@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+# Import "secret" settings.
+from .settings_secrets import *
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -23,6 +26,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTHENTICATION_BACKENDS = (
+    # 'django.contrib.auth.backends.ModelBackend',  # default
+    # 'django.contrib.auth.backends.RemoteUserBackend',
+    'simple_reddit_oauth.backends.RedditBackend',
+)
 
 # Application definition
 
@@ -33,6 +41,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'simple_reddit_oauth',
+    'dtr5app',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,5 +96,22 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Import "secret" settings.
-from .settings_secret import *
+
+# Write all logging to the console, including logleves INFO and DEBUG,
+# when DEBUG is True.
+# See https://docs.djangoproject.com/en/1.8/topics/logging/
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}

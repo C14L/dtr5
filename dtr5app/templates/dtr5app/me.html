@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Your account deatils</title>
+      <script>
+
+function getRandom(min, max) {
+  // Return a random Float between min and max.
+  return Math.random() * (max - min) + min;
+}
+
+function geoloc(form){
+  // Find user's geolocation, fuzzy it, and submit to profile.
+  // See http://diveintohtml5.info/geolocation.html
+  if (!"geolocation" in navigator) {
+    alert("Your browser doesn't support geo location lookup.")
+    return false;
+  }
+
+  try {
+    // The callback gets a geolocation object and the time. Use only
+    // "loc.coords.latitude" and "loc.coords.longitude", but fuzzy it!
+    navigator.geolocation.getCurrentPosition(
+      function(loc, timestamp) {
+        // Fuzzy the geolocation with some +/- 5 kilometers. See
+        // http://stackoverflow.com/questions/1253499/simple-calculations-
+        //                            for-working-with-lat-lon-km-distance
+        //
+        // Approximation:
+        // - Latitude: 1 deg = 110.574 km
+        // - Longitude: 1 deg = 111.320 * cos(latitude) km
+        //
+        // Get geoloction from browser object.
+        var latExact = loc.coords.latitude;
+        var lngExact = loc.coords.longitude;
+        // Check if valid
+        if(!latExact||!lngExact){throw "No valid geolocation coords found."};
+        // Fuzzy it by +/- 5 km, but we need that in degrees lat/lng.
+        var fuzzyKm = 5; // km
+        var latOneDegInKm = 110.574; // km
+        var lngOneDegInKm = 111.320 * Math.cos(latExact); // km
+        // Get the degrees for 5 km.
+        var latFuzzyDeg = 1 * fuzzyKm / latOneDegInKm;
+        var lngFuzzyDeg = 1 * fuzzyKm / lngOneDegInKm;
+        // Get a random number, (+ or -) for the degrees and add 
+        // it to the geolocation.
+        var latFuzzy = latExact + getRandom(-5, 5);
+        var lngFuzzy = lngExact + getRandom(-5, 5);
+        // Now set the fuzzy values on the form and submit.
+        form.children.lat.value = latFuzzy;
+        form.children.lng.value = lngFuzzy;
+        // Now submit the form.
+        form.submit();
+      }
+    );
+  } catch(err) {
+    alert("Sorry, could not find your geolocation: " + err);
+  }
+}
+
+
+      </script>
+      <style>
+
+body {
+  margin: 0; padding: 0;
+}
+form {
+  display: inline-block;
+}
+header {
+  margin: 0; padding: 8px;
+  background-color: #CCCCFF;
+  border-bottom: 1px solid #333;
+}
+.header-btns {
+  float: right;
+}
+.site-logo {
+  font-size: 24px; line-height: 30px;
+}
+.site-logo > a {
+  color: inherit; text-decoration: inherit;
+}
+
+
+      </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-btns">
+        <form method="POST" action="/me/locate/" onsubmit="geoloc(this);return false;">
+          {% csrf_token %}
+          <input type="hidden" name="lat" value="">
+          <input type="hidden" name="lng" value="">
+          <input type="submit" title="Update your geolocation, currently lat={{user.profile.lat}} lng={{user.profile.lng}}" value="locate">
+        </form>
+        <form method="POST" action="/me/update/">
+          {% csrf_token %}
+          <input type="submit" title="Update your profile with fresh data from your Reddit account. Last loaded {{user.profile.updated}}" value="update">
+        </form>
+        <button onclick="location.href='/account/logout/'" title="You are {{user.username}}, a Reddit user since {{user.profile.created}}">logout</button>
+      </div>
+      <div class="site-logo">
+        <a href="/">Redddate</a>
+      </div>
+    </header>
+    <ul>
+      {% for row in subbed_subreddits %}
+      <li>
+        <a href="https://www.reddit.com{{row.sr.url}}">
+          {{row.sr.display_name}}
+        </a>
+        {% if row.user_is_contributor %}contrib{% endif %}
+        {% if row.user_is_moderator %}mod{% endif %}
+        {% if row.user_is_subscriber %}subscr{% endif %}
+        {% if row.user_is_banned %}banned{% endif %}
+        {% if row.user_is_muted %}muted{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    <hr>
+    <p style="font-size:small">
+      access_token: {{session.expires}} --
+      now {{unixtime}} --
+      secs.left: {{timeleft}}
+    <hr>
+  </body>
+</html>
