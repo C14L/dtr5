@@ -124,8 +124,12 @@ def me_favsr_view(request):
     Save favorite subreddits picked by auth user from their list of
     subreddits.
     """
-    sr_id_list = [x[3:] for x in request.POST.keys() if x.startswith('id_')]
-    print('--> sr_id_list --> {}'.format(sr_id_list))
+    sr_id_li = [x[3:] for x in request.POST.keys() if x.startswith('id_')]
+    sr_li = Subscribed.objects.filter(user=request.user)
+    sr_li.update(is_favorite=False)  # delete all favorites of user
+    sr_li = Subscribed.objects.filter(user=request.user, sr__in=sr_id_li)
+    if sr_li:
+        sr_li.update(is_favorite=True)  # and set favorite on the subset
     return redirect(reverse('me_page'))
 
 

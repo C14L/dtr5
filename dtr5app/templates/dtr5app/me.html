@@ -213,7 +213,7 @@ footer {
             {% for row in subbed_subreddits %}
             <li>
               <label>
-                <input type="checkbox" name="id_{{row.sr.id}}" value="1">
+                <input{% if row.is_favorite %} checked{% endif %} type="checkbox" name="id_{{row.sr.id}}" value="1">
               </label>
               <a href="https://www.reddit.com{{row.sr.url}}">
                 {{row.sr.display_name}}
