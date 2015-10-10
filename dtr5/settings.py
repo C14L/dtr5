@@ -26,6 +26,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGIN_URL = '/'
+
 AUTHENTICATION_BACKENDS = (
     # 'django.contrib.auth.backends.ModelBackend',  # default
     # 'django.contrib.auth.backends.RemoteUserBackend',

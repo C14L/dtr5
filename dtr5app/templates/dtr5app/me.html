@@ -9,12 +9,30 @@ function getRandom(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-function geoloc(form){
+function geoloc(form) {
   // Find user's geolocation, fuzzy it, and submit to profile.
   // See http://diveintohtml5.info/geolocation.html
   if (!"geolocation" in navigator) {
     alert("Your browser doesn't support geo location lookup.")
     return false;
+  }
+
+  function fuzzyGeoloc(lat, lng) {
+        // Check if valid
+        if (!lat || !lng) throw "No valid geolocation coords found.";
+        // Fuzzy it by +/- 5 km, but we need that in degrees lat/lng.
+        var fuzzyKm = 5.0; // km
+        var latOneDegInKm = 110.574; // km
+        var lngOneDegInKm = 111.320 * Math.cos(lat); // km
+        // Get the degrees for 5 km.
+        var latFuzzyDeg = fuzzyKm / latOneDegInKm;
+        var lngFuzzyDeg = fuzzyKm / lngOneDegInKm;
+        // Get a random number, (+ or -) for the degrees and add
+        // it to the geolocation.
+        var latRandomDeg = getRandom((latFuzzyDeg*(-1)), latFuzzyDeg);
+        var lngRandomDeg = getRandom((lngFuzzyDeg*(-1)), lngFuzzyDeg);
+        // Return the exacy lat/lng +/- the random degrees.
+        return {'lat':(lat + latRandomDeg), 'lng':(lng + lngRandomDeg)};
   }
 
   try {
@@ -31,25 +49,12 @@ function geoloc(form){
         // - Longitude: 1 deg = 111.320 * cos(latitude) km
         //
         // Get geoloction from browser object.
-        var latExact = loc.coords.latitude;
-        var lngExact = loc.coords.longitude;
-        // Check if valid
-        if(!latExact||!lngExact){throw "No valid geolocation coords found."};
-        // Fuzzy it by +/- 5 km, but we need that in degrees lat/lng.
-        var fuzzyKm = 5; // km
-        var latOneDegInKm = 110.574; // km
-        var lngOneDegInKm = 111.320 * Math.cos(latExact); // km
-        // Get the degrees for 5 km.
-        var latFuzzyDeg = 1 * fuzzyKm / latOneDegInKm;
-        var lngFuzzyDeg = 1 * fuzzyKm / lngOneDegInKm;
-        // Get a random number, (+ or -) for the degrees and add 
-        // it to the geolocation.
-        var latFuzzy = latExact + getRandom(-5, 5);
-        var lngFuzzy = lngExact + getRandom(-5, 5);
+        fuzzyCoords = fuzzyGeoloc(loc.coords.latitude, loc.coords.longitude);
         // Now set the fuzzy values on the form and submit.
-        form.children.lat.value = latFuzzy;
-        form.children.lng.value = lngFuzzy;
+        form.children.lat.value = fuzzyCoords.lat;
+        form.children.lng.value = fuzzyCoords.lng;
         // Now submit the form.
+        form.method = "POST"
         form.submit();
       }
     );
@@ -58,72 +63,218 @@ function geoloc(form){
   }
 }
 
-
       </script>
       <style>
 
 body {
   margin: 0; padding: 0;
+  font: normal 16px/16px serif;
 }
-form {
-  display: inline-block;
+a {
+  text-decoration: none;
 }
-header {
-  margin: 0; padding: 8px;
-  background-color: #CCCCFF;
-  border-bottom: 1px solid #333;
+form, button {
+  display: inline;
+  margin: 0
 }
-.header-btns {
-  float: right;
-}
-.site-logo {
-  font-size: 24px; line-height: 30px;
-}
-.site-logo > a {
-  color: inherit; text-decoration: inherit;
+label {
+  cursor: pointer;
 }
 
+header {
+  background-color: #CCF;
+  border-bottom: 1px solid #888;
+  margin: 0; padding: 8px 16px;
+  overflow: hidden;
+}
+.site-logo {
+  float: left;
+  font-size: 2rem; line-height: 2rem;
+}
+.site-logo > a.site-name {
+  color: inherit; text-decoration: inherit;
+}
+.site-links {
+  background-color: #FFF;
+  float: right;
+  font-size: 0.9rem; line-height: 1rem;
+  margin: 0.4rem 0; padding: 0.1rem 0.5rem;
+}
+.site-links > a.username {
+}
+
+ul#site-messages {
+  background-color: #C00;
+  color: #FFF;
+  font-size: 1.15rem;
+  list-style: none;
+  margin: 0; padding: 8px;
+}
+ul#site-messages li {
+  margin: 0; padding: 8px;
+}
+ul#site-messages li a {
+}
+
+main {
+  overflow: hidden;
+}
+
+article {
+  margin: 0 300px 0 0; padding: 16px;
+}
+.settings-btns {
+  border: 1px solid #888;
+  margin: 0; padding: 8px;
+}
+.settings-btns .item {
+  margin: 0; padding: 8px;
+}
+.settings-btns .item > span {
+  margin-left: 4px;
+}
+
+aside#sidebar {
+  float: right;
+  width: 300px;
+}
+aside#sidebar .sr-list {
+}
+aside#sidebar .sr-list h2 {
+}
+aside#sidebar .sr-list p {
+}
+aside#sidebar .sr-list ul {
+  list-style: none;
+  margin: 0; padding: 0;
+}
+aside#sidebar .sr-list > li {
+  margin: 0; padding: 0;
+  margin-bottom: 8px;
+}
+aside#sidebar .sr-list > li label {
+  vertical-align: middle;
+}
+aside#sidebar .sr-list > li input[type="checkbox"] {
+}
+aside#sidebar .sr-list > li > a {
+}
+aside#sidebar .sr-list > li > .status {
+  display: inline;
+  font-size: 0.9rem;
+  color: #999;
+}
+aside#sidebar .sr-list > li > .status .banned,
+aside#sidebar .sr-list > li > .status .muted {
+  color: #F33;
+  font-weight: bold;
+}
+
+footer {
+  background-color: #EEE;
+  border-top: 1px solid #888;
+  clear: both;
+  font-size: 0.9rem;
+  margin: 0; padding: 16px;
+}
 
       </style>
   </head>
   <body>
     <header>
-      <div class="header-btns">
-        <form method="POST" action="/me/locate/" onsubmit="geoloc(this);return false;">
-          {% csrf_token %}
-          <input type="hidden" name="lat" value="">
-          <input type="hidden" name="lng" value="">
-          <input type="submit" title="Update your geolocation, currently lat={{user.profile.lat}} lng={{user.profile.lng}}" value="locate">
-        </form>
-        <form method="POST" action="/me/update/">
-          {% csrf_token %}
-          <input type="submit" title="Update your profile with fresh data from your Reddit account. Last loaded {{user.profile.updated}}" value="update">
-        </form>
-        <button onclick="location.href='/account/logout/'" title="You are {{user.username}}, a Reddit user since {{user.profile.created}}">logout</button>
-      </div>
+
       <div class="site-logo">
-        <a href="/">Redddate</a>
+        <a class="site-name" href="/">Redddate</a>
       </div>
+
+      <div class="site-links">
+        <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a> |
+        <a class="reddit-mailbox" href="https://www.reddit.com/message/messages/">reddit mailbox</a>
+      </div>
+
     </header>
-    <ul>
-      {% for row in subbed_subreddits %}
-      <li>
-        <a href="https://www.reddit.com{{row.sr.url}}">
-          {{row.sr.display_name}}
-        </a>
-        {% if row.user_is_contributor %}contrib{% endif %}
-        {% if row.user_is_moderator %}mod{% endif %}
-        {% if row.user_is_subscriber %}subscr{% endif %}
-        {% if row.user_is_banned %}banned{% endif %}
-        {% if row.user_is_muted %}muted{% endif %}
-      </li>
+    {% if messages %}
+    <ul id="site-messages">
+      {% for msg in messages %}
+      <li{% if msg.tags %} class="{{msg.tags}}"{% endif %}>{{msg}}</li>
       {% endfor %}
     </ul>
-    <hr>
-    <p style="font-size:small">
+    {% endif %}
+    <main>
+      <aside id="sidebar">
+        <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">
+          {% csrf_token %}
+          <h2>Favorite subreddits</h2>
+          <p>Pick up to 10 subreddits as your favourites.</p>
+          <noscript>
+            <p><input type="submit"></p>
+          </noscript>
+          <ul class="sr-list">
+            {% for row in subbed_subreddits %}
+            <li>
+              <label>
+                <input type="checkbox" name="id_{{row.sr.id}}" value="1">
+              </label>
+              <a href="https://www.reddit.com{{row.sr.url}}">
+                {{row.sr.display_name}}
+              </a>
+              <div class="status">
+                {% if row.user_is_contributor %}
+                <span class="contrib">contributor</span>
+                {% endif %}
+                {% if row.user_is_moderator %}
+                <span class="mod">moderator</span>
+                {% endif %}
+                {% if row.user_is_subscriber %}
+                <span class="subscr">subscriber</span>
+                {% endif %}
+                {% if row.user_is_banned %}
+                <span class="banned">banned</span>
+                {% endif %}
+                {% if row.user_is_muted %}
+                <span class="muted">muted</span>
+                {% endif %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          <noscript>
+            <p><input type="submit"></p>
+          </noscript>
+        </form>
+      </aside>
+      <article>
+        <fieldset class="settings-btns">
+          <legend>Profile settings</legend>
+          <div class="item">
+            <form method="GET" action="{% url 'me_locate_page' %}" onsubmit="geoloc(this);return false;">
+              {% csrf_token %}
+              <input type="hidden" name="lat" value="">
+              <input type="hidden" name="lng" value="">
+              <input type="submit" value="locate">
+            </form>
+            <span>Update your geolocation, currently <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a></span>
+          </div>
+          <div class="item">
+            <form method="POST" action="{% url 'me_update_page' %}">
+              {% csrf_token %}
+              <input type="submit" value="update">
+            </form>
+            <span>Update your profile with fresh data from your Reddit account. Last updated {{user.profile.updated}}</span>
+          </div>
+          <div class="item">
+            <button onclick="location.href='{% url 'logout_page' %}'">logout</button>
+            <span>For username <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a>, a Reddit user since {{user.profile.created}}</span>
+          </div>
+        </fieldset>
+
+
+      </article>
+    </main>
+    <footer>
       access_token: {{session.expires}} --
       now {{unixtime}} --
       secs.left: {{timeleft}}
-    <hr>
+    </footer>
   </body>
 </html>

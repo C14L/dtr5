@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Set your geo location</title>
+  </head>
+  <body>
+    <p>Setting the (fuzzied) geo location automatically requires Javascript to be enabled in your browser. But you can also set the geo location manually here:</p>
+    <form method="POST" action="">
+      {% csrf_token %}
+      <label>
+        <span>Latitude:</span>
+        <input type="text" name="lat" value="{{user.profile.lat}}">
+      </label>
+      <label>
+        <span>Longitude:</span>
+        <input type="text" name="lng" value="{{user.profile.lng}}">
+      </label>
+      <input type="submit">
+    </form>
+  </body>
+</html>

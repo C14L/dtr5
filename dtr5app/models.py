@@ -23,8 +23,8 @@ class Profile(models.Model):
     hide_from_robots = models.BooleanField(default=False)
     has_verified_email = models.BooleanField(default=False)
     # other data:
-    lat = models.FloatField(null=True, default=None)
-    lng = models.FloatField(null=True, default=None)
+    lat = models.FloatField(default=0.0)
+    lng = models.FloatField(default=0.0)
 
     class Meta:
         verbose_name = "User Profile"
@@ -71,6 +71,7 @@ class Subscribed(models.Model):
     user_is_subscriber = models.BooleanField(default=True)
     user_is_banned = models.BooleanField(default=False)
     user_is_muted = models.BooleanField(default=False)
+    is_favorite = models.BooleanField(default=False)  # user fav'd this sr.
 
     class Meta:
         verbose_name = "Subreddit subscription"
