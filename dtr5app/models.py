@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from toolbox import get_imgur_page_from_picture_url
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +26,13 @@ class Profile(models.Model):
     # other data:
     lat = models.FloatField(default=0.0)
     lng = models.FloatField(default=0.0)
+    # manually input data
+    dob = models.DateField(null=True, default=None)  # user's birthday
+    sex = models.IntegerField(default=0, choices=settings.SEX)
 
     class Meta:
-        verbose_name = "User Profile"
-        verbose_name_plural = "User Profiles"
+        verbose_name = "user profile"
+        verbose_name_plural = "user profiles"
 
         index_together = [["lat", "lng"], ]
 
@@ -55,8 +59,8 @@ class Sr(models.Model):
     subscribers_here = models.IntegerField(default=0)
 
     class Meta:
-        verbose_name = "Subreddit"
-        verbose_name_plural = "Subreddits"
+        verbose_name = "subreddit"
+        verbose_name_plural = "subreddits"
         ordering = ['display_name']
 
     def __str__(self):
@@ -74,11 +78,35 @@ class Subscribed(models.Model):
     is_favorite = models.BooleanField(default=False)  # user fav'd this sr.
 
     class Meta:
-        verbose_name = "Subreddit subscription"
-        verbose_name_plural = "Subreddit subscriptions"
+        verbose_name = "subreddit subscription"
+        verbose_name_plural = "subreddit subscriptions"
 
     def __str__(self):
         return '{} --> {}'.format(self.user.username, self.sr.name)
+
+
+class Picture(models.Model):
+    user = models.ForeignKey(User, editable=False, related_name="pics")
+    url = models.CharField(max_length=150)
+    src = models.CharField(default='', max_length=150)  # source page URL.
+
+    class Meta:
+        verbose_name = "picture"
+        verbose_name_plural = "pictures"
+
+    def __init__(self, *args, **kwargs):
+        super(Picture, self).__init__(*args, **kwargs)
+
+    def __str__(self):
+        return '{} --> {}'.format(self.user.username, self.url)
+
+    def save(self, *args, **kwargs):
+        if '//i.imgur.com/' in self.url:
+            # if this is a imgur URL, get a link to the source page.
+            self.src = get_imgur_page_from_picture_url(self.url)
+            # do the same for other common image hosters... who?
+            # -- TODO --
+        super(Picture, self).save(*args, **kwargs)
 
 
 @receiver(post_save, sender=User)

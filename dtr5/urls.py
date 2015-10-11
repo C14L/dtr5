@@ -27,6 +27,11 @@ urlpatterns = [
     url(r'^me/update/$', views.me_update_view, name="me_update_page"),
     url(r'^me/locate/$', views.me_locate_view, name="me_locate_page"),
     url(r'^me/favsr/$', views.me_favsr_view, name="me_favsr_page"),
+    url(r'^me/manual/$', views.me_manual_view, name="me_manual_page"),
+    url(r'^me/pic/$', views.me_picture_view, name="me_picture_page"),
+    url(r'^me/pic/delete$',
+        views.me_picture_delete_view, name="me_picture_delete_page"),
+    url(r'^search/$', views.me_search_view, name="me_search_page"),
 
     url(r'^user/(?P<username>[a-zA-Z0-9_-]{2,30})/$',
         views.profile_view, name="profile_page"),

@@ -20,8 +20,8 @@ function geoloc(form) {
   function fuzzyGeoloc(lat, lng) {
         // Check if valid
         if (!lat || !lng) throw "No valid geolocation coords found.";
-        // Fuzzy it by +/- 5 km, but we need that in degrees lat/lng.
-        var fuzzyKm = 5.0; // km
+        // Fuzzy it by +/- x km, but we need that in degrees lat/lng.
+        var fuzzyKm = 1.0; // km
         var latOneDegInKm = 110.574; // km
         var lngOneDegInKm = 111.320 * Math.cos(lat); // km
         // Get the degrees for 5 km.
@@ -80,10 +80,13 @@ form, button {
 label {
   cursor: pointer;
 }
+.help {
+  font-size: 0.9rem;
+  color: #888;
+}
 
 header {
   background-color: #CCF;
-  border-bottom: 1px solid #888;
   margin: 0; padding: 8px 16px;
   overflow: hidden;
 }
@@ -124,7 +127,11 @@ article {
   margin: 0 300px 0 0; padding: 16px;
 }
 .settings-btns {
-  border: 1px solid #888;
+  background-color: #EEE;
+  margin: 0 0 16px 0; padding: 8px 16px;
+}
+.settings-btns > p {
+  font-weight: bold;
   margin: 0; padding: 8px;
 }
 .settings-btns .item {
@@ -132,6 +139,46 @@ article {
 }
 .settings-btns .item > span {
   margin-left: 4px;
+}
+.settings-btns .item.manual {
+  display: block;
+  margin: 0; padding: 24px 0;
+}
+.settings-btns .item.manual > label {
+  margin: 0; padding: 8px;
+  border-right: 1px solid #888;
+}
+.settings-btns .item.manual > label:last-child {
+  border-right: 0;
+}
+.settings-btns .item.pics-preview {
+  font-size: 0; /* remove vertical gap between pics */
+}
+.settings-btns .item.pics-form input[type="text"] {
+  width: 300px;
+}
+.settings-btns .item.pics-preview > .pic {
+  background-color: #CCC;
+  display: inline-block;
+  margin: 1px; padding: 0;
+  min-width: 150px; height: 200px;
+  overflow: hidden;
+  position: relative;
+  vertical-align: middle; /* remove horizontal gap between pics */
+}
+.settings-btns .item.pics-preview > .pic > img {
+  max-width: 300px; height: inherit;
+  border: 0;
+}
+.settings-btns .item.pics-preview > .pic > form > input[type="submit"] {
+  cursor: pointer;
+  opacity: 0.1;
+  position: absolute; top: 10px; right: 10px;
+  transition: 0.3s ease-out;
+}
+.settings-btns .item.pics-preview > .pic:hover > form > input[type="submit"] {
+  opacity: 1;
+  transition: 0.3s ease-out;
 }
 
 aside#sidebar {
@@ -189,10 +236,12 @@ footer {
 
       <div class="site-links">
         <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a> |
-        <a class="reddit-mailbox" href="https://www.reddit.com/message/messages/">reddit mailbox</a>
+        <a class="reddit-mailbox" href="https://www.reddit.com/message/messages/">reddit mailbox</a> |
+        <a class="logout" href="{% url 'logout_page' %}">logout</a>
       </div>
 
     </header>
+
     {% if messages %}
     <ul id="site-messages">
       {% for msg in messages %}
@@ -200,7 +249,9 @@ footer {
       {% endfor %}
     </ul>
     {% endif %}
+
     <main>
+
       <aside id="sidebar">
         <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">
           {% csrf_token %}
@@ -242,10 +293,62 @@ footer {
             <p><input type="submit"></p>
           </noscript>
         </form>
+
       </aside>
+
       <article>
-        <fieldset class="settings-btns">
-          <legend>Profile settings</legend>
+
+        <div class="settings-btns">
+          <p><a href="{% url 'me_search_page' %}">Search</a> settings</p>
+          <div class="item">
+            <form method="POST" action="{% url 'me_search_page' %}">
+              <label>
+                <span>Find</span>
+                <select name="f_sex" size="1">
+                  <option value="">everybody</option>
+                  {% for sex in sex_choices %}
+                    {% if sex.0 > 0 %}
+                      <option{% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              </label>
+              <label>
+                <select name="f_distance" size="1"><!-- in km -->
+                  <option value="15">near by</option>
+                  <option value="50">in my area</option>
+                  <option value="300">not too far</option>
+                  <option value="20040">worldwide</option>
+                </select>
+              </label>
+              <label class="submit">
+                <input type="submit" value="save (and show results)">
+              </label>
+            </form>
+          </div>
+        </div>
+
+        <div class="settings-btns">
+          <p>Profile settings for <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a>, a Reddit user since {{user.profile.created}}</p>
+          <form class="item manual" method="POST" action="{% url 'me_manual_page' %}">
+            {% csrf_token %}
+            <label class="sex">
+              <span>Sex:</span>
+              <select name="sex" size="1">
+                {% for sex in sex_choices %}
+                <option{% if user.profile.sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label class="dob">
+              <span>Birthday:</span>
+              <input type="date" name="dob" value="{{user.profile.dob|date:'c'}}">
+              <span class="help">Never shown! Only your age, Western zodiac, and Chinese zodiac are shown.</span>
+            </label>
+            <label class="submit">
+              <input type="submit">
+            </label>
+          </form>
           <div class="item">
             <form method="GET" action="{% url 'me_locate_page' %}" onsubmit="geoloc(this);return false;">
               {% csrf_token %}
@@ -254,6 +357,7 @@ footer {
               <input type="submit" value="locate">
             </form>
             <span>Update your geolocation, currently <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a></span>
+            <span class="help">Your geolocation will randomly be fuzzied around a 1 km radius.</span>
           </div>
           <div class="item">
             <form method="POST" action="{% url 'me_update_page' %}">
@@ -261,13 +365,39 @@ footer {
               <input type="submit" value="update">
             </form>
             <span>Update your profile with fresh data from your Reddit account. Last updated {{user.profile.updated}}</span>
+            <span class="help">Fetches your subscribed subreddits and reddit profile.</span>
           </div>
-          <div class="item">
-            <button onclick="location.href='{% url 'logout_page' %}'">logout</button>
-            <span>For username <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a>, a Reddit user since {{user.profile.created}}</span>
-          </div>
-        </fieldset>
+        </div>
 
+        <div class="settings-btns">
+          <p>Pictures of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></p>
+          <div class="item pics-form">
+            <form method="POST" action="{% url 'me_picture_page' %}">
+              {% csrf_token %}
+              <input type="text" name="pic_url" value="" placeholder="http://i.imgur.com/????????.jpg">
+              <input type="submit">
+            </form>
+          </div>
+          <div class="item pics-preview">
+            {% for pic in pics %}
+            <div class="pic">
+              <a href="{{pic.src}}"><img src="{{pic.url}}" alt=""></a>
+              <form method="POST" action="{% url 'me_picture_delete_page' %}">
+                {% csrf_token %}
+                <input type="hidden" name="pic_url" value="{{pic.url}}">
+                <input type="submit" value="delete">
+              </form>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="settings-btns">
+          <p>All about of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></p>
+          <div class="item">
+            <textarea cols="80" rows="10" name="about" placeholder="Write about yourself. Or about why you like pizza and bacon. Or about that bird you saw that just escaped that cat last year."></textarea>
+          </div>
+        </div>
 
       </article>
     </main>

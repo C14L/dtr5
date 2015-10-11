@@ -1,16 +1,20 @@
+import dateutil.parser
 import logging
 import pytz
+import requests  # to check image URLs for HTTO 200 responses
 from time import time as unixtime
 from datetime import datetime
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.shortcuts import redirect, render_to_response
+from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 from simple_reddit_oauth import api
-# from .models import Profile
+
+from toolbox import force_int, force_float, set_imgur_url
 from .models import Sr
 from .models import Subscribed
 
@@ -29,8 +33,10 @@ def me_view(request, template_name="dtr5app/me.html"):
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
     ctx = {
+        "pics": request.user.pics.all().order_by('-pk'),
         "subbed_subreddits":
             request.user.subs.all().order_by('sr__display_name'),
+        "sex_choices": settings.SEX,
         "unixtime": unixtime(),
         "timeleft": request.session['expires'] - unixtime(),
     }
@@ -111,8 +117,8 @@ def me_locate_view(request):
         return render_to_response(template_name, ctx,
                                   context_instance=RequestContext(request))
     else:
-        request.user.profile.lat = float(request.POST.get('lat', 0))
-        request.user.profile.lng = float(request.POST.get('lng', 0))
+        request.user.profile.lat = force_float(request.POST.get('lat', 0.0))
+        request.user.profile.lng = force_float(request.POST.get('lng', 0.0))
         request.user.profile.save()
         messages.success(request, 'Location data updated.')
         return redirect(reverse('me_page'))
@@ -133,7 +139,91 @@ def me_favsr_view(request):
     return redirect(reverse('me_page'))
 
 
-def profile_view(request, template_name='dtr5app/profile.html'):
+@require_http_methods(["POST"])
+def me_manual_view(request):
+    """
+    Save profile data manually input by auth user: birthdate, sex, etc.
+    """
+    if request.POST.get('dob', None):
+        try:
+            dob = dateutil.parser.parse(request.POST.get('dob', None)).date()
+            request.user.profile.dob = dob
+        except:
+            pass
+    if request.POST.get('sex', None):
+        request.user.profile.sex = force_int(request.POST.get('sex'))
+
+    request.user.profile.save()
+    return redirect(reverse('me_page'))
+
+
+@require_http_methods(["POST"])
+def me_picture_delete_view(request):
+    """
+    Delete one of auth user's picture URLs.
+    """
+    pic_url = request.POST.get('pic_url', None)
+    try:
+        request.user.pics.get(url=pic_url).delete()
+        messages.info(request, 'Picture removed.')
+    except:
+        messages.info(request, 'Picture not found.')
+    return redirect(reverse('me_page'))
+
+
+@require_http_methods(["POST"])
+def me_picture_view(request):
+    """
+    Save the URL of a picture.
+    """
+    allowed_content_types = ['image/jpeg', 'image/gif', 'image/webp',
+                             'image/png']
+    pic_url = request.POST.get('pic_url', '')
+    if not pic_url:
+        return HttpResponse('Please add the URL for a picture.')
+    # Check for valid URL schema.
+    # ...
+
+    # If imgur.com picture, set to "medium" size.
+    pic_url = set_imgur_url(pic_url, size='m')
+
+    # Check for HTTP 200 response on that URL, load time,
+    # file size, file type, etc.
+    try:
+        r = requests.head(pic_url, timeout=1)  # 1 sec timeout
+    except:
+        return HttpResponse('The image is loading too slowly.')
+    if r.status_code != 200:
+        return HttpResponse('The image "{}"" can not be accessed, it returned '
+                            'HTTP status code "{}".'.
+                            format(pic_url, r.status_code))
+    if r.headers.get('content-type', None) not in allowed_content_types:
+        return HttpResponse('Not recognized as an image file. Please only '
+                            'use jpg, gif, png, or webp images. Recognized '
+                            'mime type was "{}".'.
+                            format(r.headers.get('content-type', '')))
+    if force_int(r.headers.get('content-length')) > (1024 * 512):
+        return HttpResponse('The image file size ({} kiB) is too large. '
+                            'Please use a smaller size (max. 500 kiB).'.
+                            format(r.headers.get('content-length') / 1024))
+    # Count user's pics and limit to 10 or so.
+    if request.user.pics.all().count() < 10:
+        request.user.pics.create(user=request.user, url=pic_url)
+    else:
+        return HttpResponse('You already have 10 pictures in '
+                            'your profile. Please delete an old '
+                            'picture, before adding another one.')
+    return redirect(reverse('me_page'))
+
+
+def me_search_view(request, template_name='dtr5app/search.html'):
     ctx = {}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+def profile_view(request, username, template_name='dtr5app/profile.html'):
+    view_user = get_object_or_404(User, username=username)
+    ctx = {'view_user': view_user}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

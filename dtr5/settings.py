@@ -117,3 +117,29 @@ LOGGING = {
         },
     },
 }
+
+# Settings for user profile data.
+SEX = (
+    (0, 'other'),
+    (1, 'woman who likes men'),
+    (2, 'woman who likes women'),
+    (3, 'woman who likes queer'),
+    (4, 'man who likes women'),
+    (5, 'man who likes men'),
+    (6, 'man who likes queer'),
+    (7, 'queer who likes women'),
+    (8, 'queer who likes men'),
+    (9, 'queer who likes queer'),
+)
+SEX_SYMBOL = (  # ♀♂⚥⚢⚣⚤⚪★☆⮕♥
+    (0, '⚪'),
+    (1, '♀♥♂'),
+    (2, '♀♥♀'),
+    (3, '♀♥⚥'),
+    (4, '♂♥♀'),
+    (5, '♂♥♂'),
+    (6, '♂♥⚥'),
+    (7, '⚥♥♀'),
+    (8, '⚥♥♂'),
+    (9, '⚥♥⚥'),
+)
