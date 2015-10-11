@@ -17,23 +17,56 @@ class Profile(models.Model):
     name = models.CharField(default="", max_length=20)
     created = models.DateField(null=True, default=None)  # created_utc
     updated = models.DateTimeField(null=True, default=None)
+
     # changeable Reddit user account data:
     link_karma = models.IntegerField(default=0)
     comment_karma = models.IntegerField(default=0)
+    # set if the reddit account or any subbed sr is "over_18"
     over_18 = models.BooleanField(default=False)
     hide_from_robots = models.BooleanField(default=False)
     has_verified_email = models.BooleanField(default=False)
+    gold_creddits = models.BooleanField(default=False)
+
     # other data:
     lat = models.FloatField(default=0.0)
     lng = models.FloatField(default=0.0)
+
     # manually input data
-    dob = models.DateField(null=True, default=None)  # user's birthday
+    dob = models.DateField(null=True, default=None)  # user's b'day
     sex = models.IntegerField(default=0, choices=settings.SEX)
+
+    # f_ --> user search settings: who shows up in search results?
+    f_sex = models.PositiveSmallIntegerField(default=0)
+    f_distance = models.PositiveSmallIntegerField(default=0)  # max 32767
+    f_minage = models.PositiveSmallIntegerField(default=18)
+    f_maxage = models.PositiveSmallIntegerField(default=100)
+    # find users with the over_18 profile value set to True or who
+    # are subscribed to any "over_18" subreddits?
+    f_over_18 = models.BooleanField(default=True)
+    # find only users that have a verified email on reddit?
+    f_has_verified_email = models.BooleanField(default=False)
+
+    # x_ --> only show my profile listed in another redditor's
+    # search results, if the other redditor...
+    # ...matches all my above search (f_*) options.
+    x_match_search_options = models.BooleanField(default=False)
+    # ...is not subbed to any over_18 subreddits and their reddit
+    # account is not set to "over_18" either.
+    x_only_no_over_18 = models.BooleanField(default=False)
+    # ...has a verified email address on reddit.
+    x_has_verified_email = models.BooleanField(default=False)
+    # ...has an account that is at least so many days old.
+    # (do not use models.DurationField, the resolution is too high,
+    # its less compatible, and the functionality isn't needed here)
+    x_min_account_age_days = models.PositiveSmallIntegerField(default=2)
+    # ...has at least so much comment karma.
+    x_min_comment_karma = models.PositiveIntegerField(default=50)
+    # ...has at least so much link karma.
+    x_min_link_karma = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = "user profile"
         verbose_name_plural = "user profiles"
-
         index_together = [["lat", "lng"], ]
 
     def __str__(self):
@@ -93,6 +126,7 @@ class Picture(models.Model):
     class Meta:
         verbose_name = "picture"
         verbose_name_plural = "pictures"
+        unique_together = (('user', 'url'), )
 
     def __init__(self, *args, **kwargs):
         super(Picture, self).__init__(*args, **kwargs)

@@ -216,6 +216,18 @@ def me_picture_view(request):
     return redirect(reverse('me_page'))
 
 
+def me_search_save_view(request):
+    """
+    Save the user search settings and redirect to search results page.
+    """
+    request.user.profile.f_sex = force_int(request.POST.get('f_sex'))
+    request.user.profile.f_distance = force_int(request.POST.get('f_distance'))
+    # request.user.profile.f_minage = request.POST.get('f_minage')
+    # request.user.profile.f_maxage = request.POST.get('f_maxage')
+    request.user.profile.save()
+    return redirect(reverse('me_search_page'))
+
+
 def me_search_view(request, template_name='dtr5app/search.html'):
     ctx = {}
     return render_to_response(template_name, ctx,
