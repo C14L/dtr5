@@ -5,15 +5,22 @@ Collection of random simple general-purpose helper functions.
 import re
 
 
-def force_int(x):
+def force_int(x, min=None, max=None):
     """
     Receives any value and returns an integer. Values that can not be
-    parsed are returned as 0
+    parsed are returned as 0. Values that are smaller that min or
+    larger than max, if either is given, are set to min or max
+    respectively.
     """
     try:
-        return int(x)
+        i = int(x)
     except:
         return 0
+    if min and i < min:
+        i = min
+    if max and i > max:
+        i = max
+    return i
 
 
 def force_float(x):
