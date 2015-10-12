@@ -143,3 +143,5 @@ SEX_SYMBOL = (  # ♀♂⚥⚢⚣⚤⚪★☆⮕♥
     (8, '⚥♥♂'),
     (9, '⚥♥⚥'),
 )
+# Number of user IDs to load into session cache.
+SEARCH_RESULTS_BUFFER_SIZE = 100

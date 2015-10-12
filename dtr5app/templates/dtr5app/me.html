@@ -1,411 +1,152 @@
-<!DOCTYPE html>
-<html>
-  <head>
-      <title>Your account deatils</title>
-      <script>
+{% extends 'dtr5app/base.html' %}
 
-function getRandom(min, max) {
-  // Return a random Float between min and max.
-  return Math.random() * (max - min) + min;
-}
-
-function geoloc(form) {
-  // Find user's geolocation, fuzzy it, and submit to profile.
-  // See http://diveintohtml5.info/geolocation.html
-  if (!"geolocation" in navigator) {
-    alert("Your browser doesn't support geo location lookup.")
-    return false;
-  }
-
-  function fuzzyGeoloc(lat, lng) {
-        // Check if valid
-        if (!lat || !lng) throw "No valid geolocation coords found.";
-        // Fuzzy it by +/- x km, but we need that in degrees lat/lng.
-        var fuzzyKm = 1.0; // km
-        var latOneDegInKm = 110.574; // km
-        var lngOneDegInKm = 111.320 * Math.cos(lat); // km
-        // Get the degrees for 5 km.
-        var latFuzzyDeg = fuzzyKm / latOneDegInKm;
-        var lngFuzzyDeg = fuzzyKm / lngOneDegInKm;
-        // Get a random number, (+ or -) for the degrees and add
-        // it to the geolocation.
-        var latRandomDeg = getRandom((latFuzzyDeg*(-1)), latFuzzyDeg);
-        var lngRandomDeg = getRandom((lngFuzzyDeg*(-1)), lngFuzzyDeg);
-        // Return the exacy lat/lng +/- the random degrees.
-        return {'lat':(lat + latRandomDeg), 'lng':(lng + lngRandomDeg)};
-  }
-
-  try {
-    // The callback gets a geolocation object and the time. Use only
-    // "loc.coords.latitude" and "loc.coords.longitude", but fuzzy it!
-    navigator.geolocation.getCurrentPosition(
-      function(loc, timestamp) {
-        // Fuzzy the geolocation with some +/- 5 kilometers. See
-        // http://stackoverflow.com/questions/1253499/simple-calculations-
-        //                            for-working-with-lat-lon-km-distance
-        //
-        // Approximation:
-        // - Latitude: 1 deg = 110.574 km
-        // - Longitude: 1 deg = 111.320 * cos(latitude) km
-        //
-        // Get geoloction from browser object.
-        fuzzyCoords = fuzzyGeoloc(loc.coords.latitude, loc.coords.longitude);
-        // Now set the fuzzy values on the form and submit.
-        form.children.lat.value = fuzzyCoords.lat;
-        form.children.lng.value = fuzzyCoords.lng;
-        // Now submit the form.
-        form.method = "POST"
-        form.submit();
-      }
-    );
-  } catch(err) {
-    alert("Sorry, could not find your geolocation: " + err);
-  }
-}
-
-      </script>
-      <style>
-
-body {
-  margin: 0; padding: 0;
-  font: normal 16px/16px serif;
-}
-a {
-  text-decoration: none;
-}
-form, button {
-  display: inline;
-  margin: 0
-}
-label {
-  cursor: pointer;
-}
-.help {
-  font-size: 0.9rem;
-  color: #888;
-}
-
-header {
-  background-color: #CCF;
-  margin: 0; padding: 8px 16px;
-  overflow: hidden;
-}
-.site-logo {
-  float: left;
-  font-size: 2rem; line-height: 2rem;
-}
-.site-logo > a.site-name {
-  color: inherit; text-decoration: inherit;
-}
-.site-links {
-  background-color: #FFF;
-  float: right;
-  font-size: 0.9rem; line-height: 1rem;
-  margin: 0.4rem 0; padding: 0.1rem 0.5rem;
-}
-.site-links > a.username {
-}
-
-ul#site-messages {
-  background-color: #C00;
-  color: #FFF;
-  font-size: 1.15rem;
-  list-style: none;
-  margin: 0; padding: 8px;
-}
-ul#site-messages li {
-  margin: 0; padding: 8px;
-}
-ul#site-messages li a {
-}
-
-main {
-  overflow: hidden;
-}
-
-article {
-  margin: 0 300px 0 0; padding: 16px;
-}
-.settings-btns {
-  background-color: #EEE;
-  margin: 0 0 16px 0; padding: 8px 16px;
-}
-.settings-btns > p {
-  font-weight: bold;
-  margin: 0; padding: 8px;
-}
-.settings-btns .item {
-  margin: 0; padding: 8px;
-}
-.settings-btns .item > span {
-  margin-left: 4px;
-}
-.settings-btns .item.manual {
-  display: block;
-  margin: 0; padding: 24px 0;
-}
-.settings-btns .item.manual > label {
-  margin: 0; padding: 8px;
-  border-right: 1px solid #888;
-}
-.settings-btns .item.manual > label:last-child {
-  border-right: 0;
-}
-.settings-btns .item.pics-preview {
-  font-size: 0; /* remove vertical gap between pics */
-}
-.settings-btns .item.pics-form input[type="text"] {
-  width: 300px;
-}
-.settings-btns .item.pics-preview > .pic {
-  background-color: #CCC;
-  display: inline-block;
-  margin: 1px; padding: 0;
-  min-width: 150px; height: 200px;
-  overflow: hidden;
-  position: relative;
-  vertical-align: middle; /* remove horizontal gap between pics */
-}
-.settings-btns .item.pics-preview > .pic > img {
-  max-width: 300px; height: inherit;
-  border: 0;
-}
-.settings-btns .item.pics-preview > .pic > form > input[type="submit"] {
-  cursor: pointer;
-  opacity: 0.1;
-  position: absolute; top: 10px; right: 10px;
-  transition: 0.3s ease-out;
-}
-.settings-btns .item.pics-preview > .pic:hover > form > input[type="submit"] {
-  opacity: 1;
-  transition: 0.3s ease-out;
-}
-
-aside#sidebar {
-  float: right;
-  width: 300px;
-}
-aside#sidebar .sr-list {
-}
-aside#sidebar .sr-list h2 {
-}
-aside#sidebar .sr-list p {
-}
-aside#sidebar .sr-list ul {
-  list-style: none;
-  margin: 0; padding: 0;
-}
-aside#sidebar .sr-list > li {
-  margin: 0; padding: 0;
-  margin-bottom: 8px;
-}
-aside#sidebar .sr-list > li label {
-  vertical-align: middle;
-}
-aside#sidebar .sr-list > li input[type="checkbox"] {
-}
-aside#sidebar .sr-list > li > a {
-}
-aside#sidebar .sr-list > li > .status {
-  display: inline;
-  font-size: 0.9rem;
-  color: #999;
-}
-aside#sidebar .sr-list > li > .status .banned,
-aside#sidebar .sr-list > li > .status .muted {
-  color: #F33;
-  font-weight: bold;
-}
-
-footer {
-  background-color: #EEE;
-  border-top: 1px solid #888;
-  clear: both;
-  font-size: 0.9rem;
-  margin: 0; padding: 16px;
-}
-
-      </style>
-  </head>
-  <body>
-    <header>
-
-      <div class="site-logo">
-        <a class="site-name" href="/">Redddate</a>
-      </div>
-
-      <div class="site-links">
-        <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a> |
-        <a class="reddit-mailbox" href="https://www.reddit.com/message/messages/">reddit mailbox</a> |
-        <a class="logout" href="{% url 'logout_page' %}">logout</a>
-      </div>
-
-    </header>
-
-    {% if messages %}
-    <ul id="site-messages">
-      {% for msg in messages %}
-      <li{% if msg.tags %} class="{{msg.tags}}"{% endif %}>{{msg}}</li>
+<aside id="sidebar">
+  <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">
+    {% csrf_token %}
+    <h2>Favorite subreddits</h2>
+    <p>Pick up to 10 subreddits as your favourites.</p>
+    <noscript>
+      <p><input type="submit"></p>
+    </noscript>
+    <ul class="sr-list">
+      {% for row in subbed_subreddits %}
+      <li>
+        <label>
+          <input{% if row.is_favorite %} checked{% endif %} type="checkbox" name="id_{{row.sr.id}}" value="1">
+        </label>
+        <a href="https://www.reddit.com{{row.sr.url}}">
+          {{row.sr.display_name}}
+        </a>
+        <div class="status">
+          {% if row.user_is_contributor %}
+          <span class="contrib">contributor</span>
+          {% endif %}
+          {% if row.user_is_moderator %}
+          <span class="mod">moderator</span>
+          {% endif %}
+          {% if row.user_is_subscriber %}
+          <span class="subscr">subscriber</span>
+          {% endif %}
+          {% if row.user_is_banned %}
+          <span class="banned">banned</span>
+          {% endif %}
+          {% if row.user_is_muted %}
+          <span class="muted">muted</span>
+          {% endif %}
+        </div>
+      </li>
       {% endfor %}
     </ul>
-    {% endif %}
+    <noscript>
+      <p><input type="submit"></p>
+    </noscript>
+  </form>
 
-    <main>
+</aside>
 
-      <aside id="sidebar">
-        <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">
+<article>
+
+  <div class="settings-btns">
+    <p><a href="{% url 'me_search_page' %}">Search</a> settings</p>
+    <div class="item">
+      <form method="POST" action="{% url 'me_search_page' %}">
+        {% csrf_token %}
+        <label>
+          <span>Find</span>
+          <select name="f_sex" size="1">
+            <option value="">everybody</option>
+            {% for sex in sex_choices %}
+              {% if sex.0 > 0 %}
+                <option{% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <select name="f_distance" size="1"><!-- in km -->
+            <option value="15">near by</option>
+            <option value="50">in my area</option>
+            <option value="300">not too far</option>
+            <option value="20040">worldwide</option>
+          </select>
+        </label>
+        <label class="submit">
+          <input type="submit" value="save">
+          <a href="{% url 'me_search_page' %}">browse redditors</span>
+        </label>
+      </form>
+    </div>
+  </div>
+
+  <div class="settings-btns">
+    <p>Profile settings for <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a>, a Reddit user since {{user.profile.created}}</p>
+    <form class="item manual" method="POST" action="{% url 'me_manual_page' %}">
+      {% csrf_token %}
+      <label class="sex">
+        <span>Sex:</span>
+        <select name="sex" size="1">
+          {% for sex in sex_choices %}
+          <option{% if user.profile.sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="dob">
+        <span>Birthday:</span>
+        <input type="date" name="dob" value="{{user.profile.dob|date:'c'}}">
+        <span class="help">Never shown! Only your age, Western zodiac, and Chinese zodiac are shown.</span>
+      </label>
+      <label class="submit">
+        <input type="submit">
+      </label>
+    </form>
+    <div class="item">
+      <form method="GET" action="{% url 'me_locate_page' %}" onsubmit="geoloc(this);return false;">
+        {% csrf_token %}
+        <input type="hidden" name="lat" value="">
+        <input type="hidden" name="lng" value="">
+        <input type="submit" value="locate">
+      </form>
+      <span>Update your geolocation, currently <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a></span>
+      <span class="help">Your geolocation will randomly be fuzzied around a 1 km radius.</span>
+    </div>
+    <div class="item">
+      <form method="POST" action="{% url 'me_update_page' %}">
+        {% csrf_token %}
+        <input type="submit" value="update">
+      </form>
+      <span>Update your profile with fresh data from your Reddit account. Last updated {{user.profile.updated}}</span>
+      <span class="help">Fetches your subscribed subreddits and reddit profile.</span>
+    </div>
+  </div>
+
+  <div class="settings-btns">
+    <p>Pictures of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></p>
+    <div class="item pics-form">
+      <form method="POST" action="{% url 'me_picture_page' %}">
+        {% csrf_token %}
+        <input type="text" name="pic_url" value="" placeholder="http://i.imgur.com/????????.jpg">
+        <input type="submit">
+      </form>
+    </div>
+    <div class="item pics-preview">
+      {% for pic in pics %}
+      <div class="pic">
+        <a href="{{pic.src}}"><img src="{{pic.url}}" alt=""></a>
+        <form method="POST" action="{% url 'me_picture_delete_page' %}">
           {% csrf_token %}
-          <h2>Favorite subreddits</h2>
-          <p>Pick up to 10 subreddits as your favourites.</p>
-          <noscript>
-            <p><input type="submit"></p>
-          </noscript>
-          <ul class="sr-list">
-            {% for row in subbed_subreddits %}
-            <li>
-              <label>
-                <input{% if row.is_favorite %} checked{% endif %} type="checkbox" name="id_{{row.sr.id}}" value="1">
-              </label>
-              <a href="https://www.reddit.com{{row.sr.url}}">
-                {{row.sr.display_name}}
-              </a>
-              <div class="status">
-                {% if row.user_is_contributor %}
-                <span class="contrib">contributor</span>
-                {% endif %}
-                {% if row.user_is_moderator %}
-                <span class="mod">moderator</span>
-                {% endif %}
-                {% if row.user_is_subscriber %}
-                <span class="subscr">subscriber</span>
-                {% endif %}
-                {% if row.user_is_banned %}
-                <span class="banned">banned</span>
-                {% endif %}
-                {% if row.user_is_muted %}
-                <span class="muted">muted</span>
-                {% endif %}
-              </div>
-            </li>
-            {% endfor %}
-          </ul>
-          <noscript>
-            <p><input type="submit"></p>
-          </noscript>
+          <input type="hidden" name="pic_url" value="{{pic.url}}">
+          <input type="submit" value="delete">
         </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 
-      </aside>
+  <div class="settings-btns">
+    <p>All about of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></p>
+    <div class="item">
+      <textarea cols="80" rows="10" name="about" placeholder="Write about yourself. Or about why you like pizza and bacon. Or about that bird you saw that just escaped that cat last year."></textarea>
+    </div>
+  </div>
 
-      <article>
-
-        <div class="settings-btns">
-          <p><a href="{% url 'me_search_page' %}">Search</a> settings</p>
-          <div class="item">
-            <form method="POST" action="{% url 'me_search_page' %}">
-              <label>
-                <span>Find</span>
-                <select name="f_sex" size="1">
-                  <option value="">everybody</option>
-                  {% for sex in sex_choices %}
-                    {% if sex.0 > 0 %}
-                      <option{% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
-                    {% endif %}
-                  {% endfor %}
-                </select>
-              </label>
-              <label>
-                <select name="f_distance" size="1"><!-- in km -->
-                  <option value="15">near by</option>
-                  <option value="50">in my area</option>
-                  <option value="300">not too far</option>
-                  <option value="20040">worldwide</option>
-                </select>
-              </label>
-              <label class="submit">
-                <input type="submit" value="save">
-                <a href="{% url 'me_search_page' %}">browse redditors</span>
-              </label>
-            </form>
-          </div>
-        </div>
-
-        <div class="settings-btns">
-          <p>Profile settings for <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a>, a Reddit user since {{user.profile.created}}</p>
-          <form class="item manual" method="POST" action="{% url 'me_manual_page' %}">
-            {% csrf_token %}
-            <label class="sex">
-              <span>Sex:</span>
-              <select name="sex" size="1">
-                {% for sex in sex_choices %}
-                <option{% if user.profile.sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
-                {% endfor %}
-              </select>
-            </label>
-            <label class="dob">
-              <span>Birthday:</span>
-              <input type="date" name="dob" value="{{user.profile.dob|date:'c'}}">
-              <span class="help">Never shown! Only your age, Western zodiac, and Chinese zodiac are shown.</span>
-            </label>
-            <label class="submit">
-              <input type="submit">
-            </label>
-          </form>
-          <div class="item">
-            <form method="GET" action="{% url 'me_locate_page' %}" onsubmit="geoloc(this);return false;">
-              {% csrf_token %}
-              <input type="hidden" name="lat" value="">
-              <input type="hidden" name="lng" value="">
-              <input type="submit" value="locate">
-            </form>
-            <span>Update your geolocation, currently <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a></span>
-            <span class="help">Your geolocation will randomly be fuzzied around a 1 km radius.</span>
-          </div>
-          <div class="item">
-            <form method="POST" action="{% url 'me_update_page' %}">
-              {% csrf_token %}
-              <input type="submit" value="update">
-            </form>
-            <span>Update your profile with fresh data from your Reddit account. Last updated {{user.profile.updated}}</span>
-            <span class="help">Fetches your subscribed subreddits and reddit profile.</span>
-          </div>
-        </div>
-
-        <div class="settings-btns">
-          <p>Pictures of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></p>
-          <div class="item pics-form">
-            <form method="POST" action="{% url 'me_picture_page' %}">
-              {% csrf_token %}
-              <input type="text" name="pic_url" value="" placeholder="http://i.imgur.com/????????.jpg">
-              <input type="submit">
-            </form>
-          </div>
-          <div class="item pics-preview">
-            {% for pic in pics %}
-            <div class="pic">
-              <a href="{{pic.src}}"><img src="{{pic.url}}" alt=""></a>
-              <form method="POST" action="{% url 'me_picture_delete_page' %}">
-                {% csrf_token %}
-                <input type="hidden" name="pic_url" value="{{pic.url}}">
-                <input type="submit" value="delete">
-              </form>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-
-        <div class="settings-btns">
-          <p>All about of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></p>
-          <div class="item">
-            <textarea cols="80" rows="10" name="about" placeholder="Write about yourself. Or about why you like pizza and bacon. Or about that bird you saw that just escaped that cat last year."></textarea>
-          </div>
-        </div>
-
-      </article>
-    </main>
-    <footer>
-      access_token: {{session.expires}} --
-      now {{unixtime}} --
-      secs.left: {{timeleft}}
-    </footer>
-  </body>
-</html>
+</article>

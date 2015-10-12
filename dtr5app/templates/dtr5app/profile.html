@@ -1,11 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>{{user.username}}, a Redditor since {{user.profile.created}}</title>
-</head>
-<body>
+{% extends 'dtr5app/base.html' %}
 
-...TODO: {{user.username}}....
+{% block title %}{{view_user.username}} - {{view_user.profile.age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.distance}} km{% endblock %}
 
-</body>
-</html>
+{% block body_classes %}profile-page{% endblock %}
+
+{% block main %}
+
+<aside id="sidebar">
+
+</aside>
+
+<article>
+  <ul class="user-list">
+    {% for v in user_list %}
+    <li>
+      {% if v.pics.all.0.url %}
+      <img src="{{v.pics.all.0.url}}" alt="{{v.username}}">
+      {% endif %}
+      <span>{{v.username}}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  <div class="user-profile">
+    <h1>
+      Profile page for {{view_user.username}}
+      <span>{{view_user.profile.age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.distance}} km</span>
+    </h1>
+    <p>
+      A redditor for {{view_user.profile.created|timesince}}
+      and signed up here {{view_user.date_joined|timesince}} ago.
+    </p>
+  </div>
+</article>
+
+{% endblock %}

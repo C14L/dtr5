@@ -17,6 +17,7 @@ from simple_reddit_oauth import api
 from toolbox import force_int, force_float, set_imgur_url
 from .models import Sr
 from .models import Subscribed
+from .utils import search_results_buffer
 
 logger = logging.getLogger(__name__)
 
@@ -216,26 +217,54 @@ def me_picture_view(request):
     return redirect(reverse('me_page'))
 
 
-def me_search_save_view(request):
+@require_http_methods(["POST"])
+def me_search_view(request):
     """
     Save the user search settings and redirect to search results page.
     """
-    request.user.profile.f_sex = force_int(request.POST.get('f_sex'))
-    request.user.profile.f_distance = force_int(request.POST.get('f_distance'))
-    # request.user.profile.f_minage = request.POST.get('f_minage')
-    # request.user.profile.f_maxage = request.POST.get('f_maxage')
+    p = request.user.profile
+    if request.POST.get('f_sex', None):
+        p.f_sex = force_int(request.POST.get('f_sex'))
+    if request.POST.get('f_distance', None):
+        p.f_distance = force_int(request.POST.get('f_distance'), max=20000)
+    if request.POST.get('f_minage', None):
+        p.f_minage = force_int(request.POST.get('f_minage'), min=18)
+    if request.POST.get('f_maxage', None):
+        p.f_maxage = force_int(request.POST.get('f_maxage'), max=100)
+    if request.POST.get('f_over_18', None):
+        p.f_over_18 = bool(request.POST.get('f_over_18'))
+    if request.POST.get('f_has_verified_email', None):
+        p.f_has_verified_email = bool(request.POST.get('f_has_verified_email'))
+    request.user.profile = p
     request.user.profile.save()
-    return redirect(reverse('me_search_page'))
-
-
-def me_search_view(request, template_name='dtr5app/search.html'):
-    ctx = {}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    # Force search buffer refresh,
+    search_results_buffer(request, force=True)
+    # and go to first search result, if any.
+    if len(request.session['search_results_buffer']) > 0:
+        return redirect(reverse('profile_page', kwargs={
+            'username': request.session['search_results_buffer'][0]}))
+    else:
+        messages.warning(request,
+                         'No redditors found that match the search options.')
+        return redirect(reverse('me_page'))
 
 
 def profile_view(request, username, template_name='dtr5app/profile.html'):
+    search_results_buffer(request)
     view_user = get_object_or_404(User, username=username)
-    ctx = {'view_user': view_user}
+    userbuff = request.session['search_results_buffer']
+
+    logger.warning('userbuff == "%s"', userbuff)
+
+    # find 5 users to the left and 5 to the right
+    if len(userbuff) < 12:
+        li = userbuff
+    else:
+        for i in range(0, len(userbuff)):
+            if userbuff[i+5] == view_user.username:
+                li = userbuff[i:i+11]
+                break
+    user_list = User.objects.filter(username__in=li)
+    ctx = {'view_user': view_user, 'user_list': user_list}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

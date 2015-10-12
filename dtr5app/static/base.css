@@ -1,0 +1,158 @@
+body {
+  margin: 0; padding: 0;
+  font: normal 16px/16px serif;
+}
+a {
+  text-decoration: none;
+}
+form, button {
+  display: inline;
+  margin: 0
+}
+label {
+  cursor: pointer;
+}
+.help {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+header {
+  background-color: #CCF;
+  margin: 0; padding: 8px 16px;
+  overflow: hidden;
+}
+.site-logo {
+  float: left;
+  font-size: 2rem; line-height: 2rem;
+}
+.site-logo > a.site-name {
+  color: inherit; text-decoration: inherit;
+}
+.site-links {
+  background-color: #FFF;
+  float: right;
+  font-size: 0.9rem; line-height: 1rem;
+  margin: 0.4rem 0; padding: 0.1rem 0.5rem;
+}
+.site-links > a.username {
+}
+
+ul#site-messages {
+  background-color: #C00;
+  color: #FFF;
+  font-size: 1.15rem;
+  list-style: none;
+  margin: 0; padding: 8px;
+}
+ul#site-messages li {
+  margin: 0; padding: 8px;
+}
+ul#site-messages li a {
+}
+
+main {
+  overflow: hidden;
+}
+
+article {
+  margin: 0 300px 0 0; padding: 16px;
+}
+.settings-btns {
+  background-color: #EEE;
+  margin: 0 0 16px 0; padding: 8px 16px;
+}
+.settings-btns > p {
+  font-weight: bold;
+  margin: 0; padding: 8px;
+}
+.settings-btns .item {
+  margin: 0; padding: 8px;
+}
+.settings-btns .item > span {
+  margin-left: 4px;
+}
+.settings-btns .item.manual {
+  display: block;
+  margin: 0; padding: 24px 0;
+}
+.settings-btns .item.manual > label {
+  margin: 0; padding: 8px;
+  border-right: 1px solid #888;
+}
+.settings-btns .item.manual > label:last-child {
+  border-right: 0;
+}
+.settings-btns .item.pics-preview {
+  font-size: 0; /* remove vertical gap between pics */
+}
+.settings-btns .item.pics-form input[type="text"] {
+  width: 300px;
+}
+.settings-btns .item.pics-preview > .pic {
+  background-color: #CCC;
+  display: inline-block;
+  margin: 1px; padding: 0;
+  min-width: 150px; height: 200px;
+  overflow: hidden;
+  position: relative;
+  vertical-align: middle; /* remove horizontal gap between pics */
+}
+.settings-btns .item.pics-preview > .pic > img {
+  max-width: 300px; height: inherit;
+  border: 0;
+}
+.settings-btns .item.pics-preview > .pic > form > input[type="submit"] {
+  cursor: pointer;
+  opacity: 0.1;
+  position: absolute; top: 10px; right: 10px;
+  transition: 0.3s ease-out;
+}
+.settings-btns .item.pics-preview > .pic:hover > form > input[type="submit"] {
+  opacity: 1;
+  transition: 0.3s ease-out;
+}
+
+aside#sidebar {
+  float: right;
+  width: 300px;
+}
+aside#sidebar .sr-list {
+}
+aside#sidebar .sr-list h2 {
+}
+aside#sidebar .sr-list p {
+}
+aside#sidebar .sr-list ul {
+  list-style: none;
+  margin: 0; padding: 0;
+}
+aside#sidebar .sr-list > li {
+  margin: 0; padding: 0;
+  margin-bottom: 8px;
+}
+aside#sidebar .sr-list > li label {
+  vertical-align: middle;
+}
+aside#sidebar .sr-list > li input[type="checkbox"] {
+}
+aside#sidebar .sr-list > li > a {
+}
+aside#sidebar .sr-list > li > .status {
+  display: inline;
+  font-size: 0.9rem;
+  color: #999;
+}
+aside#sidebar .sr-list > li > .status .banned,
+aside#sidebar .sr-list > li > .status .muted {
+  color: #F33;
+  font-weight: bold;
+}
+
+footer {
+  background-color: #EEE;
+  border-top: 1px solid #888;
+  clear: both;
+  font-size: 0.9rem;
+  margin: 0; padding: 16px;
+}

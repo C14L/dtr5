@@ -1,0 +1,57 @@
+{% load static %}
+{% spaceless %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <script src="{% static 'base.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="/static/icon-apple.png">
+    <link rel="icon" sizes="192x192" href="/static/icon.png">
+    <link rel="shortcut icon" href="/static/icon.ico">
+    <meta name="msapplication-TileColor" content="#113228">
+    <meta name="msapplication-TileImage" content="">
+    {% block head %}{% endblock %}
+  </head>
+  <body class="{% block body_classes %}{% endblock %}">
+    <header>
+
+      <div class="site-logo">
+        <a class="site-name" href="/">Redddate</a>
+      </div>
+
+      <div class="site-links">
+        <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a> |
+        <a class="reddit-mailbox" href="https://www.reddit.com/message/messages/">reddit mailbox</a> |
+        <a class="logout" href="{% url 'logout_page' %}">logout</a>
+      </div>
+
+    </header>
+
+    {% if messages %}
+    <ul id="site-messages">
+      {% for msg in messages %}
+      <li{% if msg.tags %} class="{{msg.tags}}"{% endif %}>{{msg}}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <main>
+      {% block main %}{% endblock %}
+    </main>
+
+    <footer>
+      access_token: {{session.expires}} --
+      now {{unixtime}} --
+      secs.left: {{timeleft}}
+    </footer>
+
+  </body>
+</html>
+{% endspaceless %}
