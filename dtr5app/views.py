@@ -58,13 +58,15 @@ def me_update_view(request):
         if len(subscribed) > 10:
             messages.success(request, 'Subreddit list updated.')
         else:
-            n = len(subscribed)
-            messages.success(request, 'Subreddit list updated, but you are '
-                                      'only subbed to {} subreddits. Find s'
-                                      'ome more that interest you for bette'
-                                      'r results here :)'.format(len(n)))
+            messages.success(request, 'Subreddit list updated, but you are onl'
+                                      'y subbed to {} subreddits. Find some mo'
+                                      're that interest you for better results'
+                                      ' here :)'.format(len(subscribed)))
     else:
-        messages.warning(request, 'Could not find any subscribed subreddits.')
+        messages.warning(request, 'Could not find any subscribed subreddits. M'
+                                  'ost likely, because you are still only subs'
+                                  'cribed to the default subs and have not yet'
+                                  ' picked your own selection.')
 
     # Reload user profile data from Reddit.
     reddit_user = api.get_user(request)
@@ -130,8 +132,11 @@ def me_manual_view(request):
             pass
     if request.POST.get('sex', None):
         request.user.profile.sex = force_int(request.POST.get('sex'))
+    if request.POST.get('about', None):
+        request.user.profile.about = request.POST.get('about')
 
     request.user.profile.save()
+    messages.success(request, 'Profile data updated.')
     return redirect(reverse('me_page'))
 
 

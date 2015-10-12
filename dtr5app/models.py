@@ -40,6 +40,7 @@ class Profile(models.Model):
     # manually input data
     dob = models.DateField(null=True, default=None)  # user's b'day
     sex = models.IntegerField(default=0, choices=settings.SEX)
+    about = models.TextField(default='')
 
     # f_ --> user search settings: who shows up in search results?
     f_sex = models.PositiveSmallIntegerField(default=0)

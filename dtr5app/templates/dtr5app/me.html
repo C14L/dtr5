@@ -5,10 +5,9 @@
   <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">
     {% csrf_token %}
     <h2>Favorite subreddits</h2>
+    {% if subbed_subreddits %}
     <p>Pick up to 10 subreddits as your favourites.</p>
-    <noscript>
-      <p><input type="submit"></p>
-    </noscript>
+    <p><input type="submit"></p>
     <ul class="sr-list">
       {% for row in subbed_subreddits %}
       <li>
@@ -38,9 +37,10 @@
       </li>
       {% endfor %}
     </ul>
-    <noscript>
-      <p><input type="submit"></p>
-    </noscript>
+    <p><input type="submit"></p>
+    {% else %}
+    <p>No subreddits to show.</p>
+    {% endif %}
   </form>
 
 </aside>
@@ -50,7 +50,7 @@
   <div class="settings-btns">
     <p><a href="{% url 'me_search_page' %}">Search</a> settings</p>
     <div class="item">
-      <form method="POST" action="{% url 'me_page' %}">
+      <form method="POST" action="{% url 'me_search_page' %}">
         {% csrf_token %}
         <label>
           <span>Find</span>
@@ -145,9 +145,11 @@
 
   <div class="settings-btns">
     <p>All about of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></p>
-    <div class="item">
-      <textarea cols="80" rows="10" name="about" placeholder="Write about yourself. Or about why you like pizza and bacon. Or about that bird you saw that just escaped that cat last year."></textarea>
-    </div>
+    <form class="item" method="POST" action="{% url 'me_manual_page' %}">
+      {% csrf_token %}
+      <textarea cols="80" rows="10" name="about" placeholder="Write about yourself. Or about why you like pizza and bacon. Or about that bird you saw that just escaped that cat last year.">{{user.profile.about}}</textarea>
+      <p><input type="submit"></p>
+    </form>
   </div>
 
 </article>
