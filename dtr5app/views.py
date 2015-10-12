@@ -51,10 +51,9 @@ def me_update_view(request):
     then simply redirect to user's "me" page and add message to confirm
     the success or report failure.
     """
-
-    # Reload user's subreddit list.
+    # Reload user's subreddit list from reddit.
     subscribed = api.get_sr_subscriber(request)
-    if subscribed or len(subscribed) < 1:
+    if subscribed:
         # Merge them into the local list of subreddits for this user.
         for row in subscribed:
             sr, sr_created = Sr.objects.get_or_create(id=row['id'], defaults={
@@ -68,22 +67,30 @@ def me_update_view(request):
                 'display_name': row['display_name'],
                 'subreddit_type': row['subreddit_type'],
                 'subscribers': row['subscribers'], })
-        # Add the user as subscriber to the subredit object, if that's
-        # not already the case.
-        sub, sub_created = Subscribed.objects.get_or_create(
-            user=request.user, sr=sr, defaults={
-                'user_is_contributor': bool(row['user_is_contributor']),
-                'user_is_moderator': bool(row['user_is_moderator']),
-                'user_is_subscriber': bool(row['user_is_subscriber']),
-                'user_is_banned': bool(row['user_is_banned']),
-                'user_is_muted': bool(row['user_is_muted']), })
-        logger.warning('Subbed to subreddit "%s".', row)
-        # If the user was newly added to the subreddit, count it as
-        # a local user for that subreddit. (a user of the sr who is
-        # also a user on this site)
-        if sub_created:
-            sr.subscribers_here += 1
-            sr.save()
+            # Add the user as subscriber to the subredit object, if that's
+            # not already the case.
+            sub, sub_created = Subscribed.objects.get_or_create(
+                user=request.user, sr=sr, defaults={
+                    'user_is_contributor': bool(row['user_is_contributor']),
+                    'user_is_moderator': bool(row['user_is_moderator']),
+                    'user_is_subscriber': bool(row['user_is_subscriber']),
+                    'user_is_banned': bool(row['user_is_banned']),
+                    'user_is_muted': bool(row['user_is_muted']), })
+            # If the user was newly added to the subreddit, count it as
+            # a local user for that subreddit. (a user of the sr who is
+            # also a user on this site)
+            if sub_created:
+                sr.subscribers_here += 1
+                sr.save()
+        # After adding the user to all subs, now check if they are still
+        # added to subs they are no longer subbed to.
+        to_del = Subscribed.objects.filter(user=request.user).exclude(
+            sr__in=[row['id'] for row in subscribed])
+        for row in to_del:
+            row.sr.subscribers_here -= 1
+            row.sr.save()
+            row.delete()
+
         if len(subscribed) > 10:
             messages.success(request, 'Subreddit list updated.')
         else:
@@ -92,7 +99,6 @@ def me_update_view(request):
                                       'only subbed to {} subreddits. Find s'
                                       'ome more that interest you for bette'
                                       'r results here :)'.format(len(n)))
-
     else:
         messages.warning(request, 'Could not find any subscribed subreddits.')
 
