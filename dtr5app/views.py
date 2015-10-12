@@ -34,7 +34,6 @@ def me_view(request, template_name="dtr5app/me.html"):
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
     ctx = {
-        "pics": request.user.pics.all().order_by('-pk'),
         "subbed_subreddits":
             request.user.subs.all().order_by('sr__display_name'),
         "sex_choices": settings.SEX,
@@ -55,7 +54,7 @@ def me_update_view(request):
 
     # Reload user's subreddit list.
     subscribed = api.get_sr_subscriber(request)
-    if subscribed:
+    if subscribed or len(subscribed) < 1:
         # Merge them into the local list of subreddits for this user.
         for row in subscribed:
             sr, sr_created = Sr.objects.get_or_create(id=row['id'], defaults={
@@ -78,13 +77,22 @@ def me_update_view(request):
                 'user_is_subscriber': bool(row['user_is_subscriber']),
                 'user_is_banned': bool(row['user_is_banned']),
                 'user_is_muted': bool(row['user_is_muted']), })
+        logger.warning('Subbed to subreddit "%s".', row)
         # If the user was newly added to the subreddit, count it as
         # a local user for that subreddit. (a user of the sr who is
         # also a user on this site)
         if sub_created:
             sr.subscribers_here += 1
             sr.save()
-        messages.success(request, 'Subreddit list updated.')
+        if len(subscribed) > 10:
+            messages.success(request, 'Subreddit list updated.')
+        else:
+            n = len(subscribed)
+            messages.success(request, 'Subreddit list updated, but you are '
+                                      'only subbed to {} subreddits. Find s'
+                                      'ome more that interest you for bette'
+                                      'r results here :)'.format(len(n)))
+
     else:
         messages.warning(request, 'Could not find any subscribed subreddits.')
 
@@ -251,10 +259,20 @@ def me_search_view(request):
 
 def profile_view(request, username, template_name='dtr5app/profile.html'):
     search_results_buffer(request)
-    view_user = get_object_or_404(User, username=username)
     userbuff = request.session['search_results_buffer']
+    view_user = get_object_or_404(User, username=username)
+    view_user.profile.set_viewer_latlng(request.user.profile.lat,
+                                        request.user.profile.lng)
 
-    logger.warning('userbuff == "%s"', userbuff)
+    print('view_user.username=="{}"'.format(view_user.username))
+    print('view_user.profile.lat=="{}"'.format(view_user.profile.lat))
+    print('view_user.profile.lng=="{}"'.format(view_user.profile.lng))
+    print('view_user.profile.viewer_lat=="{}"'.format(
+        view_user.profile.viewer_lat))
+    print('view_user.profile.viewer_lng=="{}"'.format(
+        view_user.profile.viewer_lng))
+    print('view_user.profile.get_distance()')
+    print('userbuff=="{}"'.format(userbuff))
 
     # find 5 users to the left and 5 to the right
     if len(userbuff) < 12:
@@ -265,6 +283,9 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
                 li = userbuff[i:i+11]
                 break
     user_list = User.objects.filter(username__in=li)
+    for u in user_list:
+        u.profile.set_viewer_latlng(request.user.profile.lat,
+                                    request.user.profile.lng)
     ctx = {'view_user': view_user, 'user_list': user_list}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

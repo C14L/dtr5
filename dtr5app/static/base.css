@@ -156,3 +156,51 @@ footer {
   font-size: 0.9rem;
   margin: 0; padding: 16px;
 }
+
+
+
+body.profile {
+
+}
+body.profile ul.user-list {
+  background-color: #CCF;
+  font-size: 0;
+  list-style: none;
+  margin: 0; padding: 8px;
+  white-space: nowrap;
+}
+body.profile ul.user-list li {
+  display: inline-block;
+  font-size: 0;
+  height: 100px;
+  margin: 2px; padding: 0;
+  position: relative;
+  vertical-align: middle;
+}
+body.profile ul.user-list li .info {
+  opacity: 0;
+  background-color: #FFF;
+  border-radius: 0 5px 5px 5px;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  color: #111;
+  font-size: 1rem;
+  margin: 0; padding: 4px;
+  position: absolute; top: 20px; left: 20px;
+  transition: 0.3s ease-out;
+  z-index: 999;
+}
+body.profile ul.user-list li:hover .info {
+  opacity: 1;
+  transition: 0.3s ease-out;
+}
+body.profile ul.user-list li a {
+  display: block;
+  height: inherit;
+}
+body.profile ul.user-list li a.pic img {
+  border: 0;
+  height: inherit;
+}
+body.profile ul.user-list li a.nopic {
+  width: 100px;
+}

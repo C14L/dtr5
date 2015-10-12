@@ -1,10 +1,16 @@
 import logging
+from datetime import date
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from toolbox import get_imgur_page_from_picture_url
+from toolbox import (get_imgur_page_from_picture_url,
+                     get_western_zodiac,
+                     get_western_zodiac_symbol,
+                     get_eastern_zodiac,
+                     get_eastern_zodiac_symbol,
+                     distance_between_geolocations)
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +70,10 @@ class Profile(models.Model):
     # ...has at least so much link karma.
     x_min_link_karma = models.PositiveIntegerField(default=0)
 
+    # Can be set for distance calculation.
+    viewer_lat = None
+    viewer_lng = None
+
     class Meta:
         verbose_name = "user profile"
         verbose_name_plural = "user profiles"
@@ -71,6 +81,48 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_sex_symbol(self):
+        """Returns the symbol for the user's sex."""
+        try:
+            return [x[1] for x in settings.SEX_SYMBOL if x[0] == self.sex][0]
+        except IndexError:
+            return ''
+
+    def get_western_zodiac_display(self):
+        return get_western_zodiac(self.dob)
+
+    def get_western_zodiac_symbol(self):
+        return get_western_zodiac_symbol(self.dob)
+
+    def get_eastern_zodiac_display(self):
+        return get_eastern_zodiac(self.dob)
+
+    def get_eastern_zodiac_symbol(self):
+        return get_eastern_zodiac_symbol(self.dob)
+
+    def get_age(self):
+        try:
+            delta = date.today() - self.dob
+            return int(delta.days / 365)
+        except:
+            return ''
+
+    def set_viewer_latlng(self, vlat, vlng):
+        self.viewer_lat = vlat
+        self.viewer_lng = vlng
+
+    def get_distance(self):
+        """Return distance in meters between lat/lng and instance's loc."""
+        return int(distance_between_geolocations(
+            (self.lat, self.lng), (self.viewer_lat, self.viewer_lng)))
+
+    def get_distance_in_km(self):
+        """Returns distance in km between lat/lng and instance's location"""
+        return float(self.get_distance() / 1000)
+
+    def get_distance_in_miles(self):
+        return float(self.get_distance_in_km() * 0.621371)
 
 
 class Sr(models.Model):

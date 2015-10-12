@@ -1,5 +1,6 @@
 {% extends 'dtr5app/base.html' %}
 
+{% block main %}
 <aside id="sidebar">
   <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">
     {% csrf_token %}
@@ -49,7 +50,7 @@
   <div class="settings-btns">
     <p><a href="{% url 'me_search_page' %}">Search</a> settings</p>
     <div class="item">
-      <form method="POST" action="{% url 'me_search_page' %}">
+      <form method="POST" action="{% url 'me_page' %}">
         {% csrf_token %}
         <label>
           <span>Find</span>
@@ -64,10 +65,10 @@
         </label>
         <label>
           <select name="f_distance" size="1"><!-- in km -->
-            <option value="15">near by</option>
-            <option value="50">in my area</option>
-            <option value="300">not too far</option>
-            <option value="20040">worldwide</option>
+            <option{% if user.profile.f_distance == 20040 %} selected{% endif %}  value="20040">worldwide</option>
+            <option{% if user.profile.f_distance == 300 %} selected{% endif %}  value="300">not too far</option>
+            <option{% if user.profile.f_distance == 50 %} selected{% endif %}  value="50">in my area</option>
+            <option{% if user.profile.f_distance == 15 %} selected{% endif %} value="15">near by</option>
           </select>
         </label>
         <label class="submit">
@@ -129,7 +130,7 @@
       </form>
     </div>
     <div class="item pics-preview">
-      {% for pic in pics %}
+      {% for pic in request.user.pics.all %}
       <div class="pic">
         <a href="{{pic.src}}"><img src="{{pic.url}}" alt=""></a>
         <form method="POST" action="{% url 'me_picture_delete_page' %}">
@@ -150,3 +151,4 @@
   </div>
 
 </article>
+{% endblock %}

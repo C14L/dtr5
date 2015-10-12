@@ -1,8 +1,8 @@
 {% extends 'dtr5app/base.html' %}
 
-{% block title %}{{view_user.username}} - {{view_user.profile.age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.distance}} km{% endblock %}
+{% block title %}{{view_user.username}} - {{view_user.profile.get_age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.distance}} km{% endblock %}
 
-{% block body_classes %}profile-page{% endblock %}
+{% block body_classes %}profile{% endblock %}
 
 {% block main %}
 
@@ -14,17 +14,19 @@
   <ul class="user-list">
     {% for v in user_list %}
     <li>
+    <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km}} km away)</span>
       {% if v.pics.all.0.url %}
-      <img src="{{v.pics.all.0.url}}" alt="{{v.username}}">
+      <a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
+      {% else %}
+      <a href="#" class="nopic">{{v.username}}</a>
       {% endif %}
-      <span>{{v.username}}</span>
     </li>
     {% endfor %}
   </ul>
   <div class="user-profile">
     <h1>
       Profile page for {{view_user.username}}
-      <span>{{view_user.profile.age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.distance}} km</span>
+      <span>{{view_user.profile.get_age}} {{view_user.profile.get_sex_symbol}} {{view_user.profile.get_distance_in_km}} km away</span>
     </h1>
     <p>
       A redditor for {{view_user.profile.created|timesince}}
