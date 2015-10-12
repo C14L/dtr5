@@ -15,9 +15,9 @@ from django.views.decorators.http import require_http_methods
 from simple_reddit_oauth import api
 
 from toolbox import force_int, force_float, set_imgur_url
-from .models import Sr
 from .models import Subscribed
-from .utils import search_results_buffer
+from .utils import (search_results_buffer,
+                    update_list_of_subscribed_subreddits)
 
 logger = logging.getLogger(__name__)
 
@@ -54,43 +54,7 @@ def me_update_view(request):
     # Reload user's subreddit list from reddit.
     subscribed = api.get_sr_subscriber(request)
     if subscribed:
-        # Merge them into the local list of subreddits for this user.
-        for row in subscribed:
-            sr, sr_created = Sr.objects.get_or_create(id=row['id'], defaults={
-                'name': row['display_name'],  # display_name
-                'created': datetime.utcfromtimestamp(
-                    int(row['created_utc'])).replace(tzinfo=pytz.utc),
-                'url': row['url'],
-                'over18': row['over18'],
-                'lang': row['lang'],
-                'title': row['title'],
-                'display_name': row['display_name'],
-                'subreddit_type': row['subreddit_type'],
-                'subscribers': row['subscribers'], })
-            # Add the user as subscriber to the subredit object, if that's
-            # not already the case.
-            sub, sub_created = Subscribed.objects.get_or_create(
-                user=request.user, sr=sr, defaults={
-                    'user_is_contributor': bool(row['user_is_contributor']),
-                    'user_is_moderator': bool(row['user_is_moderator']),
-                    'user_is_subscriber': bool(row['user_is_subscriber']),
-                    'user_is_banned': bool(row['user_is_banned']),
-                    'user_is_muted': bool(row['user_is_muted']), })
-            # If the user was newly added to the subreddit, count it as
-            # a local user for that subreddit. (a user of the sr who is
-            # also a user on this site)
-            if sub_created:
-                sr.subscribers_here += 1
-                sr.save()
-        # After adding the user to all subs, now check if they are still
-        # added to subs they are no longer subbed to.
-        to_del = Subscribed.objects.filter(user=request.user).exclude(
-            sr__in=[row['id'] for row in subscribed])
-        for row in to_del:
-            row.sr.subscribers_here -= 1
-            row.sr.save()
-            row.delete()
-
+        update_list_of_subscribed_subreddits(request.user, subscribed)
         if len(subscribed) > 10:
             messages.success(request, 'Subreddit list updated.')
         else:
@@ -114,7 +78,6 @@ def me_update_view(request):
         messages.success(request, 'Profile data updated.')
     else:
         messages.warning(request, 'Could not find any user profile data.')
-
     # Go back to user's "me" page, the updated data should show up there.
     return redirect(reverse('me_page'))
 
