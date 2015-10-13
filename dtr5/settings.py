@@ -145,8 +145,5 @@ SEX_SYMBOL = (  # ♀♂⚥⚢⚣⚤⚪★☆⮕♥
 )
 # Number of user IDs to load into session cache.
 SEARCH_RESULTS_BUFFER_SIZE = 100
-
-if DEBUG:
-    RESULTS_BUFFER_LEN = 10
-else:
-    RESULTS_BUFFER_LEN = 1000
+LINKS_IN_PROFILE_HEADER = 6
+RESULTS_BUFFER_LEN = 20 if DEBUG else 1000

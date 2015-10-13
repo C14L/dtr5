@@ -70,13 +70,15 @@ def update_list_of_subscribed_subreddits(user, subscribed):
         row.delete()
 
 
-def get_usernames_around_view_user(userbuff, view_user, n=2):
+def get_usernames_around_view_user(userbuff, view_user, n=None):
     """
     From a list of usernames and a focus user, return a list of n
     usernames to the left, and n usernames to the right of the focus
     user's username. If the list gets to one of either ends, the focus
     username shoud be centered as much as possible.
     """
+    if not n:
+        n = int(getattr(settings, 'LINKS_IN_PROFILE_HEADER', 5) / 2)
     if len(userbuff) > (2*n)+1:
         if view_user.username in userbuff:
             i = userbuff.index(view_user.username)
