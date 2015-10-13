@@ -52,6 +52,7 @@
     <div class="item">
       <form method="POST" action="{% url 'me_search_page' %}">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'me_page' %}">
         <label>
           <span>Find</span>
           <select name="f_sex" size="1">

@@ -4,6 +4,7 @@ import pytz
 import requests  # to check image URLs for HTTO 200 responses
 from time import time as unixtime
 from datetime import datetime
+from random import randint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -17,14 +18,15 @@ from simple_reddit_oauth import api
 from toolbox import force_int, force_float, set_imgur_url
 from .models import Subscribed
 from .utils import (search_results_buffer,
-                    update_list_of_subscribed_subreddits)
+                    update_list_of_subscribed_subreddits,
+                    get_usernames_around_view_user)
 
 logger = logging.getLogger(__name__)
 
 
 def home_view(request):
     if request.user.is_authenticated():
-        return redirect(reverse('me_page'))
+        return redirect(reverse('me_search_page'))
     txt = '<a href="{}">Login with your Reddit account</a>'
     url = api.make_authorization_url(request)
     return HttpResponse(txt.format(url))
@@ -199,11 +201,18 @@ def me_picture_view(request):
     return redirect(reverse('me_page'))
 
 
-@require_http_methods(["POST"])
+@require_http_methods(["POST", "GET", "HEAD"])
 def me_search_view(request):
     """
     Save the user search settings and redirect to search results page.
     """
+    if request.method in ["GET", "HEAD"]:
+        # Find the next profile to show and redirect.
+        i = randint(0, len(request.session['search_results_buffer'])-1)
+        x = {'username': request.session['search_results_buffer'][i]}
+        _next = request.POST.get('next', reverse('profile_page', kwargs=x))
+        return redirect(_next)
+
     p = request.user.profile
     if request.POST.get('f_sex', None):
         p.f_sex = force_int(request.POST.get('f_sex'))
@@ -223,40 +232,24 @@ def me_search_view(request):
     search_results_buffer(request, force=True)
     # and go to first search result, if any.
     if len(request.session['search_results_buffer']) > 0:
-        return redirect(reverse('profile_page', kwargs={
-            'username': request.session['search_results_buffer'][0]}))
+        messages.success(request, 'Search options updated.')
     else:
-        messages.warning(request,
-                         'No redditors found that match the search options.')
-        return redirect(reverse('me_page'))
+        messages.warning(request, 'No redditors found for the search options.')
+    return redirect(request.POST.get('next', reverse('me_page')))
 
 
 def profile_view(request, username, template_name='dtr5app/profile.html'):
-    search_results_buffer(request)
-    userbuff = request.session['search_results_buffer']
+    """
+    Display the complete profile of one user, and show a list of
+    other users above for the user to continue browsing.
+    """
     view_user = get_object_or_404(User, username=username)
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
                                         request.user.profile.lng)
-
-    print('view_user.username=="{}"'.format(view_user.username))
-    print('view_user.profile.lat=="{}"'.format(view_user.profile.lat))
-    print('view_user.profile.lng=="{}"'.format(view_user.profile.lng))
-    print('view_user.profile.viewer_lat=="{}"'.format(
-        view_user.profile.viewer_lat))
-    print('view_user.profile.viewer_lng=="{}"'.format(
-        view_user.profile.viewer_lng))
-    print('view_user.profile.get_distance()')
-    print('userbuff=="{}"'.format(userbuff))
-
-    # find 5 users to the left and 5 to the right
-    if len(userbuff) < 12:
-        li = userbuff
-    else:
-        for i in range(0, len(userbuff)):
-            if userbuff[i+5] == view_user.username:
-                li = userbuff[i:i+11]
-                break
-    user_list = User.objects.filter(username__in=li)
+    search_results_buffer(request)
+    username_list = get_usernames_around_view_user(
+        request.session['search_results_buffer'], view_user)
+    user_list = User.objects.filter(username__in=username_list)
     for u in user_list:
         u.profile.set_viewer_latlng(request.user.profile.lat,
                                     request.user.profile.lng)

@@ -2,9 +2,11 @@
 All kinds of supporting functions for views and models.
 """
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.conf import settings
 from django.contrib.auth.models import User
 from .models import Sr, Subscribed
+from toolbox import (to_iso8601, from_iso8601)
 
 
 def search_results_buffer(request, force=False):
@@ -13,9 +15,14 @@ def search_results_buffer(request, force=False):
     not, or 'force' is True, run a search and load the usernames into
     the buffer.
     """
+    bt = request.session.get('search_results_buffer_time', None)
+    if (not bt or from_iso8601(bt) + timedelta(days=1) < from_iso8601()):
+        force = True
+    bufflen = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
     if force or not request.session.get('search_results_buffer', None):
-        li = User.objects.all().values_list('username', flat=True)
+        li = User.objects.all()[:bufflen].values_list('username', flat=True)
         request.session['search_results_buffer'] = list(li)
+        request.session['search_results_buffer_time'] = to_iso8601()
 
 
 def update_list_of_subscribed_subreddits(user, subscribed):
@@ -61,3 +68,27 @@ def update_list_of_subscribed_subreddits(user, subscribed):
         row.sr.subscribers_here -= 1
         row.sr.save()
         row.delete()
+
+
+def get_usernames_around_view_user(userbuff, view_user, n=2):
+    """
+    From a list of usernames and a focus user, return a list of n
+    usernames to the left, and n usernames to the right of the focus
+    user's username. If the list gets to one of either ends, the focus
+    username shoud be centered as much as possible.
+    """
+    if len(userbuff) > (2*n)+1:
+        if view_user.username in userbuff:
+            i = userbuff.index(view_user.username)
+            min_i = i-n if i-n > 0 else 0
+            max_i = i+n if i+n < len(userbuff) else len(userbuff)
+            li = userbuff[min_i:max_i+1]
+        else:
+            # The view_user's username is not part of the usernames
+            # list. This should not happen usually, but there may be
+            # situations, so handle it gracefully by returning just
+            # the beginning part of the usernames list.
+            li = userbuff[0:(2*n)+1]
+    else:
+        li = userbuff
+    return li

@@ -2,8 +2,35 @@
 Collection of random simple general-purpose helper functions.
 """
 
-import re
+import datetime
+import dateutil.parser
 import math
+import pytz
+import re
+
+
+def to_iso8601(when=None):
+    """Return a datetime as string in ISO-8601 format."""
+    if not when:
+        when = datetime.datetime.now(pytz.utc)
+    if not when.tzinfo:
+        when = pytz.utc.localize(when)
+    _when = when.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+    return _when
+
+
+def from_iso8601(when=None):
+    """
+    Return a UTC timezone aware datetime object from a string in
+    ISO-8601 format.
+    """
+    if not when:
+        _when = datetime.datetime.now(pytz.utc)
+    else:
+        _when = dateutil.parser.parse(when)
+    if not _when.tzinfo:
+        _when = pytz.utc.localize(_when)
+    return _when
 
 
 def force_int(x, min=None, max=None):

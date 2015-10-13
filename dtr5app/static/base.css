@@ -163,19 +163,24 @@ body.profile {
 
 }
 body.profile ul.user-list {
-  background-color: #CCF;
+  background-color: #FFF;
   font-size: 0;
   list-style: none;
-  margin: 0; padding: 8px;
+  margin: 0; padding: 2px 0;
+  overflow: hidden;
   white-space: nowrap;
+  box-shadow: 0 0 16px rgba(0,0,0,0.7);
 }
 body.profile ul.user-list li {
   display: inline-block;
   font-size: 0;
   height: 100px;
-  margin: 2px; padding: 0;
+  margin: 0; padding: 0; border: 2px solid transparent;
   position: relative;
   vertical-align: middle;
+}
+body.profile ul.user-list li.curr {
+  border-color: #F00;
 }
 body.profile ul.user-list li .info {
   opacity: 0;
@@ -196,6 +201,13 @@ body.profile ul.user-list li:hover .info {
 body.profile ul.user-list li a {
   display: block;
   height: inherit;
+  max-width: 150px;
+  overflow: hidden;
+  position: relative;
+}
+body.profile ul.user-list li:first-child a {
+}
+body.profile ul.user-list li:last-child a {
 }
 body.profile ul.user-list li a.pic img {
   border: 0;

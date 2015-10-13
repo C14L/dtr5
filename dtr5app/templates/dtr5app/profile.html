@@ -6,23 +6,27 @@
 
 {% block main %}
 
+<ul class="user-list">
+  {% for v in user_list %}
+  <li class="{% if v.username == view_user.username %}curr{% endif %}">
+    <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km}} km away)</span>
+    {% if v.pics.all.0.url %}
+    <a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
+    {% else %}
+    <a href="#" class="nopic">{{v.username}}</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+
 <aside id="sidebar">
+
+  <p>Some sidebar content here.</p>
 
 </aside>
 
 <article>
-  <ul class="user-list">
-    {% for v in user_list %}
-    <li>
-    <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km}} km away)</span>
-      {% if v.pics.all.0.url %}
-      <a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
-      {% else %}
-      <a href="#" class="nopic">{{v.username}}</a>
-      {% endif %}
-    </li>
-    {% endfor %}
-  </ul>
+
   <div class="user-profile">
     <h1>
       Profile page for {{view_user.username}}
@@ -32,7 +36,13 @@
       A redditor for {{view_user.profile.created|timesince}}
       and signed up here {{view_user.date_joined|timesince}} ago.
     </p>
+    <p>
+      {% for pic in view_user.pics.all %}
+      <img src="{{pic.url}}">
+      {% endfor %}
+    </p>
   </div>
+
 </article>
 
 {% endblock %}
