@@ -118,6 +118,7 @@ def me_favsr_view(request):
     sr_li = Subscribed.objects.filter(user=request.user, sr__in=sr_id_li)
     if sr_li:
         sr_li.update(is_favorite=True)  # and set favorite on the subset
+        messages.success(request, 'Favorite subreddits updated.')
     return redirect(reverse('me_page'))
 
 
@@ -175,7 +176,7 @@ def me_picture_view(request):
     # Check for HTTP 200 response on that URL, load time,
     # file size, file type, etc.
     try:
-        r = requests.head(pic_url, timeout=1)  # 1 sec timeout
+        r = requests.head(pic_url, timeout=3)  # 3 sec timeout
     except:
         return HttpResponse('The image is loading too slowly.')
     if r.status_code != 200:
@@ -188,9 +189,10 @@ def me_picture_view(request):
                             'mime type was "{}".'.
                             format(r.headers.get('content-type', '')))
     if force_int(r.headers.get('content-length')) > (1024 * 512):
+        x = int(int(r.headers.get('content-length')) / 1024)
         return HttpResponse('The image file size ({} kiB) is too large. '
                             'Please use a smaller size (max. 500 kiB).'.
-                            format(r.headers.get('content-length') / 1024))
+                            format(x))
     # Count user's pics and limit to 10 or so.
     if request.user.pics.all().count() < 10:
         request.user.pics.create(user=request.user, url=pic_url)
@@ -208,6 +210,7 @@ def me_search_view(request):
     """
     if request.method in ["GET", "HEAD"]:
         # Find the next profile to show and redirect.
+        search_results_buffer(request)
         i = randint(0, len(request.session['search_results_buffer'])-1)
         x = {'username': request.session['search_results_buffer'][i]}
         _next = request.POST.get('next', reverse('profile_page', kwargs=x))

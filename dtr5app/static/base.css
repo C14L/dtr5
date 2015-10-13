@@ -9,6 +9,9 @@ form, button {
   display: inline;
   margin: 0
 }
+input[type="text"], input[type="date"], input[type="submit"], select {
+  margin: 4px;
+}
 label {
   cursor: pointer;
 }
@@ -18,7 +21,7 @@ label {
 }
 
 header {
-  background-color: #CCF;
+  background-color: #CEE3F8;
   margin: 0; padding: 8px 16px;
   overflow: hidden;
 }
@@ -59,7 +62,7 @@ article {
   margin: 0 300px 0 0; padding: 16px;
 }
 .settings-btns {
-  background-color: #EEE;
+  background-color: #F3F3F3;
   margin: 0 0 16px 0; padding: 8px 16px;
 }
 .settings-btns > p {
@@ -150,7 +153,7 @@ aside#sidebar .sr-list > li > .status .muted {
 }
 
 footer {
-  background-color: #EEE;
+  background-color: #F3F3F3;
   border-top: 1px solid #888;
   clear: both;
   font-size: 0.9rem;
@@ -169,7 +172,7 @@ body.profile ul.user-list {
   margin: 0; padding: 2px 0;
   overflow: hidden;
   white-space: nowrap;
-  box-shadow: 0 0 16px rgba(0,0,0,0.7);
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
 body.profile ul.user-list li {
   display: inline-block;
