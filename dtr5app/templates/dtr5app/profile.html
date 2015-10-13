@@ -9,7 +9,7 @@
 <ul class="user-list">
   {% for v in user_list %}
   <li class="{% if v.username == view_user.username %}curr{% endif %}">
-    <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km}} km away)</span>
+    <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km|floatformat:"1"}} km away)</span>
     {% if v.pics.all.0.url %}
     <a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
     {% else %}
@@ -35,12 +35,17 @@
 </aside>
 
 <article>
-
   <div class="user-profile">
     <div class="header">
+      <div class="zodiacs">
+        <span class="western-zodiac" title="Western Zodiac: {{view_user.profile.get_western_zodiac_display}}">{{view_user.profile.get_western_zodiac_symbol}}</span>
+        <span class="eastern-zodiac" title="Eastern Zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_eastern_zodiac_symbol}}</span>
+      </div>
       <h1>{{view_user.username}}</h1>
       <p class="asl">
-        {{view_user.profile.get_age}} {{view_user.profile.get_sex_symbol}} {{view_user.profile.get_distance_in_km}} km away
+        <span title="Western Zodiac: {{view_user.profile.get_western_zodiac_display}} - Eastern Zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_age}}</span>
+        <span title="{{view_user.profile.get_sex_display}}">{{view_user.profile.get_sex_symbol}}</span>
+        <span><a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="Does NOT show the exact position. The location is intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance_in_km|floatformat:"1"}} km away</a></span>
       </p>
       <p class="account">
         A redditor for {{view_user.profile.created|timesince}} and signed up here {{view_user.date_joined|timesince}} ago.
@@ -68,15 +73,15 @@
           </tr>
           <tr>
             <td>Watches NSFW content:</td>
-            <td>{{view_user.profile.over_18}}</td>
+            <td>{{view_user.profile.over_18|yesno:"yes,no,?"}}</td>
           </tr>
           <tr>
             <td>Has a verified Email on Reddit:</td>
-            <td>{{view_user.profile.has_verified_email}}</td>
+            <td>{{view_user.profile.has_verified_email|yesno:"yes,no,?"}}</td>
           </tr>
           <tr>
             <td>Has Reddit Gold:</td>
-            <td>{{view_user.profile.is_gold}}</td>
+            <td>{{view_user.profile.gold_creddits|yesno:"yes,no,?"}}</td>
           </tr>
         </tbody>
       </table>

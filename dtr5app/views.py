@@ -74,11 +74,18 @@ def me_update_view(request):
     reddit_user = api.get_user(request)
     if reddit_user:
         # Update user profile data
-        request.user.profile.name = reddit_user['name']
-        request.user.profile.created = datetime.utcfromtimestamp(
-            int(reddit_user['created_utc'])).replace(tzinfo=pytz.utc)
-        request.user.profile.updated = datetime.now().replace(tzinfo=pytz.utc)
-        request.user.profile.save()
+        t = int(reddit_user['created_utc'])
+        p = request.user.profile
+        p.name = reddit_user['name']
+        p.created = datetime.utcfromtimestamp(t).replace(tzinfo=pytz.utc)
+        p.updated = datetime.now().replace(tzinfo=pytz.utc)
+        p.link_karma = reddit_user['link_karma']
+        p.comment_karma = reddit_user['comment_karma']
+        p.over_18 = reddit_user['over_18']
+        p.hide_from_robots = reddit_user['hide_from_robots']
+        p.has_verified_email = reddit_user['has_verified_email']
+        p.gold_creddits = reddit_user['gold_creddits']
+        p.save()
         messages.success(request, 'Profile data updated.')
     else:
         messages.warning(request, 'Could not find any user profile data.')

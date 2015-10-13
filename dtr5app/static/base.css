@@ -22,6 +22,7 @@ label {
 
 header {
   background-color: #CEE3F8;
+  border-bottom: 1px solid #5F99CF;
   margin: 0; padding: 8px 16px;
   overflow: hidden;
 }
@@ -163,7 +164,7 @@ footer {
 
 
 body.profile {
-
+  background-color: #FFF;
 }
 body.profile ul.user-list {
   background-color: #FFF;
@@ -221,13 +222,24 @@ body.profile ul.user-list li a.nopic {
 }
 
 body.profile .user-profile {
-  margin: 0; padding: 16px;
-  border: 1px solid #CCC;
-  border-radius: 5px;
-  box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  background-color: #FFF;
+  margin: 0; padding: 0;
 }
-body.profile .user-profile header {
+body.profile .user-profile .header {
   display: block;
+}
+body.profile .user-profile .header .zodiacs {
+  float: right;
+}
+body.profile .user-profile .header .zodiacs span {
+  display: inline-block;
+  width: 3rem; height: 3rem;
+  font-size: 2rem; line-height: 3rem;
+  background-color: #F00; color: #FFF;
+  text-align: center;
+  border-radius: 5px;
+  margin: 4px; padding: 0;
+  vertical-align: middle;
 }
 body.profile .user-profile .header h1 {
   display: inline-block;
@@ -240,6 +252,10 @@ body.profile .user-profile .header .asl {
   font-size: 1.5rem; line-height: 2.5rem;
   margin: 0; padding: 0 1rem;
   vertical-align: middle;
+}
+body.profile .user-profile .header .asl span {
+  display: inline-block;
+  margin: 0; padding: 0 0.25rem;
 }
 body.profile .user-profile .header .account {
   color: #888;
@@ -260,6 +276,10 @@ body.profile .user-profile .pic-about .pic img {
   margin: 0; padding: 0; border: 0;
 }
 body.profile .user-profile .pic-about .about {
+  /* display: block;
+  border: 1px solid #CCC;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.3); */
 }
 body.profile .user-profile .info {
 }

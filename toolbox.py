@@ -170,11 +170,17 @@ def get_western_zodiac_index(dob):
 
 
 def get_western_zodiac(dob):
-    return WESTERN_ZODIAC[get_western_zodiac_index(dob)]
+    try:
+        return WESTERN_ZODIAC[get_western_zodiac_index(dob)][1]
+    except IndexError:
+        return ''
 
 
 def get_western_zodiac_symbol(dob):
-    return WESTERN_ZODIAC_SYMBOLS[get_western_zodiac_index(dob)]
+    try:
+        return WESTERN_ZODIAC_SYMBOLS[get_western_zodiac_index(dob)][1]
+    except IndexError:
+        return ''
 
 
 def get_eastern_zodiac_index(dob):
@@ -188,11 +194,17 @@ def get_eastern_zodiac_index(dob):
 
 
 def get_eastern_zodiac(dob):
-    return EASTERN_ZODIAC[get_eastern_zodiac_index(dob)]
+    try:
+        return EASTERN_ZODIAC[get_eastern_zodiac_index(dob)][1]
+    except IndexError:
+        return ''
 
 
 def get_eastern_zodiac_symbol(dob):
-    return EASTERN_ZODIAC_SYMBOLS[get_eastern_zodiac_index(dob)]
+    try:
+        return EASTERN_ZODIAC_SYMBOLS[get_eastern_zodiac_index(dob)][1]
+    except IndexError:
+        return ''
 
 
 def distance_between_geolocations(p1, p2):
