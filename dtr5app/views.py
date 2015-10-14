@@ -36,8 +36,6 @@ def me_view(request, template_name="dtr5app/me.html"):
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
     ctx = {
-        "subbed_subreddits":
-            request.user.subs.all().order_by('sr__display_name'),
         "sex_choices": settings.SEX,
         "unixtime": unixtime(),
         "timeleft": request.session['expires'] - unixtime(),
@@ -256,6 +254,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     view_user = get_object_or_404(User, username=username)
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
                                         request.user.profile.lng)
+    view_user.profile.set_common_subs(request.user.subs.all())
     search_results_buffer(request)
     username_list = get_usernames_around_view_user(
         request.session['search_results_buffer'], view_user)

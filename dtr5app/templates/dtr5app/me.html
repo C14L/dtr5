@@ -5,11 +5,11 @@
   <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">
     {% csrf_token %}
     <h2>Favorite subreddits</h2>
-    {% if subbed_subreddits %}
+    {% if user.subs.all %}
     <p>Pick up to 10 subreddits as your favourites.</p>
     <p><input type="submit"></p>
     <ul class="sr-list">
-      {% for row in subbed_subreddits %}
+      {% for row in user.subs.all %}
       <li>
         <label>
           <input{% if row.is_favorite %} checked{% endif %} type="checkbox" name="id_{{row.sr.id}}" value="1">
@@ -18,20 +18,23 @@
           {{row.sr.display_name}}
         </a>
         <div class="status">
-          {% if row.user_is_contributor %}
-          <span class="contrib">contributor</span>
+          {% if row.sr.over_18 %}
+          <span class="nsfw-tag">NSFW</span>
+          {% endif %}
+          {% if 1 == 0 and row.user_is_contributor %}
+          <span class="contrib-tag">contributor</span>
           {% endif %}
           {% if row.user_is_moderator %}
-          <span class="mod">moderator</span>
+          <span class="mod-tag">moderator</span>
           {% endif %}
-          {% if row.user_is_subscriber %}
-          <span class="subscr">subscriber</span>
+          {% if 1 == 0 and row.user_is_subscriber %}
+          <span class="subscr-tag">subscriber</span>
           {% endif %}
           {% if row.user_is_banned %}
-          <span class="banned">banned</span>
+          <span class="banned-tag">banned</span>
           {% endif %}
           {% if row.user_is_muted %}
-          <span class="muted">muted</span>
+          <span class="muted-tag">muted</span>
           {% endif %}
         </div>
       </li>

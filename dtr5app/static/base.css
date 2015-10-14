@@ -5,6 +5,9 @@ body {
 a {
   text-decoration: none;
 }
+p {
+  line-height: 1.35em;
+}
 form, button {
   display: inline;
   margin: 0
@@ -18,6 +21,21 @@ label {
 .help {
   font-size: 0.9rem;
   color: #888;
+}
+.nsfw-tag, .subscr-tag, .contrib-tag, .mod-tag, .banned-tag, .muted-tag {
+  opacity: 0.5;
+  background-color: blue;
+  font-family: sans-serif;
+  font-size: 0.65rem; line-height: 1rem;
+  color: #FFF;
+  margin: 0; padding: 0 0.5rem;
+  border-radius: 0.4rem;
+}
+.subscr-tag {
+  background-color: green;
+}
+.banned-tag {
+  background-color: black;
 }
 
 header {
@@ -121,9 +139,10 @@ aside#sidebar {
   float: right;
   width: 300px;
 }
-aside#sidebar .sr-list {
+aside#sidebar h2 {
+  font-size: 1.15rem; line-height: 1em;
 }
-aside#sidebar .sr-list h2 {
+aside#sidebar .sr-list {
 }
 aside#sidebar .sr-list p {
 }

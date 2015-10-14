@@ -74,6 +74,7 @@ class Profile(models.Model):
     # Can be set for distance calculation.
     viewer_lat = None
     viewer_lng = None
+    common_subs = []
 
     class Meta:
         verbose_name = "user profile"
@@ -108,6 +109,14 @@ class Profile(models.Model):
             return int(delta.days / 365)
         except:
             return ''
+
+    def set_common_subs(self, subs_all):
+        """  ...  """
+        for s1 in subs_all:
+            for s2 in self.user.subs.all():
+                if s1.sr.pk == s2.sr.pk:
+                    self.common_subs.append(s2)
+                    break
 
     def set_viewer_latlng(self, vlat, vlng):
         self.viewer_lat = vlat
@@ -166,6 +175,7 @@ class Subscribed(models.Model):
     class Meta:
         verbose_name = "subreddit subscription"
         verbose_name_plural = "subreddit subscriptions"
+        ordering = ['sr__display_name']
 
     def __str__(self):
         return '{} --> {}'.format(self.user.username, self.sr.name)
