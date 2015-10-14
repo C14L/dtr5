@@ -20,15 +20,15 @@
 </ul>
 
 <aside id="sidebar">
-
   <h2>Your subreddit matches</h2>
-  <p>Subreddits subbed by both you and {{view_user.username}}.</p>
-  <ul>
+  {% if view_user.profile.common_subs|length == 0 %}
+  <p>You don't share any subreddits with {{view_user.username}} :(</p>
+  {% else %}
+  <p>{{view_user.profile.common_subs|length}} subreddits subbed by both you and {{view_user.username}}.</p>
+  <ul class="sr-list">
     {% for row in view_user.profile.common_subs %}
     <li>
-      <a href="https://www.reddit.com{{row.sr.url}}">
-        {{row.sr.display_name}}
-      </a>
+      <a href="{% url 'sr_page' row.sr.display_name %}">{{row.sr.display_name}}</a>
       <span class="status">
         {% if row.sr.over_18 %}
         <span class="nsfw-tag">NSFW</span>
@@ -46,41 +46,15 @@
     </li>
     {% endfor %}
   </ul>
-
-<hr>
-<ul>
-{% for row in view_user.subs.all %}
-<li>
-<a href="https://www.reddit.com{{row.sr.url}}">
-{{row.sr.display_name}}
-</a>
-<span class="status">
-{% if row.sr.over_18 %}
-<span class="nsfw-tag">NSFW</span>
-{% endif %}
-{% if row.user_is_moderator %}
-<span class="mod-tag">moderator</span>
-{% endif %}
-{% if row.user_is_banned %}
-<span class="banned-tag">banned</span>
-{% endif %}
-{% if row.user_is_muted %}
-<span class="muted-tag">muted</span>
-{% endif %}
-</span>
-</li>
-{% endfor %}
-</ul>
+  {% endif %}
 
   <h2>{{view_user.username}}'s favorite subreddits</h2>
   <p></p>
-  <ul>
+  <ul class="sr-list">
     {% for row in view_user.subs.all %}
     {% if row.is_favorite %}
     <li>
-      <a href="https://www.reddit.com{{row.sr.url}}">
-        {{row.sr.display_name}}
-      </a>
+      <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
       <span class="status">
         {% if row.sr.over_18 %}
         <span class="nsfw-tag">NSFW</span>

@@ -19,20 +19,18 @@
     <meta name="msapplication-TileImage" content="">
     {% block head %}{% endblock %}
   </head>
-  <body class="{% block body_classes %}{% endblock %}">
-    <header>
+  <body class="{% block body_classes %}{% endblock %}{% if user.is_authenticated %} auth-user{% else %} anon-user{% endif %}">
 
+    <header>
       <div class="site-logo">
         <a class="site-name" href="/">Redddate</a>
       </div>
-
       <div class="site-links">
         <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a> |
         <a class="reddit-mailbox" href="https://www.reddit.com/message/messages/">reddit mailbox</a> |
         <a class="settings" href="{% url 'me_page' %}">preferences</a> |
         <a class="logout" href="{% url 'logout_page' %}">logout</a>
       </div>
-
     </header>
 
     {% if messages %}
@@ -48,11 +46,15 @@
     </main>
 
     <footer>
+      {% if DEBUG %}
       refresh_token: {{request.session.refresh_token}} --
       access_token: {{request.session.access_token}} --
       expires: {{request.session.expires}} --
       now {{unixtime}} --
       secs.left: {{timeleft}}
+      {% else %}
+      &copy; 2015 - CC-SA-BY
+      {% endif %}
     </footer>
 
   </body>

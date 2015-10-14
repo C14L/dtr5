@@ -16,7 +16,7 @@ from django.views.decorators.http import require_http_methods
 from simple_reddit_oauth import api
 
 from toolbox import force_int, force_float, set_imgur_url
-from .models import Subscribed
+from .models import Subscribed, Sr
 from .utils import (search_results_buffer,
                     update_list_of_subscribed_subreddits,
                     get_usernames_around_view_user)
@@ -258,10 +258,27 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     search_results_buffer(request)
     username_list = get_usernames_around_view_user(
         request.session['search_results_buffer'], view_user)
-    user_list = User.objects.filter(username__in=username_list)
+    user_list = User.objects.filter(
+        username__in=username_list).prefetch_related('profile', 'subs')
     for u in user_list:
         u.profile.set_viewer_latlng(request.user.profile.lat,
                                     request.user.profile.lng)
     ctx = {'view_user': view_user, 'user_list': user_list}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+def sr_view(request, sr, template_name='dtr5app/sr.html'):
+    """Display a list of users who are subscribed to a subreddit."""
+    view_sr = get_object_or_404(Sr, display_name=sr)
+    user_list = User.objects.filter(
+        subs__sr=view_sr).prefetch_related('profile', 'subs')
+    user_subs_all = request.user.subs.all().prefetch_related('sr')
+    #
+    # ... TODO
+    #
+    ctx = {'view_sr': view_sr,
+           'user_list': user_list,
+           'user_subs_all': user_subs_all}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

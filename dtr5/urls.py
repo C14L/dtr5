@@ -33,6 +33,8 @@ urlpatterns = [
         views.me_picture_delete_view, name="me_picture_delete_page"),
     url(r'^search/$', views.me_search_view, name="me_search_page"),
 
-    url(r'^user/(?P<username>[a-zA-Z0-9_-]{2,30})/$',
+    url(r'^u/(?P<username>[a-zA-Z0-9_-]{2,30})/$',
         views.profile_view, name="profile_page"),
+
+    url(r'^r/(?P<sr>[a-zA-Z0-9_-]{2,30})/$', views.sr_view, name="sr_page"),
 ]

@@ -1,0 +1,69 @@
+{% extends 'dtr5app/base.html' %}
+
+{% block title %}/r/{{view_sr.display_name}}{% endblock %}
+
+{% block body_classes %}sr{% endblock %}
+
+{% block main %}
+
+<aside id="sidebar">
+  <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">
+    {% csrf_token %}
+    <h2>Favorite subreddits</h2>
+    {% if user.subs.all %}
+    <p>Pick up to 10 subreddits as your favourites.</p>
+    <p><input type="submit"></p>
+    <ul class="sr-list">
+      {% for row in user_subs_all %}
+      <li>
+        <label>
+          <input{% if row.is_favorite %} checked{% endif %} type="checkbox" name="id_{{row.sr.id}}" value="1">
+        </label>
+        <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
+        <div class="status">
+          {% if row.sr.over_18 %}
+          <span class="nsfw-tag">NSFW</span>
+          {% endif %}
+          {% if 1 == 0 and row.user_is_contributor %}
+          <span class="contrib-tag">contributor</span>
+          {% endif %}
+          {% if row.user_is_moderator %}
+          <span class="mod-tag">moderator</span>
+          {% endif %}
+          {% if 1 == 0 and row.user_is_subscriber %}
+          <span class="subscr-tag">subscriber</span>
+          {% endif %}
+          {% if row.user_is_banned %}
+          <span class="banned-tag">banned</span>
+          {% endif %}
+          {% if row.user_is_muted %}
+          <span class="muted-tag">muted</span>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    <p><input type="submit"></p>
+    {% else %}
+    <p>No subreddits to show.</p>
+    {% endif %}
+  </form>
+</aside>
+
+<article>
+  <h1>{{view_sr.display_name}}</h1>
+  <ul class="sr-user-list">
+    {% for v in user_list %}
+    <li>
+      <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km|floatformat:"1"}} km away)</span>
+      {% if v.pics.all.0.url %}
+      <a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
+      {% else %}
+      <a href="#" class="nopic">{{v.username}}</a>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</article>
+
+{% endblock %}

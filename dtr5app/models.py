@@ -112,8 +112,10 @@ class Profile(models.Model):
 
     def set_common_subs(self, subs_all):
         """  ...  """
+        self.common_subs = []
+        li = list(self.user.subs.all())
         for s1 in subs_all:
-            for s2 in self.user.subs.all():
+            for s2 in li:
                 if s1.sr.pk == s2.sr.pk:
                     self.common_subs.append(s2)
                     break
@@ -124,8 +126,11 @@ class Profile(models.Model):
 
     def get_distance(self):
         """Return distance in meters between lat/lng and instance's loc."""
-        return int(distance_between_geolocations(
-            (self.lat, self.lng), (self.viewer_lat, self.viewer_lng)))
+        try:
+            return int(distance_between_geolocations(
+                (self.lat, self.lng), (self.viewer_lat, self.viewer_lng)))
+        except TypeError:
+            return 99999999
 
     def get_distance_in_km(self):
         """Returns distance in km between lat/lng and instance's location"""

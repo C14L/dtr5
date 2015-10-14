@@ -14,9 +14,7 @@
         <label>
           <input{% if row.is_favorite %} checked{% endif %} type="checkbox" name="id_{{row.sr.id}}" value="1">
         </label>
-        <a href="https://www.reddit.com{{row.sr.url}}">
-          {{row.sr.display_name}}
-        </a>
+        <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
         <div class="status">
           {% if row.sr.over_18 %}
           <span class="nsfw-tag">NSFW</span>
@@ -97,7 +95,7 @@
       </label>
       <label class="dob">
         <span>Birthday:</span>
-        <input type="date" name="dob" value="{{user.profile.dob|date:'c'}}">
+        <input type="date" name="dob" placeholder="YYYY-MM-DD" maxlength="10" value="{{user.profile.dob|date:'c'}}">
         <span class="help">Never shown! Only your age, Western zodiac, and Chinese zodiac are shown.</span>
       </label>
       <label class="submit">
