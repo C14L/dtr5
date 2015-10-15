@@ -254,6 +254,10 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     view_user = get_object_or_404(User, username=username)
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
                                         request.user.profile.lng)
+
+    setattr(view_user, 'pics_list', list(view_user.pics.all()[:10]))
+    view_user.pics_list += [None] * (10 - len(view_user.pics_list))
+
     view_user.profile.set_common_subs(request.user.subs.all())
     search_results_buffer(request)
     username_list = get_usernames_around_view_user(
@@ -261,6 +265,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     user_list = User.objects.filter(
         username__in=username_list).prefetch_related('profile', 'subs')
     for u in user_list:
+        # set the auth user's geolocation on each user instance.
         u.profile.set_viewer_latlng(request.user.profile.lat,
                                     request.user.profile.lng)
     ctx = {'view_user': view_user, 'user_list': user_list}
@@ -272,8 +277,9 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """Display a list of users who are subscribed to a subreddit."""
     view_sr = get_object_or_404(Sr, display_name=sr)
     user_list = User.objects.filter(
-        subs__sr=view_sr).prefetch_related('profile', 'subs')
+        subs__sr=view_sr).prefetch_related('profile', 'subs', 'pics')
     for u in user_list:
+        # set the auth user's geolocation on each user instance.
         u.profile.set_viewer_latlng(request.user.profile.lat,
                                     request.user.profile.lng)
     user_subs_all = request.user.subs.all().prefetch_related('sr')

@@ -18,10 +18,18 @@ input[type="text"], input[type="date"], input[type="submit"], select {
 label {
   cursor: pointer;
 }
+
+/*
+ * Slightly smaller and slightly lighter than regular text.
+ */
 .help {
   font-size: 0.9rem;
   color: #888;
 }
+
+/*
+ * Tags next to subreddit names in subreddit sidebar lists.
+ */
 .nsfw-tag, .subscr-tag, .contrib-tag, .mod-tag, .banned-tag, .muted-tag {
   opacity: 0.5;
   background-color: blue;
@@ -38,6 +46,10 @@ label {
 .banned-tag {
   background-color: black;
 }
+
+/*
+ * Zodiac symbol boxes.
+ */
 .zodiac {
   display: inline-block;
   width: 1.5rem; height: 1.5rem;
@@ -49,52 +61,115 @@ label {
   vertical-align: middle;
 }
 
-
-
-
-
-header {
-  background-color: #CEE3F8;
-  border-bottom: 1px solid #5F99CF;
-  margin: 0; padding: 8px 16px;
-  overflow: hidden;
+/*
+ * Buttons on user profile pages for "like", "nope", or "dunno".
+ */
+.like-nope-duno {
+  background-color: #F7F7F7;
+  border: 1px solid #E9E9E9;
+  border-radius: 5px;
+  display: block;
+  margin: 16px 16px 16px 0; padding: 16px 0;
 }
-.site-logo {
-  float: left;
-  font-size: 2rem; line-height: 2rem;
-}
-.site-logo > a.site-name {
-  color: inherit; text-decoration: inherit;
-}
-.site-links {
-  background-color: #FFF;
-  float: right;
-  font-size: 0.9rem; line-height: 1rem;
-  margin: 0.4rem 0; padding: 0.1rem 0.5rem;
-}
-.site-links > a.username {
-}
-
-ul#site-messages {
-  background-color: #C00;
+.like-nope-duno .opt {
+  background: none;
+  border-radius: 50%;
+  box-shadow: inset 0 5px 10px 5px rgba(255,255,255,0.3),
+              inset 0 -5px 10px 5px rgba(0,0,0,0.1),
+              1px 2px 3px rgba(0,0,0,0.3);
   color: #FFF;
-  font-size: 1.15rem;
+  cursor: pointer;
+  display: inline-block; width: 56px; height: 56px;
+  font-size: 32px; line-height: 56px;
+  margin: 0 0 0 24px; padding: 0; border: 0;
+  outline: 0;
+  text-align: center;
+}
+.like-nope-duno .opt:active {
+  box-shadow: inset 0 -3px 5px 3px rgba(255,255,255,0.3),
+              inset 0 3px 5px 3px rgba(0,0,0,0.1),
+              1px 2px 3px rgba(0,0,0,0.3);
+}
+.like-nope-duno .opt.like {
+  background-color: #FF0000;
+}
+.like-nope-duno .opt.nope {
+  background-color: #111;
+}
+.like-nope-duno .opt.duno {
+  background-color: #999;
+}
+
+/*
+ * Small box with picture links to more user profiles.
+ */
+.prevnext-user-list {
+  margin: 0 0 20px 0; padding: 0;
+}
+.prevnext-user-list > ul {
+  background-color: #CEE3F8;
+  border: 1px solid #5F99CF;
+  border-radius: 5px;
+  display: block; width: 600px;
+  font-size: 0;
   list-style: none;
-  margin: 0; padding: 8px;
+  margin: 0; padding: 2px 0;
+  white-space: nowrap;
+  text-align: center;
 }
-ul#site-messages li {
-  margin: 0; padding: 8px;
+.prevnext-user-list > ul > li {
+  display: inline-block;
+  font-size: 0;
+  height: 50px;
+  margin: 0; padding: 0; border: 1px solid transparent;
+  position: relative;
+  vertical-align: middle;
 }
-ul#site-messages li a {
+.prevnext-user-list > ul > li .info {
+  opacity: 0;
+  background-color: #FFF;
+  border-radius: 0 5px 5px 5px;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  color: #111;
+  font-size: 1rem;
+  margin: 0; padding: 2px;
+  position: absolute; top: 10px; left: 15px;
+  transition: 0.5s ease-out;
+  z-index: 999;
 }
-
-main {
+.prevnext-user-list > ul > li:hover .info {
+  opacity: 1;
+  transition: 0.5s ease-out;
+}
+.prevnext-user-list > ul > li a {
+  display: block;
+  height: inherit;
+  max-width: 75px;
   overflow: hidden;
+  position: relative;
+}
+.prevnext-user-list > ul > li:first-child a {
+}
+.prevnext-user-list > ul > li:last-child a {
+}
+.prevnext-user-list > ul > li a.pic img {
+  border: 0;
+  height: inherit;
+}
+.prevnext-user-list > ul > li a.nopic {
+  width: 50px;
+}
+.prevnext-user-list > ul > li.curr {
+  border-color: #F99;
+}
+.prevnext-user-list > ul > li.not-curr a img {
+  opacity: 0.3;
+  transform: scale(0.9);
 }
 
-article {
-  margin: 0 300px 0 0; padding: 16px;
-}
+/*
+ * The list of settings options on the "preferences" page.
+ */
 .settings-btns {
   background-color: #F3F3F3;
   margin: 0 0 16px 0; padding: 8px 16px;
@@ -150,6 +225,58 @@ article {
   transition: 0.3s ease-out;
 }
 
+/*
+ * Site header.
+ */
+header {
+  background-color: #CEE3F8;
+  border-bottom: 1px solid #5F99CF;
+  margin: 0; padding: 8px 16px;
+  overflow: hidden;
+}
+.site-logo {
+  float: left;
+  font-size: 2rem; line-height: 2rem;
+}
+.site-logo > a.site-name {
+  color: inherit; text-decoration: inherit;
+}
+.site-links {
+  background-color: #FFF;
+  float: right;
+  font-size: 0.9rem; line-height: 1rem;
+  margin: 0.4rem 0; padding: 0.1rem 0.5rem;
+}
+.site-links > a.username {
+}
+
+/*
+ * List of system messages to respond to user input etc. Shown
+ * between "header" and "main" only if there are any messeges.
+ */
+ul#site-messages {
+  background-color: #C00;
+  color: #FFF;
+  font-size: 1.15rem;
+  list-style: none;
+  margin: 0; padding: 8px;
+}
+ul#site-messages li {
+  margin: 0; padding: 8px;
+}
+ul#site-messages li a {
+}
+
+/*
+ * Main page content area.
+ * Usualy contains <article/> and <aside id="sidebar"/>.
+ */
+main {
+  overflow: hidden;
+}
+article {
+  margin: 0 300px 0 0; padding: 16px;
+}
 aside#sidebar {
   float: right;
   width: 300px;
@@ -157,6 +284,10 @@ aside#sidebar {
 aside#sidebar h2 {
   font-size: 1.15rem; line-height: 1em;
 }
+
+/*
+ * List of subreddits in the sidebar.
+ */
 aside#sidebar .sr-list {
 }
 aside#sidebar .sr-list p {
@@ -187,6 +318,11 @@ aside#sidebar .sr-list > li > .status .muted {
   font-weight: bold;
 }
 
+/*
+ * Site footer, with copyright stuff, content licence, privacy
+ * statement, terms of service statement, cookie usage statement,
+ * and whatnot statements.
+ */
 footer {
   background-color: #F3F3F3;
   border-top: 1px solid #888;
@@ -195,8 +331,9 @@ footer {
   margin: 0; padding: 16px;
 }
 
-
-
+/*
+ * User profile page.
+ */
 body.profile {
   background-color: #FFF;
 }
@@ -259,32 +396,32 @@ body.profile .user-profile ul.pics {
 }
 body.profile .user-profile ul.pics li {
   display: block;
-  height: 150px;
-  margin: 0.5px; padding: 0;
-  max-width: 225px;
   float: left;
+  max-width: 225px; height: 150px; 
+  margin: 1px; padding: 0;
+  overflow: hidden;
 }
 body.profile .user-profile ul.pics li:first-child {
+  float: left;
   height: 300px;
   max-width: 450px;
-  float: left;
 }
 body.profile .user-profile ul.pics li .no-pic {
-  height: inherit;
-  width: calc(attr('height') * 1.5);
+  display: block; width: 175px; height: 150px;
+  background-color: #CCC;
 }
 body.profile .user-profile ul.pics li .pic {
+  display: inline-block;
   height: inherit;
 }
 body.profile .user-profile ul.pics li .pic img {
   border: 0;
   height: inherit;
 }
-body.profile .user-profile hr {
-  clear: both;
-}
 
-
+/*
+ * Subreddit specific page.
+ */
 body.sr ul.sr-user-list {
   list-style: none;
   margin: 0; padding: 0;
@@ -301,71 +438,3 @@ body.sr ul.sr-user-list > li > a > img {
   width: 100px; max-height: 100px;
   float: left;
 }
-
-/*
- * Small box with picture links to more user profiles.
- */
-.prevnext-user-list {
-  margin: 0 0 20px 0; padding: 0;
-}
-.prevnext-user-list > ul {
-  background-color: #CEE3F8;
-  border: 1px solid #5F99CF;
-  border-radius: 5px;
-  display: block; width: 600px;
-  font-size: 0;
-  list-style: none;
-  margin: 0 auto; padding: 2px 0;
-  white-space: nowrap;
-  text-align: center;
-}
-.prevnext-user-list > ul > li {
-  display: inline-block;
-  font-size: 0;
-  height: 100px;
-  margin: 0; padding: 0; border: 2px solid transparent;
-  position: relative;
-  vertical-align: middle;
-}
-.prevnext-user-list > ul > li .info {
-  opacity: 0;
-  background-color: #FFF;
-  border-radius: 0 5px 5px 5px;
-  box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-  color: #111;
-  font-size: 1rem;
-  margin: 0; padding: 4px;
-  position: absolute; top: 20px; left: 30px;
-  transition: 0.3s ease-out;
-  z-index: 999;
-}
-.prevnext-user-list > ul > li:hover .info {
-  opacity: 1;
-  transition: 0.3s ease-out;
-}
-.prevnext-user-list > ul > li a {
-  display: block;
-  height: inherit;
-  max-width: 150px;
-  overflow: hidden;
-  position: relative;
-}
-.prevnext-user-list > ul > li:first-child a {
-}
-.prevnext-user-list > ul > li:last-child a {
-}
-.prevnext-user-list > ul > li a.pic img {
-  border: 0;
-  height: inherit;
-}
-.prevnext-user-list > ul > li a.nopic {
-  width: 100px;
-}
-.prevnext-user-list > ul > li.curr {
-  border-color: #F00;
-}
-.prevnext-user-list > ul > li.not-curr a img {
-  opacity: 0.5;
-  transform: scale(0.85);
-}
-

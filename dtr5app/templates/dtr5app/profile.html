@@ -7,59 +7,74 @@
 {% block main %}
 
 <aside id="sidebar">
-  <h2>Your subreddit matches</h2>
-  {% if view_user.profile.common_subs|length == 0 %}
-  <p>You don't share any subreddits with {{view_user.username}} :(</p>
-  {% else %}
-  <p>{{view_user.profile.common_subs|length}} subreddits subbed by both you and {{view_user.username}}.</p>
-  <ul class="sr-list">
-    {% for row in view_user.profile.common_subs %}
-    <li>
-      <a href="{% url 'sr_page' row.sr.display_name %}">{{row.sr.display_name}}</a>
-      <span class="status">
-        {% if row.sr.over_18 %}
-        <span class="nsfw-tag">NSFW</span>
-        {% endif %}
-        {% if row.user_is_moderator %}
-        <span class="mod-tag">moderator</span>
-        {% endif %}
-        {% if row.user_is_banned %}
-        <span class="banned-tag">banned</span>
-        {% endif %}
-        {% if row.user_is_muted %}
-        <span class="muted-tag">muted</span>
-        {% endif %}
-      </span>
-    </li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-
-  <h2>{{view_user.username}}'s favorite subreddits</h2>
-  <p></p>
-  <ul class="sr-list">
-    {% for row in view_user.subs.all %}
-    {% if row.is_favorite %}
-    <li>
-      <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
-      <span class="status">
-        {% if row.sr.over_18 %}
-        <span class="nsfw-tag">NSFW</span>
-        {% endif %}
-        {% if row.user_is_moderator %}
-        <span class="mod-tag">moderator</span>
-        {% endif %}
-        {% if row.user_is_banned %}
-        <span class="banned-tag">banned</span>
-        {% endif %}
-        {% if row.user_is_muted %}
-        <span class="muted-tag">muted</span>
-        {% endif %}
-      </span>
-    </li>
+  <div class="like-nope-duno">
+    <form method="POST" action="">
+      {% csrf_token %}
+      <input type="hidden" name="set" value="like">
+      <input type="submit" class="like opt" value="♥" title="like!">
+    </form>
+    <form method="POST" action="">
+      {% csrf_token %}
+      <input type="hidden" name="set" value="nope">
+      <input type="submit" class="nope opt" value="❌" title="nope!">
+    </form>
+    <a href="{# url 'profile_view' view_user.next_user.username #}" class="duno opt" title="dunno...">?</a>
+    </form>
+  </div>
+  <div class="subreddit-matches">
+    {% if view_user.profile.common_subs|length == 0 %}
+      <h2>No subreddit matches :(</h2>
+    {% else %}
+      <h2>{{view_user.profile.common_subs|length}} subreddit matches :)</h2>
+      <ul class="sr-list">
+        {% for row in view_user.profile.common_subs %}
+          <li>
+            <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
+            <span class="status">
+              {% if row.sr.over_18 %}
+              <span class="nsfw-tag">NSFW</span>
+              {% endif %}
+              {% if row.user_is_moderator %}
+              <span class="mod-tag">moderator</span>
+              {% endif %}
+              {% if row.user_is_banned %}
+              <span class="banned-tag">banned</span>
+              {% endif %}
+              {% if row.user_is_muted %}
+              <span class="muted-tag">muted</span>
+              {% endif %}
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
     {% endif %}
-    {% endfor %}
-  </ul>
+  </div>
+  <div class="fav-subreddit-list">
+    <h2>{{view_user.username}}'s favorite subreddits</h2>
+    <ul class="sr-list">
+      {% for row in view_user.subs.all %}
+        {% if row.is_favorite %}
+          <li>
+            <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
+            <span class="status">
+              {% if row.sr.over_18 %}
+              <span class="nsfw-tag">NSFW</span>
+              {% endif %}
+              {% if row.user_is_moderator %}
+              <span class="mod-tag">moderator</span>
+              {% endif %}
+              {% if row.user_is_banned %}
+              <span class="banned-tag">banned</span>
+              {% endif %}
+              {% if row.user_is_muted %}
+              <span class="muted-tag">muted</span>
+              {% endif %}
+            </span>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
 </aside>
 
 <article>
@@ -68,7 +83,7 @@
     <ul>
       {% for v in user_list %}
       <li class="{% if v.username == view_user.username %}curr{% else %}not-curr{% endif %}">
-        <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km|floatformat:"1"}} km away)</span><a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
+        <span class="info">{{v.username}}, {{v.profile.get_age}} {{v.profile.get_sex_symbol}} {{v.profile.get_distance_in_km|floatformat:"1"}} km away</span><a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
       </li>
       {% endfor %}
     </ul>
@@ -88,7 +103,7 @@
     </div>
 
     <ul class="pics">
-      {% for pic in view_user.pics.all %}
+      {% for pic in view_user.pics_list %}
       <li>
         {% if pic.url %}
         <a href="{{pic.src}}" class="pic"><img src="{{pic.url}}" alt="{{view_user.username}}"></a>
@@ -114,20 +129,6 @@
         </thead>
         <tbody>
           <tr>
-            <td>Western zodiac:</td>
-            <td>
-              <span class="zodiac western-zodiac" title="Western Zodiac: {{view_user.profile.get_western_zodiac_display}}">{{view_user.profile.get_western_zodiac_symbol}}</span>
-              {{view_user.profile.get_western_zodiac_display}}
-            </td>
-          </tr>
-          </tr>
-            <td>Eastern zodiac:</td>
-            <td>
-              <span class="zodiac eastern-zodiac" title="Eastern Zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_eastern_zodiac_symbol}}</span>
-              {{view_user.profile.get_eastern_zodiac_display}}
-            </td>
-          </tr>
-          <tr>
             <td>Age:</td>
             <td>{{view_user.profile.get_age}}</td>
           </tr>
@@ -139,9 +140,23 @@
             <td>Distance:</td>
             <td>{{view_user.profile.get_distance_in_km|floatformat:"1"}} km from you</td>
           </tr>
+          <!-- <tr>
+            <td></td>
+            <td></td>
+          </tr> -->
+          <tr>
+            <td>Western zodiac:</td>
+            <td>
+              <span class="zodiac western-zodiac" title="Western Zodiac: {{view_user.profile.get_western_zodiac_display}}">{{view_user.profile.get_western_zodiac_symbol}}</span>
+              {{view_user.profile.get_western_zodiac_display}}
+            </td>
           </tr>
-            <td></td>
-            <td></td>
+          <tr>
+            <td>Eastern zodiac:</td>
+            <td>
+              <span class="zodiac eastern-zodiac" title="Eastern Zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_eastern_zodiac_symbol}}</span>
+              {{view_user.profile.get_eastern_zodiac_display}}
+            </td>
           </tr>
         </tbody>
       </table>
@@ -152,7 +167,7 @@
         <thead>
           <tr>
             <td colspan="2">
-              <a href="https://www.reddit.com/user/{{view_user.username}}/">{{view_user.username}} on Reddit</a>
+              <a href="https://www.reddit.com/user/{{view_user.username}}/">{{view_user.username}}</a> on Reddit
             </td>
           </tr>
         </thead>
@@ -170,7 +185,7 @@
             <td>{{view_user.profile.over_18|yesno:"yes,no,?"}}</td>
           </tr>
           <tr>
-            <td>Has a verified Email on Reddit:</td>
+            <td>Has a verified Email:</td>
             <td>{{view_user.profile.has_verified_email|yesno:"yes,no,?"}}</td>
           </tr>
           <tr>

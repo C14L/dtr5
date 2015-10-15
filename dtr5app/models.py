@@ -84,6 +84,9 @@ class Profile(models.Model):
     def __str__(self):
         return self.name
 
+    def __init__(self, *args, **kwargs):
+        super(Profile, self).__init__(*args, **kwargs)
+
     def get_sex_symbol(self):
         """Returns the symbol for the user's sex."""
         try:
