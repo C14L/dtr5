@@ -273,6 +273,9 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     view_sr = get_object_or_404(Sr, display_name=sr)
     user_list = User.objects.filter(
         subs__sr=view_sr).prefetch_related('profile', 'subs')
+    for u in user_list:
+        u.profile.set_viewer_latlng(request.user.profile.lat,
+                                    request.user.profile.lng)
     user_subs_all = request.user.subs.all().prefetch_related('sr')
     #
     # ... TODO

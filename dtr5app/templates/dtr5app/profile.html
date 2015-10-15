@@ -6,19 +6,6 @@
 
 {% block main %}
 
-<ul class="user-list">
-  {% for v in user_list %}
-  <li class="{% if v.username == view_user.username %}curr{% endif %}">
-    <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km|floatformat:"1"}} km away)</span>
-    {% if v.pics.all.0.url %}
-    <a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
-    {% else %}
-    <a href="#" class="nopic">{{v.username}}</a>
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul>
-
 <aside id="sidebar">
   <h2>Your subreddit matches</h2>
   {% if view_user.profile.common_subs|length == 0 %}
@@ -76,12 +63,19 @@
 </aside>
 
 <article>
+
+  <div class="prevnext-user-list">
+    <ul>
+      {% for v in user_list %}
+      <li class="{% if v.username == view_user.username %}curr{% else %}not-curr{% endif %}">
+        <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km|floatformat:"1"}} km away)</span><a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
   <div class="user-profile">
     <div class="header">
-      <div class="zodiacs">
-        <span class="western-zodiac" title="Western Zodiac: {{view_user.profile.get_western_zodiac_display}}">{{view_user.profile.get_western_zodiac_symbol}}</span>
-        <span class="eastern-zodiac" title="Eastern Zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_eastern_zodiac_symbol}}</span>
-      </div>
       <h1>{{view_user.username}}</h1>
       <p class="asl">
         <span title="Western Zodiac: {{view_user.profile.get_western_zodiac_display}} - Eastern Zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_age}}</span>
@@ -93,7 +87,66 @@
       </p>
     </div>
 
-    <div class="pic-about"><a class="pic" href="{{view_user.pics.all.0.src}}"><img src="{{view_user.pics.all.0.url}}" alt="{{view_user.username}}"></a><span class="about">{{view_user.profile.about}}</span></div>
+    <ul class="pics">
+      {% for pic in view_user.pics.all %}
+      <li>
+        {% if pic.url %}
+        <a href="{{pic.src}}" class="pic"><img src="{{pic.url}}" alt="{{view_user.username}}"></a>
+        {% else %}
+        <span class="no-pic"></span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+
+    <div class="about">
+      <p>{{view_user.profile.about}}</p>
+    </div>
+
+    <div class="info">
+      <table>
+        <thead>
+          <tr>
+            <td colspan="2">
+              More about <a href="{% url 'profile_page' view_user.username %}">{{view_user.username}}</a>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Western zodiac:</td>
+            <td>
+              <span class="zodiac western-zodiac" title="Western Zodiac: {{view_user.profile.get_western_zodiac_display}}">{{view_user.profile.get_western_zodiac_symbol}}</span>
+              {{view_user.profile.get_western_zodiac_display}}
+            </td>
+          </tr>
+          </tr>
+            <td>Eastern zodiac:</td>
+            <td>
+              <span class="zodiac eastern-zodiac" title="Eastern Zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_eastern_zodiac_symbol}}</span>
+              {{view_user.profile.get_eastern_zodiac_display}}
+            </td>
+          </tr>
+          <tr>
+            <td>Age:</td>
+            <td>{{view_user.profile.get_age}}</td>
+          </tr>
+          <tr>
+            <td>Gender:</td>
+            <td>{{view_user.profile.get_sex_display}}</td>
+          </tr>
+          <tr>
+            <td>Distance:</td>
+            <td>{{view_user.profile.get_distance_in_km|floatformat:"1"}} km from you</td>
+          </tr>
+          </tr>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="info">
       <table>
         <thead>
@@ -127,19 +180,10 @@
         </tbody>
       </table>
     </div>
-    <hr>
-    <ul class="pics">
-      {% for pic in view_user.pics.all %}
-      <li>
-        <a href="{{pic.src}}">
-          <img src="{{pic.url}}" alt="view_user.username">
-        </a>
-      </li>
-      {% endfor %}
-    </ul>
-    <hr>
   </div>
-
+  <div>
+    <p class="help">All distances are approximate, because only fuzzied location data is stored to protect privacy.</p>
+  </div>
 </article>
 
 {% endblock %}

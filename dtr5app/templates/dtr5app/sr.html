@@ -15,7 +15,7 @@
     <p><input type="submit"></p>
     <ul class="sr-list">
       {% for row in user_subs_all %}
-      <li>
+      <li class="{% if row.sr.id == view_sr.id %}curr{% endif %}">
         <label>
           <input{% if row.is_favorite %} checked{% endif %} type="checkbox" name="id_{{row.sr.id}}" value="1">
         </label>
@@ -55,12 +55,17 @@
   <ul class="sr-user-list">
     {% for v in user_list %}
     <li>
-      <span class="info">{{v.username}} ({{v.profile.get_age}} / {{v.profile.get_sex_display}} / {{v.profile.get_distance_in_km|floatformat:"1"}} km away)</span>
-      {% if v.pics.all.0.url %}
-      <a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
-      {% else %}
-      <a href="#" class="nopic">{{v.username}}</a>
-      {% endif %}
+      <a href="{% url 'profile_page' v.username %}" class="pic">
+        <img src="{{v.pics.all.0.url}}" alt="{{v.username}}">
+      </a>
+      <span class="info">
+        <a href="{% url 'profile_page' v.username %}" class="username">{{v.username}}</a>
+        <span class="asl">
+          {{v.profile.get_age}}
+          {{v.profile.get_sex_symbol}}
+          {{v.profile.get_distance_in_km|floatformat:"1"}} km away
+        </span>
+      </span>
     </li>
     {% endfor %}
   </ul>

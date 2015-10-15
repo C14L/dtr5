@@ -38,6 +38,20 @@ label {
 .banned-tag {
   background-color: black;
 }
+.zodiac {
+  display: inline-block;
+  width: 1.5rem; height: 1.5rem;
+  font-size: 1.25rem; line-height: 1.5rem;
+  background-color: #F00; color: #FFF;
+  text-align: center;
+  border-radius: 3px;
+  margin: 0; padding: 0;
+  vertical-align: middle;
+}
+
+
+
+
 
 header {
   background-color: #CEE3F8;
@@ -186,60 +200,6 @@ footer {
 body.profile {
   background-color: #FFF;
 }
-body.profile ul.user-list {
-  background-color: #FFF;
-  font-size: 0;
-  list-style: none;
-  margin: 0; padding: 2px 0;
-  overflow: hidden;
-  white-space: nowrap;
-  box-shadow: 0 0 5px rgba(0,0,0,0.3);
-}
-body.profile ul.user-list li {
-  display: inline-block;
-  font-size: 0;
-  height: 100px;
-  margin: 0; padding: 0; border: 2px solid transparent;
-  position: relative;
-  vertical-align: middle;
-}
-body.profile ul.user-list li.curr {
-  border-color: #F00;
-}
-body.profile ul.user-list li .info {
-  opacity: 0;
-  background-color: #FFF;
-  border-radius: 0 5px 5px 5px;
-  box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-  color: #111;
-  font-size: 1rem;
-  margin: 0; padding: 4px;
-  position: absolute; top: 20px; left: 20px;
-  transition: 0.3s ease-out;
-  z-index: 999;
-}
-body.profile ul.user-list li:hover .info {
-  opacity: 1;
-  transition: 0.3s ease-out;
-}
-body.profile ul.user-list li a {
-  display: block;
-  height: inherit;
-  max-width: 150px;
-  overflow: hidden;
-  position: relative;
-}
-body.profile ul.user-list li:first-child a {
-}
-body.profile ul.user-list li:last-child a {
-}
-body.profile ul.user-list li a.pic img {
-  border: 0;
-  height: inherit;
-}
-body.profile ul.user-list li a.nopic {
-  width: 100px;
-}
 
 body.profile .user-profile {
   background-color: #FFF;
@@ -247,19 +207,6 @@ body.profile .user-profile {
 }
 body.profile .user-profile .header {
   display: block;
-}
-body.profile .user-profile .header .zodiacs {
-  float: right;
-}
-body.profile .user-profile .header .zodiacs span {
-  display: inline-block;
-  width: 3rem; height: 3rem;
-  font-size: 2rem; line-height: 3rem;
-  background-color: #F00; color: #FFF;
-  text-align: center;
-  border-radius: 5px;
-  margin: 4px; padding: 0;
-  vertical-align: middle;
 }
 body.profile .user-profile .header h1 {
   display: inline-block;
@@ -283,23 +230,7 @@ body.profile .user-profile .header .account {
   font-size: 1rem; line-height: 2.5rem;
   margin: 0; padding: 0;
 }
-body.profile .user-profile .pic-about {
-}
-body.profile .user-profile .pic-about a.pic {
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-  display: block;
-  float: right;
-  margin: 0 0 8px 16px;
-}
-body.profile .user-profile .pic-about .pic img {
-  vertical-align: middle;
-  margin: 0; padding: 0; border: 0;
-}
-body.profile .user-profile .pic-about .about {
-  /* display: block;
-  border: 1px solid #CCC;
-  border-radius: 5px;
-  box-shadow: 1px 1px 2px rgba(0,0,0,0.3); */
+body.profile .user-profile .about {
 }
 body.profile .user-profile .info {
 }
@@ -320,22 +251,121 @@ body.profile .user-profile .info table tbody tr td {
   border: 1px solid #CCC;
 }
 body.profile .user-profile ul.pics {
+  display: block;
   list-style: none;
   margin: 0; padding: 0;
+  overflow: hidden;
+  height: 300px;
 }
 body.profile .user-profile ul.pics li {
-  display: inline-block;
-  margin: 0; padding: 0;
-}
-body.profile .user-profile ul.pics li a {
-  display: inline-block;
+  display: block;
   height: 150px;
-  max-width: 300px;
+  margin: 0.5px; padding: 0;
+  max-width: 225px;
+  float: left;
 }
-body.profile .user-profile ul.pics li a img {
+body.profile .user-profile ul.pics li:first-child {
+  height: 300px;
+  max-width: 450px;
+  float: left;
+}
+body.profile .user-profile ul.pics li .no-pic {
+  height: inherit;
+  width: calc(attr('height') * 1.5);
+}
+body.profile .user-profile ul.pics li .pic {
+  height: inherit;
+}
+body.profile .user-profile ul.pics li .pic img {
   border: 0;
   height: inherit;
 }
 body.profile .user-profile hr {
   clear: both;
 }
+
+
+body.sr ul.sr-user-list {
+  list-style: none;
+  margin: 0; padding: 0;
+}
+body.sr ul.sr-user-list > li {
+  display: block;
+  margin: 8px 0; padding: 0;
+  overflow: hidden;
+}
+body.sr ul.sr-user-list > li > span.info {
+}
+body.sr ul.sr-user-list > li > a > img {
+  border: 0;
+  width: 100px; max-height: 100px;
+  float: left;
+}
+
+/*
+ * Small box with picture links to more user profiles.
+ */
+.prevnext-user-list {
+  margin: 0 0 20px 0; padding: 0;
+}
+.prevnext-user-list > ul {
+  background-color: #CEE3F8;
+  border: 1px solid #5F99CF;
+  border-radius: 5px;
+  display: block; width: 600px;
+  font-size: 0;
+  list-style: none;
+  margin: 0 auto; padding: 2px 0;
+  white-space: nowrap;
+  text-align: center;
+}
+.prevnext-user-list > ul > li {
+  display: inline-block;
+  font-size: 0;
+  height: 100px;
+  margin: 0; padding: 0; border: 2px solid transparent;
+  position: relative;
+  vertical-align: middle;
+}
+.prevnext-user-list > ul > li .info {
+  opacity: 0;
+  background-color: #FFF;
+  border-radius: 0 5px 5px 5px;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  color: #111;
+  font-size: 1rem;
+  margin: 0; padding: 4px;
+  position: absolute; top: 20px; left: 30px;
+  transition: 0.3s ease-out;
+  z-index: 999;
+}
+.prevnext-user-list > ul > li:hover .info {
+  opacity: 1;
+  transition: 0.3s ease-out;
+}
+.prevnext-user-list > ul > li a {
+  display: block;
+  height: inherit;
+  max-width: 150px;
+  overflow: hidden;
+  position: relative;
+}
+.prevnext-user-list > ul > li:first-child a {
+}
+.prevnext-user-list > ul > li:last-child a {
+}
+.prevnext-user-list > ul > li a.pic img {
+  border: 0;
+  height: inherit;
+}
+.prevnext-user-list > ul > li a.nopic {
+  width: 100px;
+}
+.prevnext-user-list > ul > li.curr {
+  border-color: #F00;
+}
+.prevnext-user-list > ul > li.not-curr a img {
+  opacity: 0.5;
+  transform: scale(0.85);
+}
+
