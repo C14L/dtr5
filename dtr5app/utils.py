@@ -94,3 +94,70 @@ def get_usernames_around_view_user(userbuff, view_user, n=None):
     else:
         li = userbuff
     return li
+
+
+def get_user_list_around_view_user(request, view_user, n=None):
+    """
+    Return a list of "n" user objects, with view user as centered
+    as possible.
+    """
+    # Make sure there are matches in the session cache.
+    search_results_buffer(request)
+    # Fetch a short list of match usernames from session cache.
+    username_list = get_usernames_around_view_user(
+        request.session['search_results_buffer'], view_user)
+    # Look up complete info on the users on that list.
+    user_list = get_user_list_from_username_list(username_list)
+    # For each user on the list, set auth user's latlng.
+    for u in user_list:
+        # set the auth user's geolocation on each user instance.
+        u.profile.set_viewer_latlng(request.user.profile.lat,
+                                    request.user.profile.lng)
+    return user_list
+
+
+def get_user_list_from_username_list(username_list):
+    """
+    Return a list of user objects with prefetched profiles and subs,
+    from a list of usernames.
+    """
+    # Look up complete info on the users on that list.
+    user_list = User.objects.filter(username__in=username_list)
+    user_list = user_list.prefetch_related('profile', 'subs')
+    return list(user_list)
+
+
+def get_prevnext_user(request, view_user):
+    """
+    Return previous and next users, relative to view user, from the
+    search results list of users.
+    """
+    username_list = request.session['search_results_buffer']
+    try:
+        idx = [username_list.index(row) for row in username_list
+               if view_user.username == row][0]
+    except IndexError:
+        return None, None
+    try:
+        # Try one user to the right.
+        next_user = username_list[idx+1]
+    except IndexError:
+        # End of list? Then start over with the first user, NOT of the
+        # user list subset, but of the search result user list in the
+        # session cache.
+        next_user = username_list[0]
+    except UnboundLocalError:
+        # View user wasn't on the list (no idx)? Return first user.
+        next_user = username_list[0]
+    try:
+        # Try one user to the left.
+        prev_user = username_list[idx-1]
+    except IndexError:
+        # Beginning of list? Start over with the last user.
+        prev_user = username_list[-1]
+    except UnboundLocalError:
+        # View user wasn't on the list (no idx)? Return first user.
+        prev_user = view_user
+    # Return the user objects of both.
+    return (User.objects.get(username__iexact=prev_user),
+            User.objects.get(username__iexact=next_user))

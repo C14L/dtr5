@@ -19,7 +19,8 @@ from toolbox import force_int, force_float, set_imgur_url
 from .models import Subscribed, Sr
 from .utils import (search_results_buffer,
                     update_list_of_subscribed_subreddits,
-                    get_usernames_around_view_user)
+                    get_user_list_around_view_user,
+                    get_prevnext_user)
 
 logger = logging.getLogger(__name__)
 
@@ -149,7 +150,7 @@ def me_manual_view(request):
 
 
 @require_http_methods(["POST"])
-def me_picture_delete_view(request):
+def me_pic_del_view(request):
     """
     Delete one of auth user's picture URLs.
     """
@@ -246,33 +247,6 @@ def me_search_view(request):
     return redirect(request.POST.get('next', reverse('me_page')))
 
 
-def profile_view(request, username, template_name='dtr5app/profile.html'):
-    """
-    Display the complete profile of one user, and show a list of
-    other users above for the user to continue browsing.
-    """
-    view_user = get_object_or_404(User, username=username)
-    view_user.profile.set_viewer_latlng(request.user.profile.lat,
-                                        request.user.profile.lng)
-
-    setattr(view_user, 'pics_list', list(view_user.pics.all()[:10]))
-    view_user.pics_list += [None] * (10 - len(view_user.pics_list))
-
-    view_user.profile.set_common_subs(request.user.subs.all())
-    search_results_buffer(request)
-    username_list = get_usernames_around_view_user(
-        request.session['search_results_buffer'], view_user)
-    user_list = User.objects.filter(
-        username__in=username_list).prefetch_related('profile', 'subs')
-    for u in user_list:
-        # set the auth user's geolocation on each user instance.
-        u.profile.set_viewer_latlng(request.user.profile.lat,
-                                    request.user.profile.lng)
-    ctx = {'view_user': view_user, 'user_list': user_list}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
-
-
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """Display a list of users who are subscribed to a subreddit."""
     view_sr = get_object_or_404(Sr, display_name=sr)
@@ -289,5 +263,65 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     ctx = {'view_sr': view_sr,
            'user_list': user_list,
            'user_subs_all': user_subs_all}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+def profile_view(request, username, template_name='dtr5app/profile.html'):
+    """
+    Display the complete profile of one user, and show a list of
+    other users above for the user to continue browsing.
+    """
+    view_user = get_object_or_404(User, username=username)
+    # Add auth user's latlng, so we can query their distance.
+    view_user.profile.set_viewer_latlng(request.user.profile.lat,
+                                        request.user.profile.lng)
+    # Make sure there is a list of 10 pic objects, empty or not.
+    setattr(view_user, 'pics_list', list(view_user.pics.all()[:10]))
+    view_user.pics_list += [None] * (10 - len(view_user.pics_list))
+    # Find the subs that auth user and view user have in common.
+    view_user.profile.set_common_subs(request.user.subs.all())
+    # Get a list of user objects around view user, all with latlng.
+    user_list = get_user_list_around_view_user(request, view_user)
+    # Find previous and next user on the list, relative to view user.
+    prev_user, next_user = get_prevnext_user(request, view_user)
+
+    ctx = {'view_user': view_user,
+           'user_list': user_list,
+           'prev_user': prev_user,
+           'next_user': next_user}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+def me_flag_view(request, action, flag, username):
+    """
+    Let auth user set a flag for their relation to view user. Then
+    redirect to the next user in session[search_results_buffer] list.
+
+    Possible flag values are 'like', 'nope', 'block'
+    """
+    print('--> me_flag_view(): {} {} {}'.format(action, flag, username))
+    view_user = get_object_or_404(User, username=username)
+
+    if flag == 'like':
+        pass
+    if flag == 'nope':
+        pass
+    if flag == 'block':
+        pass
+
+    prev_user, next_user = get_prevnext_user(request, view_user)
+    _next = reverse('profile_page', args={next_user.username})
+    return redirect(request.POST.get('next', _next))
+
+
+def matches_view(request, template_name='dtr5app/matches.html'):
+    """
+    Show a page with all matches (i.e. mututal 'like' flags) of auth
+    user and all other users.
+    """
+
+    ctx = {}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

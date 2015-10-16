@@ -8,17 +8,15 @@
 
 <aside id="sidebar">
   <div class="like-nope-duno">
-    <form method="POST" action="">
+    <form method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
       {% csrf_token %}
-      <input type="hidden" name="set" value="like">
       <input type="submit" class="like opt" value="♥" title="like!">
     </form>
-    <form method="POST" action="">
+    <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
       {% csrf_token %}
-      <input type="hidden" name="set" value="nope">
       <input type="submit" class="nope opt" value="❌" title="nope!">
     </form>
-    <a href="{# url 'profile_view' view_user.next_user.username #}" class="duno opt" title="dunno...">?</a>
+    <a href="{% url 'profile_page' next_user.username %}" class="duno opt" title="dunno...">?</a>
     </form>
   </div>
   <div class="subreddit-matches">
@@ -81,11 +79,17 @@
 
   <div class="prevnext-user-list">
     <ul>
+      <li class="prev">
+        <a href="{% url 'profile_page' prev_user.username %}">⯇</a>
+      </li>
       {% for v in user_list %}
       <li class="{% if v.username == view_user.username %}curr{% else %}not-curr{% endif %}">
         <span class="info">{{v.username}}, {{v.profile.get_age}} {{v.profile.get_sex_symbol}} {{v.profile.get_distance_in_km|floatformat:"1"}} km away</span><a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.pics.all.0.url}}" alt="{{v.username}}"></a>
       </li>
       {% endfor %}
+      <li class="next">
+        <a href="{% url 'profile_page' next_user.username %}">⯈</a>
+      </li>
     </ul>
   </div>
 

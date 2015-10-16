@@ -135,7 +135,7 @@
       {% for pic in request.user.pics.all %}
       <div class="pic">
         <a href="{{pic.src}}"><img src="{{pic.url}}" alt=""></a>
-        <form method="POST" action="{% url 'me_picture_delete_page' %}">
+        <form method="POST" action="{% url 'me_pic_del_page' %}">
           {% csrf_token %}
           <input type="hidden" name="pic_url" value="{{pic.url}}">
           <input type="submit" value="delete">

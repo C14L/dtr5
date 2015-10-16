@@ -18,23 +18,34 @@ from django.contrib import admin
 from simple_reddit_oauth import urls as simple_reddit_oauth_urls
 from dtr5app import views
 
+R_USERNAME = r'(?P<username>[a-zA-Z0-9_-]{2,30})'
+
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include(simple_reddit_oauth_urls)),
     url(r'^$', views.home_view, name="home_page"),
 
+    # Users preferences page, and URIs to POST to.
     url(r'^me/$', views.me_view, name="me_page"),
     url(r'^me/update/$', views.me_update_view, name="me_update_page"),
     url(r'^me/locate/$', views.me_locate_view, name="me_locate_page"),
     url(r'^me/favsr/$', views.me_favsr_view, name="me_favsr_page"),
     url(r'^me/manual/$', views.me_manual_view, name="me_manual_page"),
     url(r'^me/pic/$', views.me_picture_view, name="me_picture_page"),
-    url(r'^me/pic/delete$',
-        views.me_picture_delete_view, name="me_picture_delete_page"),
+    url(r'^me/pic/delete$', views.me_pic_del_view, name="me_pic_del_page"),
     url(r'^search/$', views.me_search_view, name="me_search_page"),
 
-    url(r'^u/(?P<username>[a-zA-Z0-9_-]{2,30})/$',
-        views.profile_view, name="profile_page"),
+    # Show a list of matches (auth user and view user mutual likes).
+    url(r'^matches/$', views.matches_view, name="matches_page"),
 
+    # Show all users that subscribe to a specific subreddit.
+    # --> TODO: Maybe not really needed?
     url(r'^r/(?P<sr>[a-zA-Z0-9_-]{2,30})/$', views.sr_view, name="sr_page"),
+
+    # Show "view user"'s profile page.
+    url(r'^u/' + R_USERNAME + r'/$', views.profile_view, name="profile_page"),
+
+    # Let auth user set a flag on view user (like, nope, block, etc).
+    url(r'^flag/(?P<action>set|remove)/(?P<flag>[a-zA-Z0-9_-]{2,30})/' +
+        R_USERNAME + r'/$', views.me_flag_view, name="me_flag_page"),
 ]
