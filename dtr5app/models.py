@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.timezone import now
 from toolbox import (get_imgur_page_from_picture_url,
                      get_western_zodiac,
                      get_western_zodiac_symbol,
@@ -141,6 +142,16 @@ class Profile(models.Model):
 
     def get_distance_in_miles(self):
         return float(self.get_distance_in_km() * 0.621371)
+
+
+class Flag(models.Model):
+    """Store relations between users, such as 'like', 'block', etc."""
+    FLAG_CHOICES = ((1, 'like'), (2, 'nope'), (3, 'block'), )
+
+    sender = models.ForeignKey(User, related_name="flags_sent")
+    receiver = models.ForeignKey(User, related_name="flags_received")
+    flag = models.PositiveSmallIntegerField(choices=FLAG_CHOICES)
+    created = models.DateTimeField(default=now)
 
 
 class Sr(models.Model):
