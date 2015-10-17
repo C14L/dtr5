@@ -12,18 +12,24 @@ from toolbox import (to_iso8601,
                      get_latlng_bounderies)
 
 
+def get_blocked_usernames_list():
+    """Return a list of usernames blocked by admin."""
+    return []
+
+
 def search_users(request):
     """
     Return a list of usernames who
     - match auth user's the search options,
     - are subbed to similar subreddits as auth user
-    - are not blocked by auth user,
+    - are not flagged by auth user,
     - are not blocked by admin via username blocklist,
     - have at least one picture URL,
     - ...
     """
     bufflen = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
     li = User.objects.all()
+
     # Search option: sex
     if request.user.profile.f_sex > 0:
         li = li.filter(profile__sex=request.user.profile.f_sex)
@@ -45,10 +51,21 @@ def search_users(request):
     # Only users with a verified email on reddit?
     # if request.user.profile.f_has_verified_email:
     #     li = li.filter(profile__has_verified_email=True)
+
+    # Are subbed to similar subreddits as auth user
+    # TODO...
+
+    # Are not already flagged by auth user ('like', 'nope', 'block')
+    li = li.exclude(flags_received__sender=request.user)
+
+    # Are not blocked by admin via username blocklist,
+    li = li.exclude(username__in=get_blocked_usernames_list())
+
+    # Have at least one picture URL,
+    # TODO...
+
     # All filters set, limit the list's length and get only usernames.
     li = list(li[:bufflen].values_list('username', flat=True))
-    print('--> Found {} matches.'.format(len(li)))
-    print('--> Matches: {}'.format(li))
     return li
 
 
