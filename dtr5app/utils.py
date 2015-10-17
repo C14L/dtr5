@@ -6,7 +6,50 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 from .models import Sr, Subscribed
-from toolbox import (to_iso8601, from_iso8601)
+from toolbox import (to_iso8601,
+                     from_iso8601,
+                     get_dob_range,
+                     get_latlng_bounderies)
+
+
+def search_users(request):
+    """
+    Return a list of usernames who
+    - match auth user's the search options,
+    - are subbed to similar subreddits as auth user
+    - are not blocked by auth user,
+    - are not blocked by admin via username blocklist,
+    - have at least one picture URL,
+    - ...
+    """
+    bufflen = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
+    li = User.objects.all()
+    # Search option: sex
+    if request.user.profile.f_sex > 0:
+        li = li.filter(profile__sex=request.user.profile.f_sex)
+    # Search option: age
+    dob_earliest, dob_latest = get_dob_range(request.user.profile.f_minage,
+                                             request.user.profile.f_maxage)
+    li = li.filter(profile__dob__gt=dob_earliest, profile__dob__lt=dob_latest)
+    # Search option: distance
+    if request.user.profile.f_distance:
+        lat_min, lng_min, lat_max, lng_max = get_latlng_bounderies(
+            request.user.profile.lat,
+            request.user.profile.lng,
+            request.user.profile.f_distance)
+        li = li.filter(profile__lat__gte=lat_min, profile__lat__lte=lat_max,
+                       profile__lng__gte=lng_min, profile__lng__lte=lng_max)
+    # Only show SFW profiles?
+    # if request.user.profile.f_over_18:
+    #     li = li.filter(profile__over_18=True)
+    # Only users with a verified email on reddit?
+    # if request.user.profile.f_has_verified_email:
+    #     li = li.filter(profile__has_verified_email=True)
+    # All filters set, limit the list's length and get only usernames.
+    li = list(li[:bufflen].values_list('username', flat=True))
+    print('--> Found {} matches.'.format(len(li)))
+    print('--> Matches: {}'.format(li))
+    return li
 
 
 def search_results_buffer(request, force=False):
@@ -17,12 +60,13 @@ def search_results_buffer(request, force=False):
     """
     bt = request.session.get('search_results_buffer_time', None)
     if (not bt or from_iso8601(bt) + timedelta(days=1) < from_iso8601()):
-        force = True
-    bufflen = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
-    if force or not request.session.get('search_results_buffer', None):
-        li = User.objects.all()[:bufflen].values_list('username', flat=True)
-        request.session['search_results_buffer'] = list(li)
+        force = True  # if buffer is old, force refresh
+    if request.session.get('search_results_buffer', None) is None:
+        force = True  # no buffer ever set, then do a search
+    if force:
+        request.session['search_results_buffer'] = search_users(request)
         request.session['search_results_buffer_time'] = to_iso8601()
+        request.session.modified = True
 
 
 def update_list_of_subscribed_subreddits(user, subscribed):

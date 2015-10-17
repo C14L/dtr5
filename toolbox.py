@@ -2,7 +2,7 @@
 Collection of random simple general-purpose helper functions.
 """
 
-import datetime
+from datetime import date, datetime
 import dateutil.parser
 import math
 import pytz
@@ -12,7 +12,7 @@ import re
 def to_iso8601(when=None):
     """Return a datetime as string in ISO-8601 format."""
     if not when:
-        when = datetime.datetime.now(pytz.utc)
+        when = datetime.now(pytz.utc)
     if not when.tzinfo:
         when = pytz.utc.localize(when)
     _when = when.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
@@ -25,7 +25,7 @@ def from_iso8601(when=None):
     ISO-8601 format.
     """
     if not when:
-        _when = datetime.datetime.now(pytz.utc)
+        _when = datetime.now(pytz.utc)
     else:
         _when = dateutil.parser.parse(when)
     if not _when.tzinfo:
@@ -102,7 +102,17 @@ def get_imgur_page_from_picture_url(url):
     else:
         return ''
 
-# --- Western and Eastern zodiac --------------------------------------
+
+# --- Date of Birth and Zodiac -------------------------------------- #
+
+
+def get_dob_range(minage, maxage):
+    """Return earliest and latest dob to match a min/max age range."""
+    year = date.today().year
+    dob_earliest = date.today().replace(year=(year-maxage))
+    dob_latest = date.today().replace(year=(year-minage))
+    return dob_earliest, dob_latest
+
 
 WESTERN_ZODIAC = (
     (0, ''), (1, 'aries'), (2, 'taurus'), (3, 'gemini'),
@@ -207,6 +217,9 @@ def get_eastern_zodiac_symbol(dob):
         return ''
 
 
+# --- Geolocation --------------------------------------------------- #
+
+
 def distance_between_geolocations(p1, p2):
     """
     Gets two geolocation points p1 and p2 as (lat, lng) tuples. Returns
@@ -222,3 +235,23 @@ def distance_between_geolocations(p1, p2):
     lat_delta_m = (p1_lat - p2_lat) * lat_1_deg
     lng_delta_m = (p1_lng - p2_lng) * lng_1_deg
     return int(math.sqrt(math.pow(lat_delta_m, 2) + math.pow(lng_delta_m, 2)))
+
+
+def get_latlng_bounderies(lat, lng, distance):
+    """Return min/max lat/lng values for a distance around a latlng.
+
+    Receives a geolocation as lat/lng floats and a distance (km) around
+    that point. To simplify database lookup, only get a square around
+    the geolocation. Return (lat_min, lng_min) and (lat_max, lng_max)
+    geolocation points to draw the box.
+    """
+    lat_1deg = 110574.0  # m
+    lng_1deg = 111320.0 * math.cos(lat)  # m
+    dist_m = float(distance * 1000)
+    lat_dist_deg = abs(dist_m / lat_1deg)
+    lng_dist_deg = abs(dist_m / lng_1deg)
+    return (lat-lat_dist_deg, lng-lat_dist_deg,
+            lat+lng_dist_deg, lng+lng_dist_deg)
+
+
+# ------------------------------------------------------------------- #

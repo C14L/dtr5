@@ -45,7 +45,7 @@ class Profile(models.Model):
 
     # f_ --> user search settings: who shows up in search results?
     f_sex = models.PositiveSmallIntegerField(default=0)
-    f_distance = models.PositiveSmallIntegerField(default=0)  # max 32767
+    f_distance = models.PositiveSmallIntegerField(default=0)  # km, max 32767
     f_minage = models.PositiveSmallIntegerField(default=18)
     f_maxage = models.PositiveSmallIntegerField(default=100)
     # find users with the over_18 profile value set to True or who
@@ -146,12 +146,26 @@ class Profile(models.Model):
 
 class Flag(models.Model):
     """Store relations between users, such as 'like', 'block', etc."""
-    FLAG_CHOICES = ((1, 'like'), (2, 'nope'), (3, 'block'), )
+    LIKE_FLAG = 1
+    NOPE_FLAG = 2
+    BLOCK_FLAG = 3
+    FLAG_CHOICES = ((LIKE_FLAG, 'like'), (NOPE_FLAG, 'nope'),
+                    (BLOCK_FLAG, 'block'), )
 
     sender = models.ForeignKey(User, related_name="flags_sent")
     receiver = models.ForeignKey(User, related_name="flags_received")
-    flag = models.PositiveSmallIntegerField(choices=FLAG_CHOICES)
+    flag = models.PositiveSmallIntegerField(blank=False, choices=FLAG_CHOICES)
     created = models.DateTimeField(default=now)
+
+    class Meta:
+        verbose_name = 'user flag'
+        verbose_name_plural = 'user flags'
+        unique_together = ['sender', 'receiver', 'flag']
+
+    def __str__(self):
+        return '{} --{}--> {}'.format(self.sender.username,
+                                      self.get_flag_display(),
+                                      self.receiver.username)
 
 
 class Sr(models.Model):

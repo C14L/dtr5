@@ -9,14 +9,14 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 from simple_reddit_oauth import api
 
 from toolbox import force_int, force_float, set_imgur_url
-from .models import Subscribed, Sr
+from .models import Subscribed, Sr, Flag
 from .utils import (search_results_buffer,
                     update_list_of_subscribed_subreddits,
                     get_user_list_around_view_user,
@@ -217,7 +217,12 @@ def me_search_view(request):
     if request.method in ["GET", "HEAD"]:
         # Find the next profile to show and redirect.
         search_results_buffer(request)
-        i = randint(0, len(request.session['search_results_buffer'])-1)
+        if len(request.session['search_results_buffer']) < 1:
+            messages.warning(request,
+                             'No redditors found for the search options.')
+            return redirect(request.POST.get('next', reverse('me_page')))
+        # i = randint(0, len(request.session['search_results_buffer'])-1)
+        i = 0
         x = {'username': request.session['search_results_buffer'][i]}
         _next = request.POST.get('next', reverse('profile_page', kwargs=x))
         return redirect(_next)
@@ -303,16 +308,35 @@ def me_flag_view(request, action, flag, username):
     """
     print('--> me_flag_view(): {} {} {}'.format(action, flag, username))
     view_user = get_object_or_404(User, username=username)
+    flags = {x[1]: x[0] for x in Flag.FLAG_CHOICES}
 
-    if flag == 'like':
+    if action == 'set':
+        if flag in flags.keys():
+            view_flag, created = Flag.objects.get_or_create(
+                sender=request.user, receiver=view_user, flag=flags[flag])
+    elif action == 'delete':
         pass
-    if flag == 'nope':
-        pass
-    if flag == 'block':
-        pass
+        # TODO!
+    else:
+        return HttpResponseNotFound()
 
-    prev_user, next_user = get_prevnext_user(request, view_user)
-    _next = reverse('profile_page', args={next_user.username})
+    if view_user.username in request.session['search_results_buffer']:
+        if len(request.session['search_results_buffer']) > 1:
+            # Get the next user in the search results buffer.
+            prev_user, next_user = get_prevnext_user(request, view_user)
+            _next = reverse('profile_page', args={next_user.username})
+
+        # Remove the user who was just flagged from results buffer.
+        request.session['search_results_buffer'].remove(view_user.username)
+        request.session.modified = True
+    else:
+        # View user not in buffer, so no "next" available.
+        _next = reverse('profile_page', args={view_user.username})
+
+    if len(request.session['search_results_buffer']) < 1:
+        messages.warning(request, 'Nobody found. Try searching again!')
+        return redirect(reverse('me_page'))
+
     return redirect(request.POST.get('next', _next))
 
 
