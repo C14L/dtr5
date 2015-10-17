@@ -52,6 +52,9 @@ def search_users(request):
     # if request.user.profile.f_has_verified_email:
     #     li = li.filter(profile__has_verified_email=True)
 
+    # exclude auth user themself.
+    li = li.exclude(pk=request.user.pk)
+
     # Are subbed to similar subreddits as auth user
     # TODO...
 
