@@ -54,18 +54,18 @@ def search_users(request):
 
     # exclude auth user themself.
     li = li.exclude(pk=request.user.pk)
-
-    # Are subbed to similar subreddits as auth user
-    # TODO...
-
     # Are not already flagged by auth user ('like', 'nope', 'block')
     li = li.exclude(flags_received__sender=request.user)
-
     # Are not blocked by admin via username blocklist,
     li = li.exclude(username__in=get_blocked_usernames_list())
 
+    # Are subbed to similar subreddits as auth user
+    #
+    # -- TODO --
+    #
+
     # Have at least one picture URL,
-    # TODO...
+    li = li.exclude(profile__pics_str='[]')
 
     # All filters set, limit the list's length and get only usernames.
     li = list(li[:bufflen].values_list('username', flat=True))
