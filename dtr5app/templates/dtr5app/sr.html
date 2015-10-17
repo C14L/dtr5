@@ -56,7 +56,7 @@
     {% for v in user_list %}
     <li>
       <a href="{% url 'profile_page' v.username %}" class="pic">
-        <img src="{{v.pics.all.0.url}}" alt="{{v.username}}">
+        <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
       </a>
       <span class="info">
         <a href="{% url 'profile_page' v.username %}" class="username">{{v.username}}</a>

@@ -132,7 +132,7 @@
       </form>
     </div>
     <div class="item pics-preview">
-      {% for pic in request.user.pics.all %}
+      {% for pic in request.user.profile.pics %}
       <div class="pic">
         <a href="{{pic.src}}"><img src="{{pic.url}}" alt=""></a>
         <form method="POST" action="{% url 'me_pic_del_page' %}">

@@ -4,7 +4,6 @@ import pytz
 import requests  # to check image URLs for HTTO 200 responses
 from time import time as unixtime
 from datetime import datetime
-from random import randint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -156,7 +155,9 @@ def me_pic_del_view(request):
     """
     pic_url = request.POST.get('pic_url', None)
     try:
-        request.user.pics.get(url=pic_url).delete()
+        request.user.profile.pics = [x for x in request.user.profile.pics
+                                     if x['url'] != pic_url]
+        request.user.profile.save()
         messages.info(request, 'Picture removed.')
     except:
         messages.info(request, 'Picture not found.')
@@ -178,7 +179,6 @@ def me_picture_view(request):
 
     # If imgur.com picture, set to "medium" size.
     pic_url = set_imgur_url(pic_url, size='m')
-
     # Check for HTTP 200 response on that URL, load time,
     # file size, file type, etc.
     try:
@@ -199,13 +199,14 @@ def me_picture_view(request):
         return HttpResponse('The image file size ({} kiB) is too large. '
                             'Please use a smaller size (max. 500 kiB).'.
                             format(x))
-    # Count user's pics and limit to 10 or so.
-    if request.user.pics.all().count() < 10:
-        request.user.pics.create(user=request.user, url=pic_url)
-    else:
-        return HttpResponse('You already have 10 pictures in '
-                            'your profile. Please delete an old '
-                            'picture, before adding another one.')
+    if len(request.user.profile.pics) > 9:
+        return HttpResponse('You already have 10 pictures in your profile. Ple'
+                            'ase delete an old one, before adding another :)')
+    if pic_url in [x['url'] for x in request.user.profile.pics]:
+        return HttpResponse('That picture already exists in your profile.')
+
+    request.user.profile.pics.append({'url': pic_url})
+    request.user.profile.save()
     return redirect(reverse('me_page'))
 
 
@@ -282,7 +283,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
                                         request.user.profile.lng)
     # Make sure there is a list of 10 pic objects, empty or not.
-    setattr(view_user, 'pics_list', list(view_user.pics.all()[:10]))
+    setattr(view_user, 'pics_list', view_user.profile.pics[:10])
     view_user.pics_list += [None] * (10 - len(view_user.pics_list))
     # Find the subs that auth user and view user have in common.
     view_user.profile.set_common_subs(request.user.subs.all())

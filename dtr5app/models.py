@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import date
 from django.conf import settings
@@ -42,6 +43,10 @@ class Profile(models.Model):
     dob = models.DateField(null=True, default=None)  # user's b'day
     sex = models.IntegerField(default=0, choices=settings.SEX)
     about = models.TextField(default='')
+    # JSON string with a list of pictures.
+    # url: char field with the complete picture URL.
+    # src: char field with the comeplete URL to the pic's source page.
+    pics_str = models.TextField(default='')
 
     # f_ --> user search settings: who shows up in search results?
     f_sex = models.PositiveSmallIntegerField(default=0)
@@ -76,6 +81,7 @@ class Profile(models.Model):
     viewer_lat = None
     viewer_lng = None
     common_subs = []
+    pics = []  # helper list, this will be serialized on save.
 
     class Meta:
         verbose_name = "user profile"
@@ -87,6 +93,25 @@ class Profile(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Profile, self).__init__(*args, **kwargs)
+        # Unserialilze pictures JSON string into list.
+        try:
+            self.pics = json.loads(self.pics_str)
+        except ValueError:
+            self.pics = []
+
+    def save(self, *args, **kwargs):
+        # Don't store more than 10 pictures per profile.
+        if len(self.pics) > 10:
+            self.pics = self.pics[:10]
+        # For all pictures, make sure to use the right imgur size.
+        for pic in self.pics:
+            if '//i.imgur.com/' in pic['url']:
+                pic['src'] = get_imgur_page_from_picture_url(pic['url'])
+                # do the same for other common image hosters... who?
+                # -- TODO --
+        # Serialilze pics list into JSON string.
+        self.pics_str = json.dumps(self.pics, ensure_ascii=False)
+        super(Profile, self).save(*args, **kwargs)
 
     def get_sex_symbol(self):
         """Returns the symbol for the user's sex."""
@@ -212,31 +237,6 @@ class Subscribed(models.Model):
 
     def __str__(self):
         return '{} --> {}'.format(self.user.username, self.sr.name)
-
-
-class Picture(models.Model):
-    user = models.ForeignKey(User, editable=False, related_name="pics")
-    url = models.CharField(max_length=150)
-    src = models.CharField(default='', max_length=150)  # source page URL.
-
-    class Meta:
-        verbose_name = "picture"
-        verbose_name_plural = "pictures"
-        unique_together = (('user', 'url'), )
-
-    def __init__(self, *args, **kwargs):
-        super(Picture, self).__init__(*args, **kwargs)
-
-    def __str__(self):
-        return '{} --> {}'.format(self.user.username, self.url)
-
-    def save(self, *args, **kwargs):
-        if '//i.imgur.com/' in self.url:
-            # if this is a imgur URL, get a link to the source page.
-            self.src = get_imgur_page_from_picture_url(self.url)
-            # do the same for other common image hosters... who?
-            # -- TODO --
-        super(Picture, self).save(*args, **kwargs)
 
 
 @receiver(post_save, sender=User)
