@@ -129,21 +129,22 @@ label {
   height: 50px;
   margin: 0; padding: 0; border: 1px solid transparent;
   vertical-align: middle;
+  position: relative;
 }
 .prevnext-user-list > ul > li .info {
   opacity: 0;
-  background-color: #FFF;
-  border-radius: 0 5px 5px 5px;
-  box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  background-color: #FFFFFF;
+  border-radius: 5px 5px 5px 0;
+  border: 1px solid #5F99CF;
   color: #111;
   font-size: 1rem;
   margin: 0; padding: 2px;
-  position: absolute; top: 10px; left: 15px;
+  position: absolute; top: -10px; left: 15px;
   transition: 0.5s ease-out;
   z-index: 999;
 }
 .prevnext-user-list > ul > li:hover .info {
-  opacity: 1;
+  opacity: 0.8;
   transition: 0.5s ease-out;
 }
 .prevnext-user-list > ul > li a {
