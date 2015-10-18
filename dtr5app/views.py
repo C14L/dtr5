@@ -29,14 +29,20 @@ logger = logging.getLogger(__name__)
 def home_view(request):
     if request.user.is_authenticated():
         return redirect(reverse('me_search_page'))
-    txt = '<a href="{}">Login with your Reddit account</a>'
-    url = api.make_authorization_url(request)
-    return HttpResponse(txt.format(url))
+
+    template_name = 'dtr5app/home_anon.html'
+    ctx = {'auth_url': api.make_authorization_url(request)}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
 
 
 def me_view(request, template_name="dtr5app/me.html"):
+    """Show a settings page for auth user's profile."""
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
+    # Check if the user has filled on the basics of their profile. If
+    # they haven't, show special pages for it.
+    
     ctx = {
         "sex_choices": settings.SEX,
         "unixtime": unixtime(),
@@ -341,6 +347,8 @@ def matches_view(request, template_name='dtr5app/matches.html'):
     Show a page with all matches (i.e. mututal 'like' flags) of auth
     user and all other users.
     """
+    if not request.user.is_authenticated():
+        return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
     # Get all User objects auth user received likes from.
     user_list_recv = User.objects.filter(flags_sent__receiver=request.user,
                                          flags_received__flag=Flag.LIKE_FLAG)

@@ -1,0 +1,111 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}Dating for reddit users{% endblock %}
+
+{% block body_classes %}home-anon{% endblock %}
+
+{% block head %}
+<style>
+body.home-anon {
+}
+body.home-anon main {
+  display: block;
+  min-height: 100vh; width: 100%;
+  background: #FFFFFF url({% static 'reddit2.jpg' %}) center center no-repeat;
+  background-size: cover;
+}
+body.home-anon article h1 {
+  font-size: 2.5rem; line-height: 1rem;
+  font-weight: normal;
+  letter-spacing: 0.3rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+body.home-anon article {
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #5F99CF;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  display: block;
+  margin: 10vh auto; padding: 0;
+  overflow: hidden;
+  width: 500px;
+}
+body.home-anon article > .overlay {
+  background-color: #CEE3F8;
+  text-align: center;
+  margin: 0; padding: 24px;
+}
+body.home-anon article > .abouts {
+  display: block;
+  font-size: 1rem;
+  margin: 0; padding: 0 16px;
+}
+
+body.home-anon article > .overlay > p > a {
+  background-color: #FFFFFF;
+  border-radius: 0;
+  border: 1px solid #5F99CF; border-right: 0;
+  display: block;
+  font-size: 19px;
+  font-weight: bold;
+  margin: 0 auto; padding: 8px;
+  position: relative;
+  text-align: center;
+  width: 250px;
+}
+body.home-anon article > .overlay > p > a:before {
+  background-color: #FFFFFF;
+  border-radius: 0;
+  border: 1px solid #5F99CF; 
+  border-width: 1px 1px 0 0;
+  content: '';
+  display: block;
+  margin: 0; padding: 0;
+  position: absolute; top: 5px; right: -14px;
+  width: 26px; height: 26px;
+  transform: rotate(45deg)
+}
+body.home-anon article > .overlay > p > a {
+  background: linear-gradient(0deg, #CEE3F8, #FFFFFF);
+  transition: 0.1s ease-out;
+}
+body.home-anon article > .overlay > p > a:before {
+  background: linear-gradient(-45deg, #CEE3F8, #FFFFFF);
+  transition: 0.1s ease-out;
+}
+body.home-anon article > .overlay > p > a:hover {
+  background: linear-gradient(0deg, #5F99CF, #CEE3F8);
+  color: #FFFFFF;
+  transition: 0.1s ease-out;
+}
+body.home-anon article > .overlay > p > a:hover:before {
+  background: linear-gradient(-45deg, #5F99CF, #CEE3F8);
+  transition: 0.1s ease-out;
+}
+</style>
+{% endblock %}
+
+{% block main %}
+
+<article>
+  <div class="overlay">
+    <h1>redddate</h1>
+    <p><a href="{{auth_url}}">Login with Reddit</a></p>
+  </div>
+  <div class="abouts">
+
+<p>On <a href="https://www.reddit.com/r/Lightbulb/">/r/lightbulb</a>, user <a href="https://www.reddit.com/user/TeaStainsAndTobacco">/u/TeaStainsAndTobacco</a> had a cool idea: <strong>"A Reddit dating site that matches you based on interest in similar subreddits."</strong></p>
+
+<p>So, here it is. <a href="{{auth_url}}"><b>Sign up</b></a> and <a href="https://www.reddit.com/r/redddate/">tell me</a> what you think.</p>
+
+<p>Privacy and anonymity are important on Reddit, and here too. After signup with your reddit account (oAuth), the app only fetches your public user account data and subreddit list. Then, you manually add picture, age, gender, and geolocation coordinates.</p>
+
+<p><u>Geolocation data:</u> the browser fetches your coordinates and fuzzies them by anywhere between 0 and 2 kilometers, before they are uploaded, so your exact location is never known. You can also type in your latitude and longitude manually.</p>
+
+<p><u>Date of birth:</u> its never shown, its only used to show your age and your western and eastern zodiacs on your profile. Punch in your correct date of birth to get your correct zodiacs and age.</p>
+
+  </div>
+</article>
+
+{% endblock %}
