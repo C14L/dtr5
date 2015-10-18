@@ -57,7 +57,7 @@ def me_view(request, template_name="dtr5app/me.html"):
     if len(request.user.profile.pics) == 0:
         return render_to_response('dtr5app/step_5.html', ctx,
                                   context_instance=RequestContext(request))
-    if not (request.user.profile.f_sex and request.user.profile.f_distance):
+    if not (request.user.profile.f_distance):
         return render_to_response('dtr5app/step_6.html', ctx,
                                   context_instance=RequestContext(request))
     return render_to_response(template_name, ctx,
@@ -235,22 +235,20 @@ def me_search_view(request):
     """
     Save the user search settings and redirect to search results page.
     """
+    txt_not_found = 'No redditors found for the search options.'
+
     if request.method in ["GET", "HEAD"]:
         # Find the next profile to show and redirect.
         search_results_buffer(request)
         if len(request.session['search_results_buffer']) < 1:
-            messages.warning(request,
-                             'No redditors found for the search options.')
+            messages.warning(request, txt_not_found)
             return redirect(request.POST.get('next', reverse('me_page')))
-        # i = randint(0, len(request.session['search_results_buffer'])-1)
-        i = 0
-        x = {'username': request.session['search_results_buffer'][i]}
+        x = {'username': request.session['search_results_buffer'][0]}
         _next = request.POST.get('next', reverse('profile_page', kwargs=x))
         return redirect(_next)
 
     p = request.user.profile
-    if request.POST.get('f_sex', None):
-        p.f_sex = force_int(request.POST.get('f_sex'))
+    p.f_sex = force_int(request.POST.get('f_sex', ''))
     if request.POST.get('f_distance', None):
         p.f_distance = force_int(request.POST.get('f_distance'), max=20000)
     if request.POST.get('f_minage', None):
@@ -262,15 +260,20 @@ def me_search_view(request):
     if request.POST.get('f_has_verified_email', None):
         p.f_has_verified_email = bool(request.POST.get('f_has_verified_email'))
     request.user.profile = p
+    #
+    # TODO: check if model is dirty and only force a search results
+    # buffer refresh if the search parameters actually changed. To
+    # avoid too many searches.
+    #
     request.user.profile.save()
-    # Force search buffer refresh,
     search_results_buffer(request, force=True)
-    # and go to first search result, if any.
-    if len(request.session['search_results_buffer']) > 0:
-        messages.success(request, 'Search options updated.')
-    else:
-        messages.warning(request, 'No redditors found for the search options.')
-    return redirect(request.POST.get('next', reverse('me_page')))
+    #
+    if len(request.session['search_results_buffer']) < 1:
+        messages.warning(request, txt_not_found)
+        return redirect(request.POST.get('next', reverse('me_page')))
+    # messages.success(request, 'Search options updated.')
+    x = {'username': request.session['search_results_buffer'][0]}
+    return redirect(reverse('profile_page', kwargs=x))
 
 
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
