@@ -1,7 +1,7 @@
 {% extends 'dtr5app/base.html' %}
 {% load static %}
 
-{% block title %}Update subreddits{% endblock %}
+{% block title %}update subreddits{% endblock %}
 
 {% block body_classes %}signup-steps step-2 step-update-subs{% endblock %}
 
@@ -13,7 +13,7 @@
 
 <article>
   <div class="overlay">
-    <h1>redddate</h1>
+    <h1>update subreddits</h1>
     <form method="POST" action="{% url 'me_update_page' %}">
       {% csrf_token %}
       <input class="mainbtn" type="submit" value="Update subreddits">

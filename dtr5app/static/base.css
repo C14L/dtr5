@@ -22,20 +22,29 @@ form, button {
 input[type="text"], input[type="date"], input[type="submit"], select {
   margin: 4px; padding: 4px;
 }
-label {
+input[type="submit"], select, label {
   cursor: pointer;
 }
+input[type="submit"] {
+  min-width: 75px;
+}
+
 
 /*
- * Slightly smaller and slightly lighter than regular text.
+
+Slightly smaller and slightly lighter than regular text.
+
  */
 .help {
   font-size: 0.9rem;
   color: #888;
 }
 
+
 /*
- * Tags next to subreddit names in subreddit sidebar lists.
+
+Tags next to subreddit names in subreddit sidebar lists.
+
  */
 .nsfw-tag, .subscr-tag, .contrib-tag, .mod-tag, .banned-tag, .muted-tag {
   opacity: 0.5;
@@ -54,8 +63,11 @@ label {
   background-color: black;
 }
 
+
 /*
- * Zodiac symbol boxes.
+
+Zodiac symbol boxes.
+
  */
 .zodiac {
   display: inline-block;
@@ -68,8 +80,11 @@ label {
   vertical-align: middle;
 }
 
+
 /*
- * Buttons on user profile pages for "like", "nope", or "dunno".
+
+Buttons on user profile pages for "like", "nope", or "dunno".
+
  */
 .like-nope-duno {
   background-color: #F7F7F7;
@@ -86,6 +101,7 @@ label {
               1px 2px 3px rgba(0,0,0,0.3);
   color: #FFF;
   cursor: pointer;
+  min-width: auto; min-height: auto;
   display: inline-block; width: 56px; height: 56px;
   font-size: 32px; line-height: 56px;
   margin: 0 0 0 24px; padding: 0; border: 0;
@@ -110,8 +126,11 @@ label {
   background-color: #999;
 }
 
+
 /*
- * Small box with picture links to more user profiles.
+
+Small box with picture links to more user profiles.
+
  */
 .prevnext-user-list {
   margin: 0 0 20px 0; padding: 0;
@@ -196,7 +215,71 @@ label {
 
 
 /*
- * The list of settings options on the "preferences" page.
+
+User list on pages: matches, sr, etc.
+
+ */
+ul.user-list {
+  display: block;
+  font-size: 0;
+  list-style: none;
+  margin: 0; padding: 0;
+}
+ul.user-list li {
+  display: inline-block;
+  margin: 1px; padding: 0;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  vertical-align: middle;
+}
+ul.user-list li form {
+  display: block;
+  margin: 0; padding: 0;
+  position: absolute; top: -30px; right: 4px;
+  opacity: 0;
+  transition: 0.3s ease-out;
+}
+ul.user-list li:hover form {
+  opacity: 1;
+  top: 4px;
+  transition: 0.3s ease-out;
+}
+ul.user-list li input[type="submit"] {
+}
+ul.user-list li a.pic {
+  height: inherit;
+}
+ul.user-list li a.pic img {
+  height: inherit;
+}
+ul.user-list li span.info {
+  background-color: rgba(255,255,255,1);
+  display: block;
+  font-size: 1rem; line-height: 1.5em;
+  margin: 0; padding: 4px 8px;
+  opacity: 0;
+  position: absolute; bottom: -100px; left: 0; right: 0;
+  transition: 0.3s ease-out;
+}
+ul.user-list li:hover span.info {
+  opacity: 0.8;
+  bottom: 0px;
+  transition: 0.3s ease-out;
+}
+ul.user-list li span.info a.username {
+  display: block;
+}
+ul.user-list li span.info span.asl {
+  color: #888;
+  display: block;
+}
+
+
+/*
+
+The list of settings options on the "preferences" page.
+
  */
 .settings-btns {
   background-color: #F3F3F3;
@@ -253,8 +336,11 @@ label {
   transition: 0.3s ease-out;
 }
 
+
 /*
- * Site header.
+
+Site header.
+
  */
 header {
   background-color: #CEE3F8;
@@ -264,7 +350,10 @@ header {
 }
 .site-logo {
   float: left;
-  font-size: 2rem; line-height: 2rem;
+  font-size: 2.5rem; line-height: 2rem;
+  font-weight: normal;
+  letter-spacing: 0.3rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 .site-logo > a.site-name {
   color: inherit; text-decoration: inherit;
@@ -278,9 +367,12 @@ header {
 .site-links > a.username {
 }
 
+
 /*
- * List of system messages to respond to user input etc. Shown
- * between "header" and "main" only if there are any messeges.
+
+List of system messages to respond to user input etc. Shown
+between "header" and "main" only if there are any messeges.
+
  */
 ul#site-messages {
   background-color: #C00;
@@ -295,9 +387,12 @@ ul#site-messages li {
 ul#site-messages li a {
 }
 
+
 /*
- * Main page content area.
- * Usualy contains <article/> and <aside id="sidebar"/>.
+
+Main page content area.
+Usualy contains <article/> and <aside id="sidebar"/>.
+
  */
 main {
   overflow: hidden;
@@ -313,8 +408,11 @@ aside#sidebar h2 {
   font-size: 1.15rem; line-height: 1em;
 }
 
+
 /*
- * List of subreddits in the sidebar.
+
+List of subreddits in the sidebar.
+
  */
 aside#sidebar .sr-list {
 }
@@ -346,10 +444,13 @@ aside#sidebar .sr-list > li > .status .muted {
   font-weight: bold;
 }
 
+
 /*
- * Site footer, with copyright stuff, content licence, privacy
- * statement, terms of service statement, cookie usage statement,
- * and whatnot statements.
+
+Site footer, with copyright stuff, content licence, privacy
+statement, terms of service statement, cookie usage statement,
+and whatnot statements.
+
  */
 footer {
   background-color: #F3F3F3;
@@ -359,8 +460,11 @@ footer {
   margin: 0; padding: 16px;
 }
 
+
 /*
- * User profile page.
+
+User profile page.
+
  */
 body.profile {
   background-color: #FFF;
@@ -447,8 +551,11 @@ body.profile .user-profile ul.pics li .pic img {
   height: inherit;
 }
 
+
 /*
- * Subreddit specific page.
+
+Subreddit specific page.
+
  */
 body.sr ul.sr-user-list {
   font-size: 0;
@@ -492,73 +599,30 @@ body.sr ul.sr-user-list > li > a > img {
   height: 150px;
 }
 
+
 /*
- * Matches page.
+
+Matches page.
+
  */
 body.matches {
 }
 body.matches article {
 }
-body.matches article ul.user-list {
-  display: block;
-  font-size: 0;
-  list-style: none;
-  margin: 0; padding: 0;
-}
-body.matches article ul.user-list li {
-  display: inline-block;
-  margin: 1px; padding: 0;
-  height: 200px;
-  overflow: hidden;
-  position: relative;
-  vertical-align: middle;
-}
-body.matches article ul.user-list li form {
-  display: block;
-  margin: 0; padding: 0;
-  position: absolute; top: -30px; right: 4px;
-  opacity: 0;
-  transition: 0.3s ease-out;
-}
-body.matches article ul.user-list li:hover form {
-  opacity: 1;
-  top: 4px;
-  transition: 0.3s ease-out;
-}
-body.matches article ul.user-list li input[type="submit"] {
-}
-body.matches article ul.user-list li a.pic {
-  height: inherit;
-}
-body.matches article ul.user-list li a.pic img {
-  height: inherit;
-}
-body.matches article ul.user-list li span.info {
-  background-color: rgba(255,255,255,1);
-  display: block;
-  font-size: 1rem; line-height: 1.5em;
-  margin: 0; padding: 4px 8px;
-  opacity: 0;
-  position: absolute; bottom: -100px; left: 0; right: 0;
-  transition: 0.3s ease-out;
-}
-body.matches article ul.user-list li:hover span.info {
-  opacity: 1;
-  bottom: 0px;
-  transition: 0.3s ease-out;
-}
 body.matches article ul.user-list li form.like-nope-duno {
   box-shadow: none;
   background-color: transparent;
   margin: 0; padding: 0; border: 0;
-  transform: scale(0.75);
+  transform: scale(0.5);
 }
 body.matches article ul.user-list li form.like-nope-duno .opt.nope {
 }
 
 
 /*
- * Home page signup screen for anonymous users.
+
+Home page signup screen for anonymous users.
+
  */
 body.signup-steps main {
   display: block;
@@ -602,7 +666,7 @@ body.signup-steps article .overlay .mainbtn {
   font-size: 19px;
   font-weight: bold;
   margin: 0 auto; padding: 8px;
-  overflow: auto;
+  overflow: none;
   position: relative;
   text-align: center;
   width: 250px;
@@ -641,8 +705,11 @@ body.signup-steps article .overlay .mainbtn:hover:before {
   transition: 0.1s ease-out;
 }
 
+
 /*
- * After signup steps to input basic account info.
+
+After signup steps to input basic account info.
+
  */
 body.signup-steps {
 }

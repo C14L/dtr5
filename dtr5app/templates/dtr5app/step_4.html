@@ -1,7 +1,7 @@
 {% extends 'dtr5app/base.html' %}
 {% load static %}
 
-{% block title %}Set age and gender{% endblock %}
+{% block title %}age and gender{% endblock %}
 
 {% block body_classes %}signup-steps step-4 step-age-gender{% endblock %}
 
@@ -13,7 +13,7 @@
 
 <article>
   <div class="overlay">
-    <h1>redddate</h1>
+    <h1>age and gender</h1>
     <form class="manual" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
 

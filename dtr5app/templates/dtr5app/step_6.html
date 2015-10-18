@@ -1,7 +1,7 @@
 {% extends 'dtr5app/base.html' %}
 {% load static %}
 
-{% block title %}Search options{% endblock %}
+{% block title %}search options{% endblock %}
 
 {% block body_classes %}signup-steps step-6 step-search-options{% endblock %}
 
@@ -13,7 +13,7 @@
 
 <article>
   <div class="overlay">
-    <h1>redddate</h1>
+    <h1>search options</h1>
     <form method="POST" action="{% url 'me_search_page' %}">
       {% csrf_token %}
       <input type="hidden" name="next" value="{% url 'me_page' %}">

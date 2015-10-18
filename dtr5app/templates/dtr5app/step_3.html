@@ -1,7 +1,7 @@
 {% extends 'dtr5app/base.html' %}
 {% load static %}
 
-{% block title %}Update geolocation{% endblock %}
+{% block title %}update geolocation{% endblock %}
 
 {% block body_classes %}signup-steps step-3 step-update-geoloc{% endblock %}
 
@@ -13,7 +13,7 @@
 
 <article>
   <div class="overlay">
-    <h1>redddate</h1>
+    <h1>update geolocation</h1>
     <form method="GET" action="{% url 'me_locate_page' %}" onsubmit="geoloc(this);return false;">
       {% csrf_token %}
       <input type="hidden" name="lat" value="">
