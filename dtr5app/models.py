@@ -178,6 +178,10 @@ class Profile(models.Model):
     def get_distance_in_miles(self):
         return float(self.get_distance_in_km() * 0.621371)
 
+    def match_with(self, view_user):
+        """Return True if user is a match (multual like) with view_user."""
+        pass  # TODO
+
 
 class Flag(models.Model):
     """Store relations between users, such as 'like', 'block', etc."""
