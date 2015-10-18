@@ -418,7 +418,7 @@ body.profile .user-profile ul.pics {
 body.profile .user-profile ul.pics li {
   display: block;
   float: left;
-  max-width: 225px; height: 150px; 
+  max-width: 225px; height: 150px;
   margin: 1px; padding: 0;
   overflow: hidden;
 }
@@ -458,4 +458,68 @@ body.sr ul.sr-user-list > li > a > img {
   border: 0;
   width: 100px; max-height: 100px;
   float: left;
+}
+
+/*
+ * Matches page.
+ */
+body.matches {
+}
+body.matches article {
+}
+body.matches article ul.user-list {
+  display: block;
+  font-size: 0;
+  list-style: none;
+  margin: 0; padding: 0;
+}
+body.matches article ul.user-list li {
+  display: inline-block;
+  margin: 1px; padding: 0;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  vertical-align: middle;
+}
+body.matches article ul.user-list li form {
+  display: block;
+  margin: 0; padding: 0;
+  position: absolute; top: -30px; right: 4px;
+  opacity: 0;
+  transition: 0.3s ease-out;
+}
+body.matches article ul.user-list li:hover form {
+  opacity: 1;
+  top: 4px;
+  transition: 0.3s ease-out;
+}
+body.matches article ul.user-list li input[type="submit"] {
+}
+body.matches article ul.user-list li a.pic {
+  height: inherit;
+}
+body.matches article ul.user-list li a.pic img {
+  height: inherit;
+}
+body.matches article ul.user-list li span.info {
+  background-color: rgba(255,255,255,1);
+  display: block;
+  font-size: 1rem; line-height: 1.5em;
+  margin: 0; padding: 4px 8px;
+  opacity: 0;
+  position: absolute; bottom: -100px; left: 0; right: 0;
+  transition: 0.3s ease-out;
+}
+body.matches article ul.user-list li:hover span.info {
+  opacity: 1;
+  bottom: 0px;
+  transition: 0.3s ease-out;
+}
+body.matches article ul.user-list li form.like-nope-duno {
+  box-shadow: none;
+  background-color: transparent;
+  margin: 0; padding: 0; border: 0;
+  transform: scale(0.75);
+}
+body.matches article ul.user-list li form.like-nope-duno .opt.nope {
 }

@@ -7,46 +7,55 @@
 {% block main %}
 
 <aside id="sidebar">
-  <div class="like-nope-duno">
-    <form method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
-      {% csrf_token %}
-      <input type="submit" class="like opt" value="♥" title="like!">
-    </form>
-    <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
-      {% csrf_token %}
-      <input type="submit" class="nope opt" value="❌" title="nope!">
-    </form>
-    {% if next_user.username %}<a href="{% url 'profile_page' next_user.username %}" class="duno opt" title="dunno...">?</a>{% endif %}
-    </form>
-  </div>
-  <div class="subreddit-matches">
-    {% if view_user.profile.common_subs|length == 0 %}
-      <h2>No subreddit matches :(</h2>
-    {% else %}
-      <h2>{{view_user.profile.common_subs|length}} subreddit matches :)</h2>
-      <ul class="sr-list">
-        {% for row in view_user.profile.common_subs %}
-          <li>
-            <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
-            <span class="status">
-              {% if row.sr.over_18 %}
-              <span class="nsfw-tag">NSFW</span>
-              {% endif %}
-              {% if row.user_is_moderator %}
-              <span class="mod-tag">moderator</span>
-              {% endif %}
-              {% if row.user_is_banned %}
-              <span class="banned-tag">banned</span>
-              {% endif %}
-              {% if row.user_is_muted %}
-              <span class="muted-tag">muted</span>
-              {% endif %}
-            </span>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  </div>
+  {% if view_user.username == user.username %}
+
+  {% else %}
+    <div class="like-nope-duno">
+      <form method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
+        {% csrf_token %}
+        <input type="submit" class="like opt" value="♥" title="like!">
+      </form>
+      <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
+        {% csrf_token %}
+        <input type="submit" class="nope opt" value="❌" title="nope!">
+      </form>
+      {% if next_user.username %}
+        <a href="{% url 'profile_page' next_user.username %}" class="duno opt" title="dunno...">?</a>
+      {% endif %}
+    </div>
+  {% endif %}
+  {% if view_user.username == user.username %}
+
+  {% else %}
+    <div class="subreddit-matches">
+      {% if view_user.profile.common_subs|length == 0 %}
+        <h2>No subreddit matches :(</h2>
+      {% else %}
+        <h2>{{view_user.profile.common_subs|length}} subreddit matches :)</h2>
+        <ul class="sr-list">
+          {% for row in view_user.profile.common_subs %}
+            <li>
+              <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
+              <span class="status">
+                {% if row.sr.over_18 %}
+                <span class="nsfw-tag">NSFW</span>
+                {% endif %}
+                {% if row.user_is_moderator %}
+                <span class="mod-tag">moderator</span>
+                {% endif %}
+                {% if row.user_is_banned %}
+                <span class="banned-tag">banned</span>
+                {% endif %}
+                {% if row.user_is_muted %}
+                <span class="muted-tag">muted</span>
+                {% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  {% endif %}
   <div class="fav-subreddit-list">
     <h2>{{view_user.username}}'s favorite subreddits</h2>
     <ul class="sr-list">
@@ -70,6 +79,8 @@
             </span>
           </li>
         {% endif %}
+      {% empty %}
+        <p>No favorite subreddits.</p>
       {% endfor %}
     </ul>
   </div>

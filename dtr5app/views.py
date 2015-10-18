@@ -8,7 +8,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import (HttpResponse,
+                         HttpResponseNotFound)
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
@@ -19,7 +20,8 @@ from .models import Subscribed, Sr, Flag
 from .utils import (search_results_buffer,
                     update_list_of_subscribed_subreddits,
                     get_user_list_around_view_user,
-                    get_prevnext_user)
+                    get_prevnext_user,
+                    add_auth_user_latlng)
 
 logger = logging.getLogger(__name__)
 
@@ -257,11 +259,8 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """Display a list of users who are subscribed to a subreddit."""
     view_sr = get_object_or_404(Sr, display_name=sr)
     user_list = User.objects.filter(
-        subs__sr=view_sr).prefetch_related('profile', 'subs', 'pics')
-    for u in user_list:
-        # set the auth user's geolocation on each user instance.
-        u.profile.set_viewer_latlng(request.user.profile.lat,
-                                    request.user.profile.lng)
+        subs__sr=view_sr).prefetch_related('profile', 'subs')
+    user_list = add_auth_user_latlng(request.user, user_list)
     user_subs_all = request.user.subs.all().prefetch_related('sr')
     #
     # ... TODO
@@ -311,33 +310,29 @@ def me_flag_view(request, action, flag, username):
     view_user = get_object_or_404(User, username=username)
     flags = {x[1]: x[0] for x in Flag.FLAG_CHOICES}
 
-    if action == 'set':
-        if flag in flags.keys():
-            view_flag, created = Flag.objects.get_or_create(
-                sender=request.user, receiver=view_user, flag=flags[flag])
+    if action == 'set' and flag in flags.keys():
+        Flag.set_flag(request.user, view_user, flag)
     elif action == 'delete':
-        pass
-        # TODO!
+        return HttpResponseNotFound()
     else:
         return HttpResponseNotFound()
-
+    # Redirect the user, either to the "next profile" if there is any
+    # in the search results buffer, or to the same profile if they were
+    # just looking at a single profile that's maybe not in the results
+    # buffer list. Or, if they ran out of results in the results buffer
+    # then redirect them to the preferences page, so they can run the
+    # search again and maybe fill new profiles into the results buffer.
     if view_user.username in request.session['search_results_buffer']:
         if len(request.session['search_results_buffer']) > 1:
-            # Get the next user in the search results buffer.
             prev_user, next_user = get_prevnext_user(request, view_user)
             _next = reverse('profile_page', args={next_user.username})
-
-        # Remove the user who was just flagged from results buffer.
         request.session['search_results_buffer'].remove(view_user.username)
         request.session.modified = True
     else:
-        # View user not in buffer, so no "next" available.
         _next = reverse('profile_page', args={view_user.username})
-
     if len(request.session['search_results_buffer']) < 1:
         messages.warning(request, 'Nobody found. Try searching again!')
         return redirect(reverse('me_page'))
-
     return redirect(request.POST.get('next', _next))
 
 
@@ -346,7 +341,21 @@ def matches_view(request, template_name='dtr5app/matches.html'):
     Show a page with all matches (i.e. mututal 'like' flags) of auth
     user and all other users.
     """
+    # Get all User objects auth user received likes from.
+    user_list_recv = User.objects.filter(flags_sent__receiver=request.user,
+                                         flags_received__flag=Flag.LIKE_FLAG)
+    print('--> user_list_recv.query == {}'.format(user_list_recv.query))
+    # From that list, filter out all users that auth user liked too.
+    user_list = user_list_recv.filter(flags_received__sender=request.user,
+                                      flags_received__flag=Flag.LIKE_FLAG)
+    print('--> user_list.query == {}'.format(user_list.query))
 
-    ctx = {}
+    user_list = user_list.order_by('-flags_received__created')
+    user_list = user_list.prefetch_related('profile')
+    user_list = add_auth_user_latlng(request.user, user_list)
+    # (Ab)use the view to update the user's matches counter.
+    request.user.profile.matches_count = len(user_list)
+    request.user.profile.save()
+    ctx = {'user_list': user_list}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

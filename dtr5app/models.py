@@ -48,6 +48,16 @@ class Profile(models.Model):
     # src: char field with the comeplete URL to the pic's source page.
     pics_str = models.TextField(default='')
 
+    # Some numbers
+    views_count = models.PositiveSmallIntegerField(default=0)  # unused
+    matches_count = models.PositiveSmallIntegerField(default=0)
+    like_sent_count = models.PositiveSmallIntegerField(default=0)  # unused
+    like_recv_count = models.PositiveSmallIntegerField(default=0)  # unused
+    nope_sent_count = models.PositiveSmallIntegerField(default=0)  # unused
+    nope_recv_count = models.PositiveSmallIntegerField(default=0)  # unused
+    block_sent_count = models.PositiveSmallIntegerField(default=0)  # unused
+    block_recv_count = models.PositiveSmallIntegerField(default=0)  # unused
+
     # f_ --> user search settings: who shows up in search results?
     f_sex = models.PositiveSmallIntegerField(default=0)
     f_distance = models.PositiveSmallIntegerField(default=0)  # km, max 32767
@@ -176,6 +186,7 @@ class Flag(models.Model):
     BLOCK_FLAG = 3
     FLAG_CHOICES = ((LIKE_FLAG, 'like'), (NOPE_FLAG, 'nope'),
                     (BLOCK_FLAG, 'block'), )
+    FLAG_DICT = {x[1]: x[0] for x in FLAG_CHOICES}
 
     sender = models.ForeignKey(User, related_name="flags_sent")
     receiver = models.ForeignKey(User, related_name="flags_received")
@@ -191,6 +202,18 @@ class Flag(models.Model):
         return '{} --{}--> {}'.format(self.sender.username,
                                       self.get_flag_display(),
                                       self.receiver.username)
+
+    @classmethod
+    def set_flag(cls, sender, receiver, flag):
+        """
+        All current flags are "unique", so that setting one of them
+        on a user, automatically removes all previously set flags on
+        that user.
+        """
+        for x in cls.objects.filter(sender=sender, receiver=receiver):
+            x.delete()
+        return cls.objects.create(sender=sender, receiver=receiver,
+                                  flag=cls.FLAG_DICT[flag])
 
 
 class Sr(models.Model):

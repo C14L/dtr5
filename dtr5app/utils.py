@@ -165,18 +165,12 @@ def get_user_list_around_view_user(request, view_user, n=None):
     Return a list of "n" user objects, with view user as centered
     as possible.
     """
-    # Make sure there are matches in the session cache.
     search_results_buffer(request)
     # Fetch a short list of match usernames from session cache.
     username_list = get_usernames_around_view_user(
         request.session['search_results_buffer'], view_user)
-    # Look up complete info on the users on that list.
     user_list = get_user_list_from_username_list(username_list)
-    # For each user on the list, set auth user's latlng.
-    for u in user_list:
-        # set the auth user's geolocation on each user instance.
-        u.profile.set_viewer_latlng(request.user.profile.lat,
-                                    request.user.profile.lng)
+    user_list = add_auth_user_latlng(request.user, user_list)
     return user_list
 
 
@@ -225,3 +219,10 @@ def get_prevnext_user(request, view_user):
     # Return the user objects of both.
     return (User.objects.get(username__iexact=prev_user),
             User.objects.get(username__iexact=next_user))
+
+
+def add_auth_user_latlng(user, user_list):
+    """Set the user's geolocation on each user list row."""
+    for row in user_list:
+        row.profile.set_viewer_latlng(user.profile.lat, user.profile.lng)
+    return user_list
