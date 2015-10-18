@@ -276,8 +276,8 @@ def me_search_view(request):
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """Display a list of users who are subscribed to a subreddit."""
     view_sr = get_object_or_404(Sr, display_name=sr)
-    user_list = User.objects.filter(
-        subs__sr=view_sr).prefetch_related('profile', 'subs')
+    user_list = User.objects.filter(subs__sr=view_sr)[:100]\
+                    .prefetch_related('profile', 'subs')
     user_list = add_auth_user_latlng(request.user, user_list)
     user_subs_all = request.user.subs.all().prefetch_related('sr')
     #
