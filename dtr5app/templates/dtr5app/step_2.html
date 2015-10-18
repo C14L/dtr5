@@ -1,0 +1,28 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}Update subreddits{% endblock %}
+
+{% block body_classes %}signup-steps step-2 step-update-subs{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block main %}
+
+{% include 'dtr5app/step_progress.html' %}
+
+<article>
+  <div class="overlay">
+    <h1>redddate</h1>
+    <form method="POST" action="{% url 'me_update_page' %}">
+      {% csrf_token %}
+      <input class="mainbtn" type="submit" value="Update subreddits">
+    </form>
+  </div>
+  <div class="abouts">
+    <p>Fetches your reddit username and signup date, and the list of subreddits your are subscribed to.</p>
+    <p></p>
+  </div>
+</article>
+
+{% endblock %}

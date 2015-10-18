@@ -1,0 +1,32 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}Update geolocation{% endblock %}
+
+{% block body_classes %}signup-steps step-3 step-update-geoloc{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block main %}
+
+{% include 'dtr5app/step_progress.html' %}
+
+<article>
+  <div class="overlay">
+    <h1>redddate</h1>
+    <form method="GET" action="{% url 'me_locate_page' %}" onsubmit="geoloc(this);return false;">
+      {% csrf_token %}
+      <input type="hidden" name="lat" value="">
+      <input type="hidden" name="lng" value="">
+      <input class="mainbtn" type="submit" value="locate">
+    </form>
+  </div>
+  <div class="abouts">
+    <p><strong>Your browser will ask you for permission</strong> to get your latitude/longitude values.</p>
+    <p>Your location is then automatically fuzzied by a 2 km (1.2 miles) radius, so that your precise location will never be revealed. Have a look at the source code to see how its done. <u>Your exact location will <em>NOT</em> be transmitted at any time.</u></p>
+    <p>If you prefer, you can also <a href="{% url 'me_locate_page' %}">type in your geolocation manually</a>.</p>
+    <noscript><p><strong>Looks like you have Javascript disabled, you will need to enter your geolocation manually.</strong></p></noscript>
+  </div>
+</article>
+
+{% endblock %}

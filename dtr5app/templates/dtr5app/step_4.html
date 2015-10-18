@@ -1,0 +1,54 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}Set age and gender{% endblock %}
+
+{% block body_classes %}signup-steps step-4 step-age-gender{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block main %}
+
+{% include 'dtr5app/step_progress.html' %}
+
+<article>
+  <div class="overlay">
+    <h1>redddate</h1>
+    <form class="manual" method="POST" action="{% url 'me_manual_page' %}">
+      {% csrf_token %}
+
+      <div>
+        <label class="sex">
+          <span>Sex:</span>
+          <select name="sex" size="1">
+            {% for sex in sex_choices %}
+            <option{% if user.profile.sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      <div>
+        <label class="dob">
+          <span>Birthday:</span>
+          <input type="date" name="dob" placeholder="YYYY-MM-DD" maxlength="10" value="{{user.profile.dob|date:'c'}}">
+        </label>
+      </div>
+
+      <div>
+        <textarea name="about" placeholder="Write about yourself. Or about why you like pizza and bacon. Or about that bird you saw that just escaped that cat last year.">{{user.profile.about}}</textarea>
+      </div>
+
+      <div>
+        <label class="submit">
+          <input type="submit">
+        </label>
+      </div>
+    </form>
+  </div>
+  <div class="abouts">
+    <p>Your <strong>birthday</strong> is <u>never</u> shown. Only your age, and your occidental and oriental zodiacs appear on your profile page.</p>
+  </div>
+</article>
+
+{% endblock %}

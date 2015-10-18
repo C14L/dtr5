@@ -1,0 +1,57 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}Search options{% endblock %}
+
+{% block body_classes %}signup-steps step-6 step-search-options{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block main %}
+
+{% include 'dtr5app/step_progress.html' %}
+
+<article>
+  <div class="overlay">
+    <h1>redddate</h1>
+    <form method="POST" action="{% url 'me_search_page' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'me_page' %}">
+
+      <div>
+        <label>
+          <span>Find</span>
+          <select name="f_sex" size="1">
+            <option value="">everybody</option>
+            {% for sex in sex_choices %}
+              {% if sex.0 > 0 %}
+                <option{% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <span></span>
+          <select name="f_distance" size="1"><!-- in km -->
+            <option{% if user.profile.f_distance == 20040 %} selected{% endif %}  value="20040">worldwide</option>
+            <option{% if user.profile.f_distance == 300 %} selected{% endif %}  value="300">not too far</option>
+            <option{% if user.profile.f_distance == 50 %} selected{% endif %}  value="50">in my area</option>
+            <option{% if user.profile.f_distance == 15 %} selected{% endif %} value="15">near by</option>
+          </select>
+        </label>
+      </div>
+
+      <div>
+        <label class="submit">
+          <input type="submit" value="save">
+        </label>
+      </div>
+
+    </form>
+  </div>
+  <div class="abouts">
+    <p>You can update the search options in your profile settings anytime.</p>
+  </div>
+</article>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}Link some photos{% endblock %}
+
+{% block body_classes %}signup-steps step-5 step-add-pictures{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block main %}
+
+{% include 'dtr5app/step_progress.html' %}
+
+<article>
+  <div class="overlay">
+    <h1>redddate</h1>
+    <form method="POST" action="{% url 'me_picture_page' %}">
+      {% csrf_token %}
+      <input type="text" name="pic_url" value="" placeholder="http://i.imgur.com/????????.jpg">
+      <input type="submit">
+    </form>
+  </div>
+  <div class="abouts">
+    <p>Add a link to a picture of yourself. Later, you can add more pictures on your profile settings page. If you prefer not to have your face linked to your account, take a photo of yourself from behind, or just a body part.</p>
+    <p>Easiest for picture upload is <a href="http://imgur.com/">Imgur.com</a></p>
+    <p class="help"><strong>No violence and no porn, please!</strong> Keep it SFW. Break the rules and get instabanned. Ain't nobody got time for them dick pics.</p>
+  </div>
+</article>
+
+{% endblock %}

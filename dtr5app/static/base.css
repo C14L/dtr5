@@ -20,7 +20,7 @@ form, button {
   margin: 0
 }
 input[type="text"], input[type="date"], input[type="submit"], select {
-  margin: 4px;
+  margin: 4px; padding: 4px;
 }
 label {
   cursor: pointer;
@@ -529,4 +529,144 @@ body.matches article ul.user-list li form.like-nope-duno {
   transform: scale(0.75);
 }
 body.matches article ul.user-list li form.like-nope-duno .opt.nope {
+}
+
+
+/*
+ * Home page signup screen for anonymous users.
+ */
+body.signup-steps main {
+  display: block;
+  min-height: 100vh; width: 100%;
+  background: #FFFFFF url(/static/reddit2.jpg) center center no-repeat;
+  background-size: cover;
+}
+body.signup-steps article h1 {
+  font-size: 2.5rem; line-height: 1rem;
+  font-weight: normal;
+  letter-spacing: 0.3rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+body.signup-steps article {
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #5F99CF;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  display: block;
+  margin: 10vh auto; padding: 0;
+  overflow: hidden;
+  width: 500px;
+}
+body.signup-steps article .overlay {
+  background-color: #CEE3F8;
+  text-align: center;
+  margin: 0; padding: 24px;
+}
+body.signup-steps article .abouts {
+  display: block;
+  font-size: 1rem;
+  margin: 0; padding: 0 16px;
+}
+
+body.signup-steps article .overlay .mainbtn {
+  background-color: #FFFFFF;
+  border-radius: 0;
+  border: 1px solid #5F99CF; border-right: 0;
+  cursor: pointer;
+  display: block;
+  font-size: 19px;
+  font-weight: bold;
+  margin: 0 auto; padding: 8px;
+  overflow: auto;
+  position: relative;
+  text-align: center;
+  width: 250px;
+}
+body.signup-steps article .overlay .mainbtn:before {
+  background-color: #FFFFFF;
+  border-radius: 0;
+  border: 1px solid #5F99CF;
+  border-width: 1px 1px 0 0;
+  content: '';
+  display: block;
+  margin: 0; padding: 0;
+  position: absolute; top: 5px; right: -14px;
+  width: 26px; height: 26px;
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+body.signup-steps article .overlay .mainbtn {
+  background: linear-gradient(0deg, #CEE3F8, #FFFFFF);
+  transition: 0.1s ease-out;
+}
+body.signup-steps article .overlay .mainbtn:before {
+  background: linear-gradient(-45deg, #CEE3F8, #FFFFFF);
+  transition: 0.1s ease-out;
+}
+body.signup-steps article .overlay .mainbtn:hover {
+  background: linear-gradient(0deg, #5F99CF, #CEE3F8);
+  color: #FFFFFF;
+  transition: 0.1s ease-out;
+}
+body.signup-steps article .overlay .mainbtn:hover:before {
+  background: linear-gradient(-45deg, #5F99CF, #CEE3F8);
+  transition: 0.1s ease-out;
+}
+
+/*
+ * After signup steps to input basic account info.
+ */
+body.signup-steps {
+}
+body.signup-steps.step-1 {  /* Signup with reddit */
+}
+body.signup-steps.step-1 div.show-signup-steps {
+  display: none;
+}
+body.signup-steps.step-2 {  /* Update Subreddits */
+}
+body.signup-steps.step-3 {  /* Update geolocation */
+}
+body.signup-steps.step-4 {  /* Set age and gender */
+}
+body.signup-steps.step-5 {  /* Link some photos */
+}
+body.signup-steps .show-signup-steps {
+  background-color: rgba(255,255,255,0.75);
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  text-align: center;
+}
+body.signup-steps .show-signup-steps > div {
+  color: #888;
+  display: inline-block;
+  margin: 0; padding: 16px 0;
+}
+body.signup-steps .show-signup-steps > div:not(:first-child):before {
+  color: #888;
+  content: '⮕';
+  margin: 0; padding: 16px;
+}
+body.signup-steps.step-1 .show-signup-steps > div.step-1,
+body.signup-steps.step-2 .show-signup-steps > div.step-2,
+body.signup-steps.step-3 .show-signup-steps > div.step-3,
+body.signup-steps.step-4 .show-signup-steps > div.step-4,
+body.signup-steps.step-5 .show-signup-steps > div.step-5,
+body.signup-steps.step-6 .show-signup-steps > div.step-6 {
+  color: #000; font-weight: bold;
+}
+body.signup-steps article .overlay {
+}
+body.signup-steps article .overlay form > div {
+  margin: 16px 0;
+}
+body.signup-steps.step-4 article .overlay textarea {
+  width: 100%; height: 90px;
+}
+body.signup-steps.step-5 article .overlay input[type="text"] {
+  width: 200px;
+}
+body.signup-steps article div.abouts {
 }

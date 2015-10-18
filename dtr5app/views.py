@@ -40,14 +40,26 @@ def me_view(request, template_name="dtr5app/me.html"):
     """Show a settings page for auth user's profile."""
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
+    ctx = {'sex_choices': settings.SEX, 'unixtime': unixtime(),
+           'timeleft': request.session['expires'] - unixtime()}
     # Check if the user has filled on the basics of their profile. If
     # they haven't, show special pages for it.
-    
-    ctx = {
-        "sex_choices": settings.SEX,
-        "unixtime": unixtime(),
-        "timeleft": request.session['expires'] - unixtime(),
-    }
+    if not request.user.subs.all():
+        return render_to_response('dtr5app/step_2.html', ctx,
+                                  context_instance=RequestContext(request))
+    if not (request.user.profile.lat and request.user.profile.lng):
+        return render_to_response('dtr5app/step_3.html', ctx,
+                                  context_instance=RequestContext(request))
+    if not (request.user.profile.dob and
+            request.user.profile.sex and request.user.profile.about):
+        return render_to_response('dtr5app/step_4.html', ctx,
+                                  context_instance=RequestContext(request))
+    if len(request.user.profile.pics) == 0:
+        return render_to_response('dtr5app/step_5.html', ctx,
+                                  context_instance=RequestContext(request))
+    if not (request.user.profile.f_sex and request.user.profile.f_distance):
+        return render_to_response('dtr5app/step_6.html', ctx,
+                                  context_instance=RequestContext(request))
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
