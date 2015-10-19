@@ -22,7 +22,7 @@ from .utils import (search_results_buffer,
                     get_user_list_around_view_user,
                     get_prevnext_user,
                     add_auth_user_latlng,
-                    get_matches_user_list)
+                    get_matches_user_list, count_matches)
 
 logger = logging.getLogger(__name__)
 
@@ -336,11 +336,9 @@ def me_flag_view(request, action, flag, username):
         Flag.set_flag(request.user, view_user, flag)
         # For both users, check their match count.
         if flag == 'like':
-            user_list = get_matches_user_list(request.user)
-            request.user.profile.matches_count = len(user_list)
+            request.user.profile.matches_count = count_matches(request.user)
             request.user.profile.save()
-            user_list = get_matches_user_list(view_user)
-            view_user.profile.matches_count = len(user_list)
+            view_user.profile.matches_count = count_matches(view_user)
             view_user.profile.save()
     elif action == 'delete':
         return HttpResponseNotFound()
@@ -352,15 +350,16 @@ def me_flag_view(request, action, flag, username):
     # buffer list. Or, if they ran out of results in the results buffer
     # then redirect them to the preferences page, so they can run the
     # search again and maybe fill new profiles into the results buffer.
-    if view_user.username in request.session['search_results_buffer']:
-        if len(request.session['search_results_buffer']) > 1:
+    if len(request.session['search_results_buffer']) > 0:
+        if view_user.username in request.session['search_results_buffer']:
             prev_user, next_user = get_prevnext_user(request, view_user)
             _next = reverse('profile_page', args={next_user.username})
-        request.session['search_results_buffer'].remove(view_user.username)
-        request.session.modified = True
-    else:
-        _next = reverse('profile_page', args={view_user.username})
-    if len(request.session['search_results_buffer']) < 1:
+            request.session['search_results_buffer'].remove(view_user.username)
+            request.session.modified = True
+        else:
+            username = request.session['search_results_buffer'][0]
+            _next = reverse('profile_page', args={username})
+    elif len(request.session['search_results_buffer']) < 1:
         messages.warning(request, 'Nobody found. Try searching again!')
         return redirect(reverse('me_page'))
     return redirect(request.POST.get('next', _next))
@@ -373,18 +372,13 @@ def matches_view(request, template_name='dtr5app/matches.html'):
     """
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
-    # Get all User objects auth user received likes from.
+    # Get a list user_list ordered by match time, most recent first,
+    # including the additional property 'matched' with match timestamp.
     user_list = get_matches_user_list(request.user)
-    # Can't use 'order_by()' here, because we used 'distinct(pk)' to
-    # get the QuerySet of distinct User objects. Solution: below, get
-    # the list and order it in Python.
-    # X X X user_list = user_list.order_by('-flags_received__created')
-    user_list = user_list.prefetch_related('profile')
     user_list = add_auth_user_latlng(request.user, user_list)
-    # (Ab)use the view to update the user's matches counter.
-    request.user.profile.matches_count = len(user_list)
+
+    request.user.profile.matches_count = count_matches(request.user)
     request.user.profile.save()
-    # Now order the list by the larger of the two
     ctx = {'user_list': user_list}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

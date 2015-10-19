@@ -140,6 +140,8 @@ def get_usernames_around_view_user(userbuff, view_user, n=None):
     usernames to the left, and n usernames to the right of the focus
     user's username. If the list gets to one of either ends, the focus
     username shoud be centered as much as possible.
+
+    TODO: wrap the user list around to have an "endless" list.
     """
     if not n:
         n = int(getattr(settings, 'LINKS_IN_PROFILE_HEADER', 5) / 2)
@@ -177,12 +179,19 @@ def get_user_list_around_view_user(request, view_user, n=None):
 def get_user_list_from_username_list(username_list):
     """
     Return a list of user objects with prefetched profiles and subs,
-    from a list of usernames.
+    from a list of usernames. Important: make sure they are in the
+    same order as the username_list.
     """
     # Look up complete info on the users on that list.
-    user_list = User.objects.filter(username__in=username_list)
-    user_list = user_list.prefetch_related('profile', 'subs')
-    return list(user_list)
+    li = User.objects.filter(
+        username__in=username_list).prefetch_related('profile', 'subs')
+    user_list = []
+    for x in username_list:
+        for y in li:
+            if y.username == x:
+                user_list.append(y)
+                break
+    return user_list
 
 
 def get_prevnext_user(request, view_user):
@@ -228,10 +237,23 @@ def add_auth_user_latlng(user, user_list):
     return user_list
 
 
+def count_matches(user):
+    """Return the number of matches (mututal likes) of 'user'."""
+    return User.objects.filter(
+        flags_sent__receiver=user, flags_received__flag=Flag.LIKE_FLAG,
+        ).filter(
+        flags_received__sender=user, flags_received__flag=Flag.LIKE_FLAG
+        ).distinct().count()
+
+
 def get_matches_user_list(user):
-    """Returns a user_list with all mutual likes for 'user'."""
-    user_list = User.objects.filter(flags_sent__receiver=user,
-                                    flags_received__flag=Flag.LIKE_FLAG)
-    user_list = user_list.filter(flags_received__sender=user,
-                                 flags_received__flag=Flag.LIKE_FLAG)
-    return user_list.distinct('pk')
+    """Return a user_list with all mutual likes for 'user'."""
+    user_list = list(User.objects.filter(
+        flags_sent__receiver=user, flags_sent__flag=Flag.LIKE_FLAG,
+        flags_received__sender=user, flags_received__flag=Flag.LIKE_FLAG))
+    for x in user_list:
+        c1 = x.flags_sent.get(receiver=user.pk).created
+        c2 = user.flags_sent.get(receiver=x.pk).created
+        setattr(x, 'matched', c1 if c1 > c2 else c2)
+    user_list.sort(key=lambda row: row.matched, reverse=True)
+    return user_list
