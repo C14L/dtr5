@@ -21,7 +21,8 @@ from .utils import (search_results_buffer,
                     update_list_of_subscribed_subreddits,
                     get_user_list_around_view_user,
                     get_prevnext_user,
-                    add_auth_user_latlng)
+                    add_auth_user_latlng,
+                    get_matches_user_list)
 
 logger = logging.getLogger(__name__)
 
@@ -333,6 +334,14 @@ def me_flag_view(request, action, flag, username):
 
     if action == 'set' and flag in flags.keys():
         Flag.set_flag(request.user, view_user, flag)
+        # For both users, check their match count.
+        if flag == 'like':
+            user_list = get_matches_user_list(request.user)
+            request.user.profile.matches_count = len(user_list)
+            request.user.profile.save()
+            user_list = get_matches_user_list(view_user)
+            view_user.profile.matches_count = len(user_list)
+            view_user.profile.save()
     elif action == 'delete':
         return HttpResponseNotFound()
     else:
@@ -365,20 +374,17 @@ def matches_view(request, template_name='dtr5app/matches.html'):
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
     # Get all User objects auth user received likes from.
-    user_list_recv = User.objects.filter(flags_sent__receiver=request.user,
-                                         flags_received__flag=Flag.LIKE_FLAG)
-    print('--> user_list_recv.query == {}'.format(user_list_recv.query))
-    # From that list, filter out all users that auth user liked too.
-    user_list = user_list_recv.filter(flags_received__sender=request.user,
-                                      flags_received__flag=Flag.LIKE_FLAG)
-    print('--> user_list.query == {}'.format(user_list.query))
-
-    user_list = user_list.order_by('-flags_received__created')
+    user_list = get_matches_user_list(request.user)
+    # Can't use 'order_by()' here, because we used 'distinct(pk)' to
+    # get the QuerySet of distinct User objects. Solution: below, get
+    # the list and order it in Python.
+    # X X X user_list = user_list.order_by('-flags_received__created')
     user_list = user_list.prefetch_related('profile')
     user_list = add_auth_user_latlng(request.user, user_list)
     # (Ab)use the view to update the user's matches counter.
     request.user.profile.matches_count = len(user_list)
     request.user.profile.save()
+    # Now order the list by the larger of the two
     ctx = {'user_list': user_list}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

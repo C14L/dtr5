@@ -5,7 +5,7 @@ import pytz
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
-from .models import Sr, Subscribed
+from .models import (Sr, Subscribed, Flag)
 from toolbox import (to_iso8601,
                      from_iso8601,
                      get_dob_range,
@@ -226,3 +226,12 @@ def add_auth_user_latlng(user, user_list):
     for row in user_list:
         row.profile.set_viewer_latlng(user.profile.lat, user.profile.lng)
     return user_list
+
+
+def get_matches_user_list(user):
+    """Returns a user_list with all mutual likes for 'user'."""
+    user_list = User.objects.filter(flags_sent__receiver=user,
+                                    flags_received__flag=Flag.LIKE_FLAG)
+    user_list = user_list.filter(flags_received__sender=user,
+                                 flags_received__flag=Flag.LIKE_FLAG)
+    return user_list.distinct('pk')
