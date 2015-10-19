@@ -26,7 +26,7 @@
           <a href="{% url 'profile_page' v.username %}" class="pic">
             <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
           </a>
-          <span class="info">
+          <span class="info" title="matched: {{v.matched|timesince}}">
             <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
             <span class="asl">
               {{v.profile.get_age}}
