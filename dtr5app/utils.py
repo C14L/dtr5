@@ -27,6 +27,9 @@ def search_users(request):
     - have at least one picture URL,
     - ...
     """
+    SR_LIMIT = getattr(settings, 'SR_LIMIT', 50)
+    SR_MIN_SUBS = getattr(settings, 'SR_MIN_SUBS', 100)
+    SR_MAX_SUBS = getattr(settings, 'SR_MAX_SUBS', 5000000)
     bufflen = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
     li = User.objects.all()
 
@@ -40,8 +43,7 @@ def search_users(request):
     # Search option: distance
     if request.user.profile.f_distance:
         lat_min, lng_min, lat_max, lng_max = get_latlng_bounderies(
-            request.user.profile.lat,
-            request.user.profile.lng,
+            request.user.profile.lat, request.user.profile.lng,
             request.user.profile.f_distance)
         li = li.filter(profile__lat__gte=lat_min, profile__lat__lte=lat_max,
                        profile__lng__gte=lng_min, profile__lng__lte=lng_max)
@@ -58,14 +60,27 @@ def search_users(request):
     li = li.exclude(flags_received__sender=request.user)
     # Are not blocked by admin via username blocklist,
     li = li.exclude(username__in=get_blocked_usernames_list())
-
-    # Are subbed to similar subreddits as auth user
-    #
-    # -- TODO --
-    #
-
     # Have at least one picture URL,
     li = li.exclude(profile__pics_str='[]')
+
+    #
+    # Fetch auth user's subreddits, smallest first, but with at least
+    # 50 subscribers. Like on reddit, use only 50 subs at a time.
+    #
+    # --> Give smaller subreddits a higher priority than larger ones.
+    # --> Give subreddits marked "favorite" a higher priority than others.
+    # -->
+    #
+    # TODO: shuffle this a bit more to get a new 50 subreddits every
+    # time, same as on Reddit for the frontpage subs.
+    sr = Sr.objects.filter(
+        subscribers__gt=SR_MIN_SUBS, subscribers__lt=SR_MAX_SUBS,
+        users__user=request.user).order_by('subscribers')[:SR_LIMIT]
+    #
+    # TODO: use the subs as a filter for the user list.
+    #
+    print('--> len(sr): ', len(sr))
+    print('--> sr:', sr)
 
     # All filters set, limit the list's length and get only usernames.
     li = list(li[:bufflen].values_list('username', flat=True))

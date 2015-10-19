@@ -231,7 +231,7 @@ class Sr(models.Model):
     title = models.CharField(default="", max_length=100)
     header_title = models.CharField(default="", max_length=100)
     display_name = models.CharField(default="", max_length=100)
-    # public or private
+    # public, restricted, or private
     subreddit_type = models.CharField(default="", max_length=50)
     # Subreddit subscribers
     subscribers = models.IntegerField(default=0)

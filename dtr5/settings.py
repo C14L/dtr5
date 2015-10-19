@@ -147,3 +147,8 @@ SEX_SYMBOL = (  # ♀♂⚥⚢⚣⚤⚪★☆⮕♥
 SEARCH_RESULTS_BUFFER_SIZE = 100
 LINKS_IN_PROFILE_HEADER = 9
 RESULTS_BUFFER_LEN = 20 if DEBUG else 1000
+# How many subreddits to use at a time to find matches.
+SR_LIMIT = 50
+# Ignore subreddits too small or too large.
+SR_MIN_SUBS = 100
+SR_MAX_SUBS = 5000000
