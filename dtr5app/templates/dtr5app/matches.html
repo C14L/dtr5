@@ -19,10 +19,12 @@
     <ul class="user-list">
       {% for v in user_list %}
         <li>
+          <!-- show "nope" button only on profile page!
           <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' v.username %}" class="like-nope-duno" onsubmit="return confirm('Really?')">
             {% csrf_token %}
             <input type="submit" class="nope opt" value="❌" title="nope!">
           </form>
+          -->
           <a href="{% url 'profile_page' v.username %}" class="pic">
             <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
           </a>

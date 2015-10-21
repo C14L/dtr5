@@ -2,7 +2,7 @@
 
 {% block title %}{{view_user.username}} - {{view_user.profile.get_age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.distance}} km{% endblock %}
 
-{% block body_classes %}profile{% endblock %}
+{% block body_classes %}profile{% if is_match %} is-match{% endif %}{% endblock %}
 
 {% block main %}
 
@@ -87,7 +87,11 @@
 </aside>
 
 <article>
-
+  {% if is_match %}
+    <div class="match-box">
+      <a href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
+    </div>
+  {% endif %}
   <div class="prevnext-user-list">
     <ul>
       {% if prev_user.username %}
@@ -137,82 +141,84 @@
       <p>{{view_user.profile.about}}</p>
     </div>
 
-    <div class="info">
-      <table>
-        <thead>
-          <tr>
-            <td colspan="2">
-              More about <a href="{% url 'profile_page' view_user.username %}">{{view_user.username}}</a>
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Age:</td>
-            <td>{{view_user.profile.get_age}}</td>
-          </tr>
-          <tr>
-            <td>Gender:</td>
-            <td>{{view_user.profile.get_sex_display}}</td>
-          </tr>
-          <tr>
-            <td>Distance:</td>
-            <td>{{view_user.profile.get_distance_in_km|floatformat:"1"}} km from you</td>
-          </tr>
-          <!-- <tr>
-            <td></td>
-            <td></td>
-          </tr> -->
-          <tr>
-            <td>Western zodiac:</td>
-            <td>
-              <span class="zodiac western-zodiac" title="Western Zodiac: {{view_user.profile.get_western_zodiac_display}}">{{view_user.profile.get_western_zodiac_symbol}}</span>
-              {{view_user.profile.get_western_zodiac_display}}
-            </td>
-          </tr>
-          <tr>
-            <td>Eastern zodiac:</td>
-            <td>
-              <span class="zodiac eastern-zodiac" title="Eastern Zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_eastern_zodiac_symbol}}</span>
-              {{view_user.profile.get_eastern_zodiac_display}}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="info-tables">
+      <div class="info">
+        <table>
+          <thead>
+            <tr>
+              <td colspan="2">
+                More about <a href="{% url 'profile_page' view_user.username %}">{{view_user.username}}</a>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Age:</td>
+              <td>{{view_user.profile.get_age}}</td>
+            </tr>
+            <tr>
+              <td>Gender:</td>
+              <td>{{view_user.profile.get_sex_display}}</td>
+            </tr>
+            <tr>
+              <td>Distance:</td>
+              <td>{{view_user.profile.get_distance_in_km|floatformat:"1"}} km from you</td>
+            </tr>
+            <!-- <tr>
+              <td></td>
+              <td></td>
+            </tr> -->
+            <tr>
+              <td>Western zodiac:</td>
+              <td>
+                <span class="zodiac western-zodiac" title="Western Zodiac: {{view_user.profile.get_western_zodiac_display}}">{{view_user.profile.get_western_zodiac_symbol}}</span>
+                {{view_user.profile.get_western_zodiac_display}}
+              </td>
+            </tr>
+            <tr>
+              <td>Eastern zodiac:</td>
+              <td>
+                <span class="zodiac eastern-zodiac" title="Eastern Zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_eastern_zodiac_symbol}}</span>
+                {{view_user.profile.get_eastern_zodiac_display}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <div class="info">
-      <table>
-        <thead>
-          <tr>
-            <td colspan="2">
-              <a href="https://www.reddit.com/user/{{view_user.username}}/">{{view_user.username}}</a> on Reddit
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Link Karma:</td>
-            <td>{{view_user.profile.link_karma}}</td>
-          </tr>
-          <tr>
-            <td>Comment Karma:</td>
-            <td>{{view_user.profile.comment_karma}}</td>
-          </tr>
-          <tr>
-            <td>Watches NSFW content:</td>
-            <td>{{view_user.profile.over_18|yesno:"yes,no,?"}}</td>
-          </tr>
-          <tr>
-            <td>Has a verified Email:</td>
-            <td>{{view_user.profile.has_verified_email|yesno:"yes,no,?"}}</td>
-          </tr>
-          <tr>
-            <td>Has Reddit Gold:</td>
-            <td>{{view_user.profile.gold_creddits|yesno:"yes,no,?"}}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="info">
+        <table>
+          <thead>
+            <tr>
+              <td colspan="2">
+                <a href="https://www.reddit.com/user/{{view_user.username}}/">{{view_user.username}}</a> on Reddit
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Link Karma:</td>
+              <td>{{view_user.profile.link_karma}}</td>
+            </tr>
+            <tr>
+              <td>Comment Karma:</td>
+              <td>{{view_user.profile.comment_karma}}</td>
+            </tr>
+            <tr>
+              <td>Watches NSFW content:</td>
+              <td>{{view_user.profile.over_18|yesno:"yes,no,?"}}</td>
+            </tr>
+            <tr>
+              <td>Has a verified Email:</td>
+              <td>{{view_user.profile.has_verified_email|yesno:"yes,no,?"}}</td>
+            </tr>
+            <tr>
+              <td>Has Reddit Gold:</td>
+              <td>{{view_user.profile.gold_creddits|yesno:"yes,no,?"}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <div>

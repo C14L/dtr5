@@ -501,7 +501,14 @@ body.profile .user-profile .header .account {
 }
 body.profile .user-profile .about {
 }
+body.profile .user-profile .info-tables {
+  background-color: #F3F3F3;
+  overflow: hidden;
+  margin: 0; padding: 0;
+}
 body.profile .user-profile .info {
+  float: left;
+  margin: 0 16px; padding: 0;
 }
 body.profile .user-profile .info table {
   margin: 16px 0;
@@ -516,7 +523,9 @@ body.profile .user-profile .info table thead tr td {
 body.profile .user-profile .info table tbody tr {
 }
 body.profile .user-profile .info table tbody tr td {
-  padding: 8px;
+  background-color: #FFFFFF;
+  padding: 0 8px;
+  line-height: 40px;
   border: 1px solid #CCC;
 }
 body.profile .user-profile ul.pics {
@@ -551,6 +560,10 @@ body.profile .user-profile ul.pics li .pic img {
   height: inherit;
 }
 
+body.profile.is-match {
+}
+body.profile.is-match article .match-box {
+}
 
 /*
 

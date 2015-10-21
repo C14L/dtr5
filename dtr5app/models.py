@@ -4,6 +4,7 @@ from datetime import date
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.timezone import now
@@ -180,7 +181,9 @@ class Profile(models.Model):
 
     def match_with(self, view_user):
         """Return True if user is a match (multual like) with view_user."""
-        pass  # TODO
+        return (Flag.objects.filter(flag=Flag.LIKE_FLAG).filter(
+            Q(sender=self.user, receiver=view_user) |
+            Q(receiver=self.user, sender=view_user)).count() == 2)
 
 
 class Flag(models.Model):

@@ -314,6 +314,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     prev_user, next_user = get_prevnext_user(request, view_user)
 
     ctx = {'view_user': view_user,
+           'is_match': request.user.profile.match_with(view_user),
            'user_list': user_list,
            'prev_user': prev_user,
            'next_user': next_user}
