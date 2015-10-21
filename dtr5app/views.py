@@ -322,6 +322,30 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
                               context_instance=RequestContext(request))
 
 
+def me_blocked_view(request):
+    return HttpResponse('Yo, them blocked...')
+
+
+def me_flag_del_view(request, flags='like,nope'):
+    """Delete all listed flags authuser set on other users."""
+    if request.method in ['GET', 'HEAD']:
+        # Return a "are you sure" page.
+        template_name = 'dtr5app/flag_del_all.html'
+        ctx = {}
+        return render_to_response(template_name, ctx,
+                                  context_instance=RequestContext(request))
+    elif request.method in ['POST']:
+        flag_ids = [Flag.FLAG_DICT[x] for x in flags.split(',')]
+        q = Flag.objects.filter(flag__in=flag_ids, sender=request.user)
+        count = q.count()
+        q.delete()
+        if Flag.FLAG_DICT['like'] in flag_ids:
+            request.user.profile.matches_count = 0
+            request.user.profile.save()
+        messages.info(request, '{} items deleted.'.format(count))
+        return redirect(reverse('me_page'))
+
+
 def me_flag_view(request, action, flag, username):
     """
     Let auth user set a flag for their relation to view user. Then
@@ -332,7 +356,6 @@ def me_flag_view(request, action, flag, username):
     print('--> me_flag_view(): {} {} {}'.format(action, flag, username))
     view_user = get_object_or_404(User, username=username)
     flags = {x[1]: x[0] for x in Flag.FLAG_CHOICES}
-
     if action == 'set' and flag in flags.keys():
         Flag.set_flag(request.user, view_user, flag)
         # For both users, check their match count.

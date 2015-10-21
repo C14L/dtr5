@@ -6,24 +6,56 @@
 
 {% block main %}
 
+{% if is_match %}
+  <div class="match-box">
+    <div class="announce">
+      <span>You like each other!</span>
+    </div>
+    <div class="uu">
+      <div class="u1">
+        <img src="{{user.profile.pics.0.url}}" alt="{{user.username}}">
+        <span class="username">{{user.username}}</span>
+      </div>
+      <div class="u2">
+        <img src="{{view_user.profile.pics.0.url}}" alt="{{view_user.username}}">
+        <span class="username">{{view_user.username}}</span>
+      </div>
+    </div>
+    <div class="action">
+      <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
+      <a class="later" href="{% url 'me_search_page' %}">Not now</a>
+    </div>
+  </div>
+{% endif %}
+
 <aside id="sidebar">
   {% if view_user.username == user.username %}
 
   {% else %}
-    <div class="like-nope-duno">
-      <form method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
-        {% csrf_token %}
-        <input type="submit" class="like opt" value="♥" title="like!">
-      </form>
-      <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
-        {% csrf_token %}
-        <input type="submit" class="nope opt" value="❌" title="nope!">
-      </form>
-      {% if next_user.username %}
-        <a href="{% url 'profile_page' next_user.username %}" class="duno opt" title="dunno...">?</a>
-      {% endif %}
-    </div>
+    {% if is_match %}
+      <div class="like-nope-duno small">
+        <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
+          {% csrf_token %}
+          <input type="submit" class="nope opt" value="❌" title="nope!">
+        </form>
+      </div>
+    {% else %}
+      <div class="like-nope-duno">
+        <form method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
+          {% csrf_token %}
+          <input type="submit" class="like opt" value="♥" title="like!">
+        </form>
+        <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
+          {% csrf_token %}
+          <input type="submit" class="nope opt" value="❌" title="nope!">
+        </form>
+        {% if next_user.username %}
+          <a href="{% url 'profile_page' next_user.username %}" class="duno opt" title="dunno...">?</a>
+        {% endif %}
+      </div>
+    {% endif %}
   {% endif %}
+
   {% if view_user.username == user.username %}
 
   {% else %}
@@ -87,11 +119,7 @@
 </aside>
 
 <article>
-  {% if is_match %}
-    <div class="match-box">
-      <a href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
-    </div>
-  {% endif %}
+
   <div class="prevnext-user-list">
     <ul>
       {% if prev_user.username %}
@@ -219,6 +247,33 @@
           </tbody>
         </table>
       </div>
+<!--
+      <div class="info">
+        <table>
+          <thead>
+            <tr>
+              <td colspan="2">
+                <a href="https://www.reddit.com/user/{{view_user.username}}/">{{view_user.username}}</a> on Redddate
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Last login:</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Liked by:</td>
+              <td>XY people</td>
+            </tr>
+            <tr>
+              <td>Likes:</td>
+              <td>XY people</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+-->
     </div>
   </div>
   <div>

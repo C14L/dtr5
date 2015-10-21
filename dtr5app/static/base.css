@@ -125,6 +125,14 @@ Buttons on user profile pages for "like", "nope", or "dunno".
 .like-nope-duno .opt.duno {
   background-color: #999;
 }
+.like-nope-duno.small {
+  text-align: right;
+}
+.like-nope-duno.small .opt.nope {
+  width: 28px; height: 28px;
+  font-size: 16px; line-height: 28px;
+  margin: 0 16px;
+}
 
 
 /*
@@ -273,6 +281,67 @@ ul.user-list li span.info a.username {
 ul.user-list li span.info span.asl {
   color: #888;
   display: block;
+}
+
+
+/*
+
+Reddit style action button, made only with CSS.
+
+ */
+.mainbtn {
+  background-color: #FFFFFF;
+  border-radius: 0;
+  border: 1px solid #5F99CF; border-right: 0;
+  cursor: pointer;
+  display: block;
+  font-family: sans-serif;
+  font-size: 19px;
+  font-weight: bold;
+  margin: 0 auto; padding: 8px;
+  overflow: none;
+  position: relative;
+  text-align: center;
+  white-space: nowrap;
+}
+.mainbtn:before {
+  background-color: #FFFFFF;
+  border-radius: 0;
+  border: 1px solid #5F99CF;
+  border-width: 1px 1px 0 0;
+  content: '';
+  display: block;
+  font-size: 0;
+  margin: 0; padding: 0;
+  position: absolute; top: 5px; right: -14px;
+  width: 26px; height: 26px;
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.mainbtn {
+  background: linear-gradient(0deg, #CEE3F8, #FFFFFF);
+  transition: 0.1s ease-out;
+}
+.mainbtn:before {
+  background: linear-gradient(-45deg, #CEE3F8, #FFFFFF);
+  transition: 0.1s ease-out;
+}
+.mainbtn:hover {
+  background: linear-gradient(0deg, #5F99CF, #CEE3F8);
+  color: #FFFFFF;
+  transition: 0.1s ease-out;
+}
+.mainbtn:hover:before {
+  background: linear-gradient(-45deg, #5F99CF, #CEE3F8);
+  transition: 0.1s ease-out;
+}
+.mainbtn {
+  width: 250px;
+}
+.mainbtn:before {
 }
 
 
@@ -562,8 +631,57 @@ body.profile .user-profile ul.pics li .pic img {
 
 body.profile.is-match {
 }
-body.profile.is-match article .match-box {
+
+
+body.profile.is-match .match-box {
+  background-color: #F3F3F3;
+  margin: 0; padding: 24px 16px;
+  overflow: hidden;
 }
+body.profile.is-match .match-box .announce {
+  font-size: 2.5rem; line-height: 1em;
+  font-weight: bold;
+  margin: 0; padding: 16px 0 0 0;
+  text-align: center;
+}
+body.profile.is-match .match-box .announce span {
+  display: inline-block;
+  position: relative;
+}
+body.profile.is-match .match-box .action {
+  padding: 16px;
+  clear: both;
+  text-align: center;
+}
+body.profile.is-match .match-box .action .mainbtn {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+body.profile.is-match .match-box .action .later {
+  color: #888;
+  display: inline-block;
+  padding-top: 16px;
+}
+body.profile.is-match .match-box .uu {
+  text-align: center;
+}
+body.profile.is-match .match-box .uu > div {
+  display: inline-block;
+  height: 200px; max-width: 300px;
+  overflow: hidden;
+}
+body.profile.is-match .match-box .uu > div > img {
+  height: inherit;
+  border: 0;
+}
+body.profile.is-match .match-box .uu > div.u1 {
+  margin-right: 1px;
+}
+body.profile.is-match .match-box .uu > div.u2 {
+  margin-left: 1px;
+}
+
+
 
 /*
 
@@ -669,55 +787,6 @@ body.signup-steps article .abouts {
   font-size: 1rem;
   margin: 0; padding: 0 16px;
 }
-
-body.signup-steps article .overlay .mainbtn {
-  background-color: #FFFFFF;
-  border-radius: 0;
-  border: 1px solid #5F99CF; border-right: 0;
-  cursor: pointer;
-  display: block;
-  font-size: 19px;
-  font-weight: bold;
-  margin: 0 auto; padding: 8px;
-  overflow: none;
-  position: relative;
-  text-align: center;
-  width: 250px;
-}
-body.signup-steps article .overlay .mainbtn:before {
-  background-color: #FFFFFF;
-  border-radius: 0;
-  border: 1px solid #5F99CF;
-  border-width: 1px 1px 0 0;
-  content: '';
-  display: block;
-  margin: 0; padding: 0;
-  position: absolute; top: 5px; right: -14px;
-  width: 26px; height: 26px;
-  -o-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-body.signup-steps article .overlay .mainbtn {
-  background: linear-gradient(0deg, #CEE3F8, #FFFFFF);
-  transition: 0.1s ease-out;
-}
-body.signup-steps article .overlay .mainbtn:before {
-  background: linear-gradient(-45deg, #CEE3F8, #FFFFFF);
-  transition: 0.1s ease-out;
-}
-body.signup-steps article .overlay .mainbtn:hover {
-  background: linear-gradient(0deg, #5F99CF, #CEE3F8);
-  color: #FFFFFF;
-  transition: 0.1s ease-out;
-}
-body.signup-steps article .overlay .mainbtn:hover:before {
-  background: linear-gradient(-45deg, #5F99CF, #CEE3F8);
-  transition: 0.1s ease-out;
-}
-
 
 /*
 
