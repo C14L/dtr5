@@ -1,25 +1,29 @@
 {% extends 'dtr5app/base.html' %}
 
-{% block title %}Matches{% endblock %}
+{% block title %}Nopes{% endblock %}
 
-{% block body_classes %}matches{% endblock %}
+{% block body_classes %}nopes{% endblock %}
 
 {% block main %}
 
 <aside id="sidebar">
   <div class="info">
-    <div class="matches-count">{{user_list|length}} matches</div>
-    <div class="like-nope-count"></div>
+    <p class="nope-count">There are {{user_list|length}} people on your nope list.</p>
+    <form class="mainbtn narrow" method="POST" action="{% url 'me_flag_del_page' %}">
+      {% csrf_token %}
+      <input type="hidden" name="flags" value="nope">
+      <input type="submit" value="clear nope list">
+    </form>
   </div>
 </aside>
 
-<article>
-  <h1>Matches</h1>
+<article class="centered">
+  <h1>Nopes</h1>
   {% if user_list %}
-    <ul class="user-list">
+    <ul class="user-list-vert">
       {% for v in user_list %}
         <li>
-          <a href="{% url 'profile_page' v.username %}" class="pic">
+          <a class="pic" href="{% url 'profile_page' v.username %}">
             <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
           </a>
           <span class="info" title="matched: {{v.matched|timesince}}">
@@ -33,6 +37,8 @@
         </li>
       {% endfor %}
     </ul>
+  {% else %}
+    <div>The list is empty.</div>
   {% endif %}
 </article>
 

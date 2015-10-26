@@ -286,6 +286,47 @@ ul.user-list li span.info span.asl {
 
 /*
 
+Other user list, one user per line.
+
+ */
+ul.user-list-vert {
+  display: block;
+  font-size: 0;
+  list-style: none;
+  margin: 0; padding: 0;
+}
+ul.user-list-vert li {
+  display: block;
+  margin: 0; padding: 8px;
+  overflow: hidden;
+}
+ul.user-list-vert li a.pic {
+  display: block;
+  float: left;
+  width: 250px; height: 150px;
+  text-align: right;
+}
+ul.user-list-vert li a.pic img {
+  border: 0;
+  max-width: 250px; height: 150px;
+}
+ul.user-list-vert li span.info {
+  display: block;
+  font-size: 1rem; line-height: 1.5em;
+  margin: 0; padding: 4px 8px;
+}
+ul.user-list-vert li span.info a.username {
+  display: block;
+  font-size: 1.5rem; line-height: 1em;
+}
+ul.user-list-vert li span.info span.asl {
+  color: #888;
+  display: block;
+}
+
+
+/*
+
 Reddit style action button, made only with CSS.
 
  */
@@ -293,6 +334,7 @@ Reddit style action button, made only with CSS.
   background-color: #FFFFFF;
   border-radius: 0;
   border: 1px solid #5F99CF; border-right: 0;
+  color: #741A92;
   cursor: pointer;
   display: block;
   font-family: sans-serif;
@@ -303,6 +345,13 @@ Reddit style action button, made only with CSS.
   position: relative;
   text-align: center;
   white-space: nowrap;
+  width: 250px;
+}
+.mainbtn.narrow {
+  width: 150px;
+}
+.mainbtn.wide {
+  width: 350px;
 }
 .mainbtn:before {
   background-color: #FFFFFF;
@@ -338,10 +387,14 @@ Reddit style action button, made only with CSS.
   background: linear-gradient(-45deg, #5F99CF, #CEE3F8);
   transition: 0.1s ease-out;
 }
-.mainbtn {
-  width: 250px;
-}
-.mainbtn:before {
+.mainbtn input[type="submit"] {
+  background: 0;
+  border: 0; outline: 0;
+  margin: 0; padding: 2px 0 1px 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: inherit;
 }
 
 
@@ -638,6 +691,13 @@ body.profile.is-match .match-box {
   margin: 0; padding: 24px 16px;
   overflow: hidden;
 }
+body.profile.is-match .match-box .like-nope-duno.small {
+  float: right;
+  background: 0;
+  border: 0;
+  box-shadow: none;
+  margin: 0; padding: 0;
+}
 body.profile.is-match .match-box .announce {
   font-size: 2.5rem; line-height: 1em;
   font-weight: bold;
@@ -755,18 +815,14 @@ body.matches article ul.user-list li form.like-nope-duno .opt.nope {
 Home page signup screen for anonymous users.
 
  */
+body.as-overlay main,
 body.signup-steps main {
   display: block;
   min-height: 100vh; width: 100%;
   background: #FFFFFF url(/static/reddit2.jpg) center center no-repeat;
   background-size: cover;
 }
-body.signup-steps article h1 {
-  font-size: 2.5rem; line-height: 1rem;
-  font-weight: normal;
-  letter-spacing: 0.3rem;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
+body.as-overlay article,
 body.signup-steps article {
   background-color: #FFFFFF;
   border-radius: 5px;
@@ -777,16 +833,26 @@ body.signup-steps article {
   overflow: hidden;
   width: 500px;
 }
+body.as-overlay article h1,
+body.signup-steps article h1 {
+  font-size: 2.5rem; line-height: 1rem;
+  font-weight: normal;
+  letter-spacing: 0.3rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+body.as-overlay article .overlay,
 body.signup-steps article .overlay {
   background-color: #CEE3F8;
   text-align: center;
   margin: 0; padding: 24px;
 }
+body.as-overlay article .abouts,
 body.signup-steps article .abouts {
   display: block;
   font-size: 1rem;
   margin: 0; padding: 0 16px;
 }
+
 
 /*
 

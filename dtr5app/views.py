@@ -6,6 +6,7 @@ from time import time as unixtime
 from datetime import datetime
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse,
@@ -322,11 +323,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
                               context_instance=RequestContext(request))
 
 
-def me_blocked_view(request):
-    return HttpResponse('Yo, them blocked...')
-
-
-def me_flag_del_view(request, flags='like,nope'):
+def me_flag_del_view(request):
     """Delete all listed flags authuser set on other users."""
     if request.method in ['GET', 'HEAD']:
         # Return a "are you sure" page.
@@ -335,7 +332,8 @@ def me_flag_del_view(request, flags='like,nope'):
         return render_to_response(template_name, ctx,
                                   context_instance=RequestContext(request))
     elif request.method in ['POST']:
-        flag_ids = [Flag.FLAG_DICT[x] for x in flags.split(',')]
+        flag_str = request.POST.get('flags', 'like,nope')
+        flag_ids = [Flag.FLAG_DICT[x] for x in flag_str.split(',')]
         q = Flag.objects.filter(flag__in=flag_ids, sender=request.user)
         count = q.count()
         q.delete()
@@ -389,18 +387,26 @@ def me_flag_view(request, action, flag, username):
     return redirect(request.POST.get('next', _next))
 
 
+@login_required
+def me_nope_view(request, template_name='dtr5app/nopes.html'):
+    user_list = User.objects.filter(flags_received__sender=request.user,
+                                    flags_received__flag=Flag.NOPE_FLAG)
+    user_list = add_auth_user_latlng(request.user, user_list)
+    ctx = {'user_list': user_list}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+@login_required
 def matches_view(request, template_name='dtr5app/matches.html'):
     """
     Show a page with all matches (i.e. mututal 'like' flags) of auth
     user and all other users.
     """
-    if not request.user.is_authenticated():
-        return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
     # Get a list user_list ordered by match time, most recent first,
     # including the additional property 'matched' with match timestamp.
     user_list = get_matches_user_list(request.user)
     user_list = add_auth_user_latlng(request.user, user_list)
-
     request.user.profile.matches_count = count_matches(request.user)
     request.user.profile.save()
     ctx = {'user_list': user_list}

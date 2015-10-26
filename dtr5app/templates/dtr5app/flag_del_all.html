@@ -3,7 +3,7 @@
 
 {% block title %}Delete all your likes and nopes{% endblock %}
 
-{% block body_classes %}flag-del-all{% endblock %}
+{% block body_classes %}as-overlay flag-del-all{% endblock %}
 
 {% block head %}{% endblock %}
 
@@ -12,10 +12,13 @@
 <article>
   <div class="overlay">
     <h1>redddate</h1>
-    <form class="mainbtn" method="POST" action="{% url 'me_flag_del_page' %}">
+    <form class="mainbtn wide" method="POST" action="{% url 'me_flag_del_page' %}">
       {% csrf_token %}
       <input type="submit" value="delete all my likes and nopes">
     </form>
+  </div>
+  <div class="abouts">
+    <p>Removes all likes and nopes you chose for other user's profiles, so that you will see all profiles again in your search results.</p>
   </div>
 </article>
 

@@ -26,7 +26,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-LOGIN_URL = '/'
+if DEBUG:
+    CANONICAL_HOST = 'http://localhost:8000'
+else:
+    CANONICAL_HOST = 'http://www.redddate.com'
+
+LOGIN_URL = CANONICAL_HOST + '/'
 
 AUTHENTICATION_BACKENDS = (
     # 'django.contrib.auth.backends.ModelBackend',  # default
@@ -152,3 +157,17 @@ SR_LIMIT = 50
 # Ignore subreddits too small or too large.
 SR_MIN_SUBS = 100
 SR_MAX_SUBS = 5000000
+
+
+# Public settings for Reddit oAuth access.
+OAUTH_REDDIT_REDIRECT_URI = CANONICAL_HOST + "/account/redditcallback/"
+OAUTH_REDDIT_REDIRECT_AUTH_SUCCESS = CANONICAL_HOST + "/me/"
+OAUTH_REDDIT_REDIRECT_AUTH_ERROR = LOGIN_URL
+# Comma-separated list of API access scope with any of:
+# identity edit flair history modconfig modflair modlog
+# modposts modwiki mysubreddits privatemessages read report
+# save submit subscribe vote wikiedit wikiread
+OAUTH_REDDIT_SCOPE = "identity,mysubreddits"
+OAUTH_REDDIT_DURATION = "permanent"  # or "temporary"
+OAUTH_REDDIT_BASE_HEADERS = {
+    "User-Agent": OAUTH_REDDIT_USER_AGENT, "raw_json": "1", }

@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^me/pic/$', views.me_picture_view, name="me_picture_page"),
     url(r'^me/pic/delete$', views.me_pic_del_view, name="me_pic_del_page"),
     url(r'^me/flag/delete$', views.me_flag_del_view, name="me_flag_del_page"),
-    url(r'^me/blocked$', views.me_blocked_view, name="me_blocked_page"),
+    url(r'^me/nopes$', views.me_nope_view, name="me_nope_page"),
 
     url(r'^search/$', views.me_search_view, name="me_search_page"),
     # Show a list of matches (auth user and view user mutual likes).

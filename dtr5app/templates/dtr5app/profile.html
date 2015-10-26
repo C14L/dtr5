@@ -8,6 +8,12 @@
 
 {% if is_match %}
   <div class="match-box">
+    <div class="like-nope-duno small">
+      <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
+        {% csrf_token %}
+        <input type="submit" class="nope opt" value="❌" title="nope!">
+      </form>
+    </div>
     <div class="announce">
       <span>You like each other!</span>
     </div>
@@ -33,12 +39,6 @@
 
   {% else %}
     {% if is_match %}
-      <div class="like-nope-duno small">
-        <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
-          {% csrf_token %}
-          <input type="submit" class="nope opt" value="❌" title="nope!">
-        </form>
-      </div>
     {% else %}
       <div class="like-nope-duno">
         <form method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
