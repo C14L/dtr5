@@ -6,55 +6,69 @@
 
 {% block main %}
 
-{% if is_match %}
+{% if view_user.username != user.username %}
   <div class="match-box">
-    <div class="like-nope-duno small">
-      <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
-        {% csrf_token %}
-        <input type="submit" class="nope opt" value="❌" title="nope!">
-      </form>
-    </div>
-    <div class="announce">
-      <span>You like each other!</span>
-    </div>
-    <div class="uu">
-      <div class="u1">
-        <img src="{{user.profile.pics.0.url}}" alt="{{user.username}}">
-        <span class="username">{{user.username}}</span>
-      </div>
-      <div class="u2">
-        <img src="{{view_user.profile.pics.0.url}}" alt="{{view_user.username}}">
-        <span class="username">{{view_user.username}}</span>
-      </div>
-    </div>
-    <div class="action">
-      <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
-      <a class="later" href="{% url 'me_search_page' %}">Not now</a>
-    </div>
-  </div>
-{% endif %}
-
-<aside id="sidebar">
-  {% if view_user.username == user.username %}
-
-  {% else %}
     {% if is_match %}
-    {% else %}
-      <div class="like-nope-duno">
-        <form method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
-          {% csrf_token %}
-          <input type="submit" class="like opt" value="♥" title="like!">
-        </form>
+
+      <div class="like-nope-duno small">
         <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
           {% csrf_token %}
           <input type="submit" class="nope opt" value="❌" title="nope!">
         </form>
+      </div>
+      <div class="announce">
+        <span>You like each other!</span>
+      </div>
+      <div class="uu">
+        <div class="u1">
+          <img src="{{user.profile.pics.0.url}}" alt="{{user.username}}">
+          <span class="username">{{user.username}}</span>
+        </div>
+        <div class="u2">
+          <img src="{{view_user.profile.pics.0.url}}" alt="{{view_user.username}}">
+          <span class="username">{{view_user.username}}</span>
+        </div>
+      </div>
+      <div class="action">
+        <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
+        <a class="later" href="{% url 'me_search_page' %}">Not now</a>
+      </div>
+
+    {% else %}
+
+      <div class="like-nope-duno">
+        <form class="like-form" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
+          {% csrf_token %}
+          <input type="submit" class="like opt" value="♥" title="like!">
+        </form>
         {% if next_user.username %}
           <a href="{% url 'profile_page' next_user.username %}" class="duno opt" title="dunno...">?</a>
         {% endif %}
+        <form class="nope-form" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
+          {% csrf_token %}
+          <input type="submit" class="nope opt" value="❌" title="nope!">
+        </form>
       </div>
+
     {% endif %}
-  {% endif %}
+  </div>
+{% endif %}
+
+<aside id="sidebar">
+
+  <div class="prevnext-user-list">
+    <ul>
+      {% if prev_user.username %}
+        {# <li class="prev"><a href="{% url 'profile_page' prev_user.username %}">⯇</a></li> #}
+      {% endif %}
+      {% for v in user_list %}
+        <li class="{% if v.username == view_user.username %}curr{% else %}not-curr{% endif %}">{# <span class="info">{{v.username}}, {{v.profile.get_age}} {{v.profile.get_sex_symbol}} {{v.profile.get_distance_in_km|floatformat:"1"}} km away</span> #}<a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.profile.pics.0.url}}" alt="{{v.username}}"></a></li>
+      {% endfor %}
+      {% if next_user.username %}
+        {# <li class="next"><a href="{% url 'profile_page' next_user.username %}">⯈</a></li> #}
+      {% endif %}
+    </ul>
+  </div>
 
   {% if view_user.username == user.username %}
 
@@ -119,26 +133,6 @@
 </aside>
 
 <article>
-
-  <div class="prevnext-user-list">
-    <ul>
-      {% if prev_user.username %}
-        <li class="prev">
-          <a href="{% url 'profile_page' prev_user.username %}">⯇</a>
-        </li>
-      {% endif %}
-      {% for v in user_list %}
-      <li class="{% if v.username == view_user.username %}curr{% else %}not-curr{% endif %}">
-        <span class="info">{{v.username}}, {{v.profile.get_age}} {{v.profile.get_sex_symbol}} {{v.profile.get_distance_in_km|floatformat:"1"}} km away</span><a href="{% url 'profile_page' v.username %}" class="pic"><img src="{{v.profile.pics.0.url}}" alt="{{v.username}}"></a>
-      </li>
-      {% endfor %}
-      {% if next_user.username %}
-        <li class="next">
-          <a href="{% url 'profile_page' next_user.username %}">⯈</a>
-        </li>
-      {% endif %}
-    </ul>
-  </div>
 
   <div class="user-profile">
     <div class="header">
