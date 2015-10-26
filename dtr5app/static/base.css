@@ -387,6 +387,24 @@ Reddit style action button, made only with CSS.
   background: linear-gradient(-45deg, #5F99CF, #CEE3F8);
   transition: 0.1s ease-out;
 }
+.mainbtn.warning {
+  color: #C00000;
+  border-color: #C00000;
+  transition: 0.2s ease-out;
+}
+.mainbtn.warning:before {
+  border-color: #C00000;
+  transition: 0.2s ease-out;
+}
+.mainbtn.warning:hover {
+  background: #C00000;
+  color: #FFFFFF;
+  transition: 0.2s ease-out;
+}
+.mainbtn.warning:hover:before {
+  background: #C00000;
+  transition: 0.2s ease-out;
+}
 .mainbtn input[type="submit"] {
   background: 0;
   border: 0; outline: 0;

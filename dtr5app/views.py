@@ -66,6 +66,31 @@ def me_view(request, template_name="dtr5app/me.html"):
                               context_instance=RequestContext(request))
 
 
+@login_required
+@require_http_methods(["GET", "HEAD", "POST"])
+def me_account_del_view(request, template_name="dtr5app/account_del.html"):
+    if request.method in ["POST"]:
+        #
+        # TODO: delete all account data.
+        #
+
+        # request.user.profile.reset_all()
+        # request.user.subs.all().delete()
+        # request.user.flags_sent.all().delete()
+        # request.user.date_joined = None
+        # request.user.last_active = None
+        # request.user.is_active = False
+        # request.user.save()
+
+        # api.delete_token(request)
+        txt = 'All account data was deleted and you logged out.'
+        messages.success(request, txt)
+        return redirect(request.POST.get('next', settings.LOGIN_URL))
+    ctx = {}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
 @require_http_methods(["POST"])
 def me_update_view(request):
     """
@@ -323,6 +348,8 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
                               context_instance=RequestContext(request))
 
 
+@login_required
+@require_http_methods(["POST", "GET", "HEAD"])
 def me_flag_del_view(request):
     """Delete all listed flags authuser set on other users."""
     if request.method in ['GET', 'HEAD']:
@@ -344,6 +371,8 @@ def me_flag_del_view(request):
         return redirect(reverse('me_page'))
 
 
+@login_required
+@require_http_methods(["POST", "GET", "HEAD"])
 def me_flag_view(request, action, flag, username):
     """
     Let auth user set a flag for their relation to view user. Then
@@ -388,6 +417,7 @@ def me_flag_view(request, action, flag, username):
 
 
 @login_required
+@require_http_methods(["GET", "HEAD"])
 def me_nope_view(request, template_name='dtr5app/nopes.html'):
     user_list = User.objects.filter(flags_received__sender=request.user,
                                     flags_received__flag=Flag.NOPE_FLAG)
@@ -398,6 +428,7 @@ def me_nope_view(request, template_name='dtr5app/nopes.html'):
 
 
 @login_required
+@require_http_methods(["GET", "HEAD"])
 def matches_view(request, template_name='dtr5app/matches.html'):
     """
     Show a page with all matches (i.e. mututal 'like' flags) of auth

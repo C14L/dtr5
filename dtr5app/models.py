@@ -185,6 +185,43 @@ class Profile(models.Model):
             Q(sender=self.user, receiver=view_user) |
             Q(receiver=self.user, sender=view_user)).count() == 2)
 
+    def reset_all(self):
+        # TODO: find generic method to do this, using each field's default.
+        self.created = None
+        self.updated = None
+        self.link_karma = 0
+        self.comment_karma = 0
+        self.over_18 = False
+        self.hide_from_robots = True
+        self.has_verified_email = False
+        self.gold_creddits = False
+        self.lat = 0.0
+        self.lng = 0.0
+        self.dob = None
+        self.sex = 0
+        self.about = ''
+        self.pics_str = ''
+        self.views_count = 0
+        self.matches_count = 0
+        self.like_sent_count = 0
+        self.like_recv_count = 0
+        self.nope_sent_count = 0
+        self.nope_recv_count = 0
+        self.block_sent_count = 0
+        self.block_recv_count = 0
+        self.f_sex = 0
+        self.f_distance = 0
+        self.f_minage = 18
+        self.f_maxage = 100
+        self.f_over_18 = True
+        self.f_has_verified_email = False
+        self.x_match_search_options = False
+        self.x_only_no_over_18 = False
+        self.x_has_verified_email = False
+        self.x_min_account_age_days = 2
+        self.x_min_comment_karma = 50
+        self.x_min_link_karma = 0
+
 
 class Flag(models.Model):
     """Store relations between users, such as 'like', 'block', etc."""

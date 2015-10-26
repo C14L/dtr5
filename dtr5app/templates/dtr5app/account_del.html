@@ -1,0 +1,27 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}Delete your account{% endblock %}
+
+{% block body_classes %}as-overlay account-del-all{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block main %}
+
+<article>
+  <div class="overlay">
+    <h1>redddate</h1>
+    <form class="mainbtn warning" method="POST" action="{% url 'me_account_del_page' %}">
+      {% csrf_token %}
+      <input type="submit" value="delete your account">
+    </form>
+  </div>
+  <div class="abouts">
+    <p><strong>WARNING: can NOT be undone!</strong></p>
+    <p>Delete all your likes, pictures, profile data, geolocation, etc.</p>
+    <p>Does NOT touch anything on your reddit account, of course.</p>
+  </div>
+</article>
+
+{% endblock %}
