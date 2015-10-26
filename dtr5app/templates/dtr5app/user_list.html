@@ -1,0 +1,26 @@
+{% if user_list %}
+  <ul class="user-list-vert">
+    {% for v in user_list %}
+      <li>
+        <a class="pic" href="{% url 'profile_page' v.username %}">
+          <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
+        </a>
+        <span class="info">
+          <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
+          <span class="asl">
+            {{v.profile.get_age}}
+            {{v.profile.get_sex_symbol}}
+            {{v.profile.get_distance_in_km|floatformat:"1"}} km away
+          </span>
+          {% if v.matched %}
+            <span class="matched">
+              matched {{v.matched|timesince}} ago
+            </span>
+          {% endif %}
+        </span>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div>The list is empty.</div>
+{% endif %}

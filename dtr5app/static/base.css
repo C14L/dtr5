@@ -303,12 +303,15 @@ ul.user-list-vert li {
 ul.user-list-vert li a.pic {
   display: block;
   float: left;
-  width: 250px; height: 150px;
+  margin: 0 16px 0 0; padding: 0;
   text-align: right;
+  width: 300px; height: 150px;
 }
 ul.user-list-vert li a.pic img {
+  background-color: #F3F3F3;
   border: 0;
-  max-width: 250px; height: 150px;
+  min-width: 100px; max-width: 250px; height: 150px;
+  overflow: hidden;
 }
 ul.user-list-vert li span.info {
   display: block;

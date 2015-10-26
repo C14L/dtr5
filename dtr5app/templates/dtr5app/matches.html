@@ -15,25 +15,7 @@
 
 <article>
   <h1>Matches</h1>
-  {% if user_list %}
-    <ul class="user-list">
-      {% for v in user_list %}
-        <li>
-          <a href="{% url 'profile_page' v.username %}" class="pic">
-            <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
-          </a>
-          <span class="info" title="matched: {{v.matched|timesince}}">
-            <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
-            <span class="asl">
-              {{v.profile.get_age}}
-              {{v.profile.get_sex_symbol}}
-              {{v.profile.get_distance_in_km|floatformat:"1"}} km away
-            </span>
-          </span>
-        </li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+  {% include 'dtr5app/user_list.html' %}
 </article>
 
 {% endblock %}
