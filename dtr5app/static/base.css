@@ -90,7 +90,6 @@ Buttons on user profile pages for "like", "nope", or "dunno".
   background-color: #F3F3F3;
   display: block;
   margin: 0; padding: 24px 16px;
-  overflow: hidden;
   text-align: center;
 }
 .like-nope-duno .opt {
@@ -131,13 +130,11 @@ Buttons on user profile pages for "like", "nope", or "dunno".
   width: 48px; height: 48px;
   font-size: 40px; line-height: 48px;
 }
-.like-nope-duno.small {
-  text-align: right;
-}
+.like-nope-duno.small .opt.like,
 .like-nope-duno.small .opt.nope {
   width: 28px; height: 28px;
   font-size: 16px; line-height: 28px;
-  margin: 0 16px;
+  margin: 0 16px; padding: 0;
 }
 
 
