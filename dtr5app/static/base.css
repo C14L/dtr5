@@ -348,12 +348,12 @@ Reddit style action button, made only with CSS.
   font-family: sans-serif;
   font-size: 19px;
   font-weight: bold;
-  margin: 0 auto; padding: 8px;
+  margin: 0 auto; padding: 11px 0;
   overflow: none;
   position: relative;
   text-align: center;
   white-space: nowrap;
-  width: 250px;
+  width: 250px; height: 39px; box-sizing: border-box;
 }
 .mainbtn.narrow {
   width: 150px;
