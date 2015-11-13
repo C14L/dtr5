@@ -64,8 +64,9 @@ def force_float(x):
 
 def set_imgur_url(url="http://i.imgur.com/wPqDiEy.jpg", size='t'):
     """
-    Gets a imgur picture URL (e.g. "http://i.imgur.com/wPqDiEyl.jpg")
-    and changes the size byte to 'size':
+    Get a imgur URL, either a picture ("http://i.imgur.com/wPqDiEy.jpg")
+    of an embed link ("http://imgur.com/wPqDiEy"). Return the direct picture
+    link for the given dimensions by setting the "size" byte:
       - "s" small rectangular
       - "t" thumb
       - "m" medium
@@ -75,14 +76,20 @@ def set_imgur_url(url="http://i.imgur.com/wPqDiEy.jpg", size='t'):
     If 'url' is not a valid imgur.com URL, the value is returned
     unchanged.
     """
-    re_imgur_url = (r'(?P<base>https?://i.imgur.com/)'
-                    r'(?P<name>[a-zA-Z0-9]{2,20}?)'
-                    r'(?P<size>[stml]?)\.'
-                    r'(?P<ext>jpe?g|gif|png|webp)')
-    m = re.search(re_imgur_url, url)
+
+    # try with imgur embed link
+    m = re.search(r'https?://imgur.com/'
+                  r'(?P<name>[a-zA-Z0-9]{2,20}?)[stml]?', url)
     if m:
-        url = '{}{}{}.{}'.format(m.group('base'), m.group('name'),
-                                 size, m.group('ext'))
+        return '//i.imgur.com/{}{}.jpg'.format(m.group('name'), size)
+
+    # try with direct picture link
+    m = re.search(r'https?://i.imgur.com/(?P<name>[a-zA-Z0-9]{2,20}?)'
+                  r'[stml]?\.(?P<ext>jpe?g|gif|png|webp)', url)
+    if m:
+        return '//i.imgur.com/{}{}.{}'.format(m.group('name'), size,
+                                              m.group('ext'))
+    # otherwise, return the URL unchanged
     return url
 
 
@@ -91,14 +98,10 @@ def get_imgur_page_from_picture_url(url):
     Returns the URL of the containing page for a picture URL
     on imgur.com
     """
-    re_imgur_url = (r'(?P<base>https?://i.imgur.com/)'
-                    r'(?P<name>[a-zA-Z0-9]{2,20})'
-                    r'(?P<size>[stml]?)\.'
-                    r'(?P<ext>jpe?g|gif|png|webp)')
-    m = re.search(re_imgur_url, url)
+    m = re.search(r'https?://i.imgur.com/(?P<name>[a-zA-Z0-9]{2,20})'
+                  r'[stml]?\.(?P<ext>jpe?g|gif|png|webp)', url)
     if m:
-        base = m.group('base').replace('i.', '')
-        return '{}{}'.format(base, m.group('name'))
+        return 'https://imgur.com/{}'.format(m.group('name'))
     else:
         return ''
 
