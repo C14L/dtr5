@@ -10,12 +10,6 @@
   <div class="match-box">
     {% if is_match %}
 
-      <div class="like-nope-duno small">
-        <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
-          {% csrf_token %}
-          <input type="submit" class="nope opt" value="❌" title="nope!">
-        </form>
-      </div>
       <div class="announce">
         <span>You like each other!</span>
       </div>
@@ -32,6 +26,12 @@
       <div class="action">
         <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
         <a class="later" href="{% url 'me_search_page' %}">Not now</a>
+      </div>
+      <div class="like-nope-duno small">
+        <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
+          {% csrf_token %}
+          <input type="submit" class="nope opt" value="❌" title="nope!">
+        </form>
       </div>
 
     {% else %}

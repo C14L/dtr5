@@ -1,0 +1,25 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}all done, welcome to redddate!{% endblock %}
+
+{% block body_classes %}signup-steps step-7 step-all-done{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block main %}
+
+{% include 'dtr5app/step_progress.html' %}
+
+<article>
+  <div class="overlay">
+    <h1>all done</h1>
+    <a class="mainbtn" href="{% url 'me_search_page' %}">see matches</a>
+  </div>
+  <div class="abouts">
+    <p>Flip through matching profiles and "like" or "nope" them. If they like you back, they will appear in your "matches".</p>
+    <p><u>Preferences:</u> to change you search, add stuff to your profile, link up to ten pictures, etc.</p>
+  </div>
+</article>
+
+{% endblock %}

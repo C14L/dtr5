@@ -132,6 +132,8 @@ Buttons on user profile pages for "like", "nope", or "dunno".
 }
 .like-nope-duno.small .opt.like,
 .like-nope-duno.small .opt.nope {
+  min-width: auto; max-width: auto;
+  min-height: auto; max-height: auto;
   width: 28px; height: 28px;
   font-size: 16px; line-height: 28px;
   margin: 0 16px; padding: 0;
@@ -710,9 +712,10 @@ body.profile .user-profile ul.pics li .pic img {
 body.profile.is-match {
 }
 
+/* the big "you like each other" box when authuser views a profile they "liked" */
 
 body.profile.is-match .match-box {
-  background-color: #F3F3F3;
+  background-color: #CC0000;
   margin: 0; padding: 24px 16px;
   overflow: hidden;
 }
@@ -726,12 +729,14 @@ body.profile.is-match .match-box .like-nope-duno.small {
 body.profile.is-match .match-box .announce {
   font-size: 2.5rem; line-height: 1em;
   font-weight: bold;
-  margin: 0; padding: 16px 0 0 0;
+  margin: 0 0 24px 0; padding: 0;
   text-align: center;
 }
 body.profile.is-match .match-box .announce span {
   display: inline-block;
   position: relative;
+  color: #FFFFFF;
+  text-shadow: 2px 2px 2px rgba(0,0,0,0.6);
 }
 body.profile.is-match .match-box .action {
   padding: 16px;
@@ -743,27 +748,41 @@ body.profile.is-match .match-box .action .mainbtn {
   padding-bottom: 10px;
 }
 body.profile.is-match .match-box .action .later {
-  color: #888;
+  color: rgba(255,255,255,0.3);
   display: inline-block;
   padding-top: 16px;
+  transition: 0.3s ease-out;
+}
+body.profile.is-match .match-box .action .later:hover {
+  color: rgba(255,255,255,0.8);
+  transition: 0.3s ease-out;
 }
 body.profile.is-match .match-box .uu {
+  display: block;
   text-align: center;
 }
 body.profile.is-match .match-box .uu > div {
+  color: rgba(255,255,255,0.6);
   display: inline-block;
-  height: 200px; max-width: 300px;
-  overflow: hidden;
+  font-size: 0.8rem;
+  max-width: 300px;
+  vertical-align: middle;
+}
+body.profile.is-match .match-box .uu > div > span.username {
+  display: block;
 }
 body.profile.is-match .match-box .uu > div > img {
-  height: inherit;
-  border: 0;
+  border: 10px solid #FFFFFF;
+  box-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+  display: block;
+  height: 200px;
+  margin: 0; padding: 0;
 }
 body.profile.is-match .match-box .uu > div.u1 {
-  margin-right: 1px;
+  margin-right: 8px;
 }
 body.profile.is-match .match-box .uu > div.u2 {
-  margin-left: 1px;
+  margin-left: 8px;
 }
 
 

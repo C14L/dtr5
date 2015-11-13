@@ -229,9 +229,10 @@ def me_picture_view(request):
     # Check for HTTP 200 response on that URL, load time,
     # file size, file type, etc.
     try:
-        r = requests.head(pic_url, timeout=3)  # 3 sec timeout
+        r = requests.head(pic_url, timeout=5)  # ? sec timeout
     except:
-        return HttpResponse('The image is loading too slowly.')
+        return HttpResponse(
+            'The image {} is loading too slowly.'.format(pic_url))
     if r.status_code != 200:
         return HttpResponse('The image "{}"" can not be accessed, it returned '
                             'HTTP status code "{}".'.
