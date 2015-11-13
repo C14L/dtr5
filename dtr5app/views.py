@@ -62,6 +62,9 @@ def me_view(request, template_name="dtr5app/me.html"):
     if not (request.user.profile.f_distance):
         return render_to_response('dtr5app/step_6.html', ctx,
                                   context_instance=RequestContext(request))
+    if (request.GET.get('done', 0) == '1'):
+        return render_to_response('dtr5app/step_7.html', ctx,
+                                  context_instance=RequestContext(request))
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
