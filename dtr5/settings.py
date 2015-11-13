@@ -152,12 +152,13 @@ SEX_SYMBOL = (  # ♀♂⚥⚢⚣⚤⚪★☆⮕♥
 SEARCH_RESULTS_BUFFER_SIZE = 100
 LINKS_IN_PROFILE_HEADER = 5
 RESULTS_BUFFER_LEN = 20 if DEBUG else 1000
-# How many subreddits to use at a time to find matches.
-SR_LIMIT = 50
 # Ignore subreddits too small or too large.
 SR_MIN_SUBS = 100
 SR_MAX_SUBS = 5000000
-
+# How many subreddits to use at a time to find matches.
+SR_LIMIT = 50
+# How many favorite subreddits can a user select.
+SR_FAVS_COUNT_MAX = 10
 
 # Public settings for Reddit oAuth access.
 OAUTH_REDDIT_REDIRECT_URI = CANONICAL_HOST + "/account/redditcallback/"

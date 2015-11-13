@@ -168,12 +168,16 @@ def me_favsr_view(request):
     subreddits.
     """
     sr_id_li = [x[3:] for x in request.POST.keys() if x.startswith('id_')]
+    if len(sr_id_li) > settings.SR_FAVS_COUNT_MAX:
+        sr_id_li = sr_id_li[:settings.SR_FAVS_COUNT_MAX]  # limit nr of favs
+        messages.warning(request, 'There is a maximum of {} favorites '
+                         'subreddits.'.format(settings.SR_FAVS_COUNT_MAX))
     sr_li = Subscribed.objects.filter(user=request.user)
     sr_li.update(is_favorite=False)  # delete all favorites of user
     sr_li = Subscribed.objects.filter(user=request.user, sr__in=sr_id_li)
     if sr_li:
         sr_li.update(is_favorite=True)  # and set favorite on the subset
-        messages.success(request, 'Favorite subreddits updated.')
+        # messages.success(request, 'Favorite subreddits updated.')
     return redirect(reverse('me_page'))
 
 
