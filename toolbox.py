@@ -76,19 +76,20 @@ def set_imgur_url(url="http://i.imgur.com/wPqDiEy.jpg", size='t'):
     If 'url' is not a valid imgur.com URL, the value is returned
     unchanged.
     """
+    base = 'https://i.imgur.com/'
 
     # try with imgur embed link
-    m = re.search(r'https?://imgur.com/'
-                  r'(?P<name>[a-zA-Z0-9]{2,20}?)[stml]?', url)
+    m = re.search(r'^https?://imgur.com/'
+                  r'(?P<name>[a-zA-Z0-9]{2,20}?)[stml]?$', url)
     if m:
-        return '//i.imgur.com/{}{}.jpg'.format(m.group('name'), size)
+        return '{}{}{}.jpg'.format(base, m.group('name'), size)
 
     # try with direct picture link
-    m = re.search(r'https?://i.imgur.com/(?P<name>[a-zA-Z0-9]{2,20}?)'
-                  r'[stml]?\.(?P<ext>jpe?g|gif|png|webp)', url)
+    m = re.search(r'^https?://i.imgur.com/(?P<name>[a-zA-Z0-9]{2,20}?)'
+                  r'[stml]?\.(?P<ext>jpe?g|gif|png|webp)$', url)
     if m:
-        return '//i.imgur.com/{}{}.{}'.format(m.group('name'), size,
-                                              m.group('ext'))
+        return '{}{}{}.{}'.format(base, m.group('name'), size, m.group('ext'))
+
     # otherwise, return the URL unchanged
     return url
 
@@ -98,8 +99,8 @@ def get_imgur_page_from_picture_url(url):
     Returns the URL of the containing page for a picture URL
     on imgur.com
     """
-    m = re.search(r'https?://i.imgur.com/(?P<name>[a-zA-Z0-9]{2,20})'
-                  r'[stml]?\.(?P<ext>jpe?g|gif|png|webp)', url)
+    m = re.search(r'^https?://i.imgur.com/(?P<name>[a-zA-Z0-9]{2,20})'
+                  r'[stml]?\.(?P<ext>jpe?g|gif|png|webp)$', url)
     if m:
         return 'https://imgur.com/{}'.format(m.group('name'))
     else:
