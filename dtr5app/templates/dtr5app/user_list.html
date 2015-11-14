@@ -13,9 +13,8 @@
             {{v.profile.get_distance_in_km|floatformat:"1"}} km away
           </span>
           {% if v.matched %}
-            <span class="matched">
-              matched {{v.matched|timesince}} ago
-            </span>
+            <span class="matched">matched {{v.matched|timesince}} ago</span>
+            <a class="mainbtn" style="margin-top: 16px; margin-left: 308px;" href="https://www.reddit.com/message/compose/?to={{v.username}}">send message</a>
           {% endif %}
         </span>
       </li>

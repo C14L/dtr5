@@ -16,7 +16,7 @@
     <h1>link your photo</h1>
     <form method="POST" action="{% url 'me_picture_page' %}">
       {% csrf_token %}
-      <input type="text" name="pic_url" value="" placeholder="http://i.imgur.com/????????.jpg">
+      <input type="text" name="pic_url" value="" placeholder="http://imgur.com/?????">
       <input type="submit">
     </form>
   </div>
