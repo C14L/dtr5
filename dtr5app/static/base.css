@@ -406,34 +406,36 @@ The list of settings options on the "preferences" page.
   border: 1px solid rgba(0,0,0,0.1);
   margin: 16px 0; padding: 16px;
 }
-.settings-section > p {
+.settings-section > h2 {
+  font-size: 1.5rem; line-height: 1em;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
   font-weight: bold;
-  margin: 0; padding: 8px;
+  margin: 0 -16px 16px -16px; padding: 0 16px 16px 16px;
+}
+.settings-section form {
+  margin: 0; padding: 0;
 }
 .settings-section .item {
-  margin: 0; padding: 8px;
+  margin: 0; padding: 0;
 }
 .settings-section .item > span {
   margin-left: 4px;
 }
-.settings-section .item.manual {
-  display: block;
-  margin: 0; padding: 24px 0;
+.settings-section.section-profile > div.item:not(:first-child) {
+  border-top: 1px solid rgba(0,0,0,0.12);
+  margin: 0 -16px 0 -16px; padding: 16px;
 }
-.settings-section .item.manual > label {
-  margin: 0; padding: 8px;
-  border-right: 1px solid #888;
+.settings-section.section-about textarea {
+  width: 400px; height: 100px;
+  resize: both;
 }
-.settings-section .item.manual > label:last-child {
-  border-right: 0;
-}
-.settings-section .item.pics-preview {
+.settings-section.section-pics .item.pics-preview {
   font-size: 0; /* remove vertical gap between pics */
 }
-.settings-section .item.pics-form input[type="text"] {
+.settings-section.section-pics .item.pics-form input[type="text"] {
   width: 300px;
 }
-.settings-section .item.pics-preview > .pic {
+.settings-section.section-pics .item.pics-preview > .pic {
   background-color: #CCC;
   display: inline-block;
   margin: 1px; padding: 0;
@@ -442,17 +444,17 @@ The list of settings options on the "preferences" page.
   position: relative;
   vertical-align: middle; /* remove horizontal gap between pics */
 }
-.settings-section .item.pics-preview > .pic > img {
+.settings-section.section-pics .item.pics-preview > .pic > img {
   max-width: 300px; height: inherit;
   border: 0;
 }
-.settings-section .item.pics-preview > .pic > form > input[type="submit"] {
+.settings-section.section-pics .item.pics-preview > .pic > form > input[type="submit"] {
   cursor: pointer;
   opacity: 0.1;
   position: absolute; top: 10px; right: 10px;
   transition: 0.3s ease-out;
 }
-.settings-section .item.pics-preview > .pic:hover > form > input[type="submit"] {
+.settings-section.section-pics .item.pics-preview > .pic:hover > form > input[type="submit"] {
   opacity: 1;
   transition: 0.3s ease-out;
 }
