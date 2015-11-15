@@ -23,7 +23,7 @@ from .utils import (update_list_of_subscribed_subreddits,
                     get_prevnext_user,
                     add_auth_user_latlng,
                     get_matches_user_list, count_matches)
-from .utils_search import search_results_buffer
+from .utils_search import search_results_buffer, search_subreddit_users
 
 logger = logging.getLogger(__name__)
 
@@ -314,13 +314,17 @@ def me_search_view(request):
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """Display a list of users who are subscribed to a subreddit."""
     view_sr = get_object_or_404(Sr, display_name=sr)
-    user_list = User.objects.filter(subs__sr=view_sr)[:100]\
-                    .prefetch_related('profile', 'subs')
+    # fetch sr users geographically closest to auth user. then paginate and
+    # only display some 15 or so per page.
+    user_list = search_subreddit_users(request, view_sr)
+    user_list = user_list[:100].prefetch_related('profile', 'subs')
     user_list = add_auth_user_latlng(request.user, user_list)
+    #
+    # TODO: instead of auth user's subs, better fetch the 30 subs most of the
+    #       users of this sr are subscribed to. that would be "the most
+    #       relevant/related subreddits" to the one displayed.
+    #
     user_subs_all = request.user.subs.all().prefetch_related('sr')
-    #
-    # ... TODO
-    #
     ctx = {'view_sr': view_sr,
            'user_list': user_list,
            'user_subs_all': user_subs_all}

@@ -11,18 +11,28 @@ from toolbox import (to_iso8601,
 from .models import (Sr)  #, Subscribed, Flag)
 
 
+def search_subreddit_users(request, sr):
+    """
+    fetch users subscribed to this subreddit [TODO: ordered by geographic
+    proximity to auth user]. return a queryset that can be paginated.
+    """
+    return search_users_by_options_queryset(request).filter(subs__sr=sr)
+
+
 def get_blocked_usernames_list():
     """Return a list of usernames blocked by admin."""
     return []
 
 
-def get_username_list_for_search_options_only(request):
+def search_users_by_options_queryset(request, include_flagged=False):
     """
-    Return a list of usernames that are matches for auth user's
-    selected search options.
-    """
-    BUFFER_LEN = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
+    return a User queryset that filters by search opetions and some other
+    basic filters like blocked usernames, etc.
 
+    include_flagged (bool) default False
+        show users be included that were already flagged (like, nope, etc)
+        by auth user?
+    """
     # 1
     li = User.objects.all()
     # 2 search option: sex
@@ -50,12 +60,23 @@ def get_username_list_for_search_options_only(request):
     # 5 exclude auth user themself.
     li = li.exclude(pk=request.user.pk)
     # 6 are not already flagged by auth user ('like', 'nope', 'block')
-    li = li.exclude(flags_received__sender=request.user)
+    if not include_flagged:
+        li = li.exclude(flags_received__sender=request.user)
     # 7 are not blocked by admin via username blocklist,
     li = li.exclude(username__in=get_blocked_usernames_list())
     # 8 have at least one picture URL,
     li = li.exclude(profile__pics_str='"[]"')
-    # get all usernames that match search options
+
+    return li
+
+
+def get_username_list_for_search_options_only(request):
+    """
+    Return a list of usernames that are matches for auth user's
+    selected search options.
+    """
+    BUFFER_LEN = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
+    li = search_users_by_options_queryset(request)
     return list(li[:BUFFER_LEN].values_list('username', flat=True))
 
 
