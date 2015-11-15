@@ -6,8 +6,9 @@ border-bottom: 1px solid #5F99CF;
 */
 
 body {
-  margin: 0; padding: 0;
+  background-color: #F3F3F3;
   font: normal 16px/16px arial,verdana,helvetica,sans-serif;
+  margin: 0; padding: 0;
 }
 a {
   text-decoration: none;
@@ -87,7 +88,6 @@ Buttons on user profile pages for "like", "nope", or "dunno".
 
  */
 .like-nope-duno {
-  background-color: #F3F3F3;
   display: block;
   margin: 0; padding: 24px 16px;
   text-align: center;
@@ -99,7 +99,7 @@ Buttons on user profile pages for "like", "nope", or "dunno".
   box-shadow: inset 0 5px 10px 5px rgba(255,255,255,0.3),
               inset 0 -5px 10px 5px rgba(0,0,0,0.1),
               1px 2px 3px rgba(0,0,0,0.3);
-  color: #FFF;
+  color: white;
   cursor: pointer;
   display: inline-block;
   font-size: 64px; line-height: 80px;
@@ -123,10 +123,10 @@ Buttons on user profile pages for "like", "nope", or "dunno".
   background-color: #FF0000;
 }
 .like-nope-duno .opt.nope {
-  background-color: #111;
+  background-color: #111111;
 }
 .like-nope-duno .opt.duno {
-  background-color: #999;
+  background-color: #999999;
   width: 48px; height: 48px;
   font-size: 40px; line-height: 48px;
 }
@@ -151,11 +151,6 @@ Small box with picture links to more user profiles.
   overflow: hidden;
 }
 .prevnext-user-list > ul {
-  /*
-  background-color: #CEE3F8;
-  border: 1px solid #5F99CF;
-  border-radius: 5px;
-  */
   display: block;
   font-size: 0;
   list-style: none;
@@ -171,60 +166,32 @@ Small box with picture links to more user profiles.
   vertical-align: middle;
   position: relative;
 }
-.prevnext-user-list > ul > li .info {
-  opacity: 0;
-  background-color: #FFFFFF;
-  border-radius: 5px 5px 5px 0;
-  border: 1px solid #5F99CF;
-  color: #111;
-  font-size: 1rem;
-  margin: 0; padding: 2px;
-  position: absolute; top: -10px; left: 15px;
-  transition: 0.5s ease-out;
-  z-index: 999;
-}
-.prevnext-user-list > ul > li:hover .info {
-  opacity: 0.8;
-  transition: 0.5s ease-out;
-}
-.prevnext-user-list > ul > li a {
+.prevnext-user-list > ul > li > a {
   display: block;
   height: inherit; width: inherit;
   overflow: hidden;
   position: relative;
 }
-.prevnext-user-list > ul > li:first-child a {
-}
-.prevnext-user-list > ul > li:last-child a {
-}
-.prevnext-user-list > ul > li a.pic img {
+.prevnext-user-list > ul > li > a > img {
   border: 0;
   height: inherit; width: inherit;
-}
-.prevnext-user-list > ul > li a.nopic {
+  opacity: 0.2;
+  transform: scale(0.6);
 }
 .prevnext-user-list > ul > li.curr {
-  border-color: #F99;
+  border-color: rgba(0,0,0,0.3);
 }
-.prevnext-user-list > ul > li:not(.curr) a img {
-  opacity: 0.2;
+.prevnext-user-list > ul > li.curr > a > img {
+  opacity: 1;
+  transform: scale(1);
+}
+.prevnext-user-list > ul > li.curr + li > a > img {
+  opacity: 0.5;
   transform: scale(0.8);
 }
-.prevnext-user-list > ul > li.prev,
-.prevnext-user-list > ul > li.next {
-  height: 50px; width: 50px;
-}
-.prevnext-user-list > ul > li.prev a,
-.prevnext-user-list > ul > li.next a {
-  background-color: #FF0000;
-  color: #FFFFFF;
-  display: block;
-  font-size: 1.5rem; line-height: 30px;
-  margin: 10px; padding: 0;
-  text-align: center;
-  width: 30px; height: 30px;
-}
 
+.prevnext-user-list > ul > li:not(.curr) > a > img {
+}
 
 /*
 
@@ -434,38 +401,39 @@ Reddit style action button, made only with CSS.
 The list of settings options on the "preferences" page.
 
  */
-.settings-btns {
-  background-color: #F3F3F3;
-  margin: 0 0 16px 0; padding: 8px 16px;
+.settings-section {
+  background-color: white;
+  border: 1px solid rgba(0,0,0,0.1);
+  margin: 16px 0; padding: 16px;
 }
-.settings-btns > p {
+.settings-section > p {
   font-weight: bold;
   margin: 0; padding: 8px;
 }
-.settings-btns .item {
+.settings-section .item {
   margin: 0; padding: 8px;
 }
-.settings-btns .item > span {
+.settings-section .item > span {
   margin-left: 4px;
 }
-.settings-btns .item.manual {
+.settings-section .item.manual {
   display: block;
   margin: 0; padding: 24px 0;
 }
-.settings-btns .item.manual > label {
+.settings-section .item.manual > label {
   margin: 0; padding: 8px;
   border-right: 1px solid #888;
 }
-.settings-btns .item.manual > label:last-child {
+.settings-section .item.manual > label:last-child {
   border-right: 0;
 }
-.settings-btns .item.pics-preview {
+.settings-section .item.pics-preview {
   font-size: 0; /* remove vertical gap between pics */
 }
-.settings-btns .item.pics-form input[type="text"] {
+.settings-section .item.pics-form input[type="text"] {
   width: 300px;
 }
-.settings-btns .item.pics-preview > .pic {
+.settings-section .item.pics-preview > .pic {
   background-color: #CCC;
   display: inline-block;
   margin: 1px; padding: 0;
@@ -474,17 +442,17 @@ The list of settings options on the "preferences" page.
   position: relative;
   vertical-align: middle; /* remove horizontal gap between pics */
 }
-.settings-btns .item.pics-preview > .pic > img {
+.settings-section .item.pics-preview > .pic > img {
   max-width: 300px; height: inherit;
   border: 0;
 }
-.settings-btns .item.pics-preview > .pic > form > input[type="submit"] {
+.settings-section .item.pics-preview > .pic > form > input[type="submit"] {
   cursor: pointer;
   opacity: 0.1;
   position: absolute; top: 10px; right: 10px;
   transition: 0.3s ease-out;
 }
-.settings-btns .item.pics-preview > .pic:hover > form > input[type="submit"] {
+.settings-section .item.pics-preview > .pic:hover > form > input[type="submit"] {
   opacity: 1;
   transition: 0.3s ease-out;
 }
@@ -496,28 +464,51 @@ Site header.
 
  */
 header {
-  background-color: #CEE3F8;
+  background-color: #003B6F; /* reddit default color: #CEE3F8; */
   border-bottom: 1px solid #5F99CF;
-  margin: 0; padding: 8px 16px;
+  margin: 0; padding: 0;
   overflow: hidden;
 }
 .site-logo {
+  color: white;
   float: left;
-  font-size: 2.5rem; line-height: 2rem;
-  font-weight: normal;
-  letter-spacing: 0.3rem;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  margin: 0; padding: 0;
+}
+.site-logo > a.site-icon > img {
+  border: 0;
+  height: 3rem;
+  margin: 0; padding: 4px 8px;
+  vertical-align: middle;
 }
 .site-logo > a.site-name {
   color: inherit; text-decoration: inherit;
+  font-size: 2.5rem; line-height: 3rem;
+  font-weight: normal;
+  letter-spacing: 0.3rem;
+  text-shadow: 0 0 2px rgba(0,0,0,0.3);
+  vertical-align: middle;
 }
 .site-links {
-  background-color: #FFF;
   float: right;
-  font-size: 0.9rem; line-height: 1rem;
-  margin: 0.4rem 0; padding: 0.1rem 0.5rem;
+  font-size: 1rem; line-height: 3rem;
+  margin: 0; padding: 0;
 }
-.site-links > a.username {
+.site-links .sep {
+  display: none;
+}
+.site-links .item {
+  background-color: rgba(255,255,255,0);
+  border-left: 1px solid rgba(255,255,255,0.28);
+  color: white;
+  display: inline-block;
+  margin: 0; padding: 4px 8px;
+  transition: 0.1s ease-out;
+}
+.site-links .item:hover {
+  background-color: rgba(255,255,255,0.28);
+  transition: 0.1s ease-out;
+}
+.site-links .item.username {
 }
 
 
@@ -565,39 +556,67 @@ aside#sidebar h2 {
 
 /*
 
-List of subreddits in the sidebar.
+Sidebar list of subreddits, with selector for favourite subs.
 
  */
-aside#sidebar .sr-list {
+aside#sidebar > form.sr-list > ul.sr-list {
 }
-aside#sidebar .sr-list p {
+aside#sidebar > form.sr-list > ul.sr-list p {
 }
-aside#sidebar .sr-list ul {
+aside#sidebar > form.sr-list > ul.sr-list {
   list-style: none;
   margin: 0; padding: 0;
 }
-aside#sidebar .sr-list > li {
+aside#sidebar > form.sr-list > ul.sr-list > li {
   margin: 0; padding: 0;
   margin-bottom: 8px;
 }
-aside#sidebar .sr-list > li label {
+aside#sidebar  > form.sr-list > ul.sr-list > li label {
   vertical-align: middle;
 }
-aside#sidebar .sr-list > li input[type="checkbox"] {
+aside#sidebar > form.sr-list > ul.sr-list > li input[type="checkbox"] {
 }
-aside#sidebar .sr-list > li > a {
+aside#sidebar > form.sr-list > ul.sr-list > li > a {
 }
-aside#sidebar .sr-list > li > .status {
+aside#sidebar > form.sr-list > ul.sr-list > li > .status {
   display: inline;
   font-size: 0.9rem;
   color: #999;
 }
-aside#sidebar .sr-list > li > .status .banned,
-aside#sidebar .sr-list > li > .status .muted {
+aside#sidebar > form.sr-list > ul.sr-list > li > .status .banned,
+aside#sidebar > form.sr-list > ul.sr-list > li > .status .muted {
   color: #F33;
   font-weight: bold;
 }
 
+/*
+
+Sidebar list of subreddit matches on profile view.
+
+ */
+aside#sidebar > .sr-list-inline {
+  background-color: white;
+  border: 1px solid rgba(0,0,0,0.1);
+  display: block;
+  margin: 16px 0; padding: 0;
+}
+aside#sidebar > .sr-list-inline > h2 {
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  margin: 0; padding: 16px;
+  text-align: center;
+}
+aside#sidebar > .sr-list-inline > ul {
+  list-style: none;
+  margin: 0; padding: 8px;
+}
+aside#sidebar > .sr-list-inline > ul > li {
+  display: inline-block;
+  margin: 0; padding: 0;
+}
+aside#sidebar > .sr-list-inline > ul > li > a {
+  display: block;
+  margin: 0; padding: 8px 4px; border: 0;
+}
 
 /*
 
@@ -621,15 +640,26 @@ User profile page.
 
  */
 body.profile {
-  background-color: #FFF;
 }
 
 body.profile .user-profile {
-  background-color: #FFF;
-  margin: 0; padding: 0;
+  background-color: white;
+  border: 1px solid rgba(0,0,0,0.1);
+  margin: 16px 0; padding: 16px;
 }
 body.profile .user-profile .header {
   display: block;
+}
+body.profile .user-profile .header .zodiacs {
+  float: right;
+  margin: 0; padding: 0;
+}
+body.profile .user-profile .header .zodiacs > span {
+  background-color: gray;
+  color: white;
+  display: inline-block;
+  font-size: 1.5rem; line-height: 1.5rem;
+  margin: 0; margin-left: 0.5rem; padding: 0.5rem;
 }
 body.profile .user-profile .header h1 {
   display: inline-block;
@@ -638,25 +668,26 @@ body.profile .user-profile .header h1 {
   vertical-align: middle;
 }
 body.profile .user-profile .header .asl {
-  display: inline-block;
+  display: block;
   font-size: 1.5rem; line-height: 2.5rem;
-  margin: 0; padding: 0 1rem;
+  margin: 0; padding: 0;
   vertical-align: middle;
 }
 body.profile .user-profile .header .asl span {
   display: inline-block;
   margin: 0; padding: 0 0.25rem;
 }
-body.profile .user-profile .header .account {
-  color: #888;
+body.profile .user-profile .account-age {
+  border-top: 1px solid rgba(0,0,0,0.12);
+  color: gray;
   display: block;
-  font-size: 1rem; line-height: 2.5rem;
-  margin: 0; padding: 0;
+  font-size: 0.9rem; line-height: 1em;
+  margin: 0 -16px; padding: 16px 16px 0 16px;
 }
 body.profile .user-profile .about {
+  margin: 0; padding: 16px;
 }
 body.profile .user-profile .info-tables {
-  background-color: #F3F3F3;
   overflow: hidden;
   margin: 0; padding: 0;
 }
@@ -682,23 +713,24 @@ body.profile .user-profile .info table tbody tr td {
   line-height: 40px;
   border: 1px solid #CCC;
 }
+
 body.profile .user-profile ul.pics {
   display: block;
   list-style: none;
   margin: 0; padding: 0;
   overflow: hidden;
-  height: 300px;
+  height: 240px;
 }
 body.profile .user-profile ul.pics li {
   display: block;
   float: left;
-  max-width: 225px; height: 150px;
+  max-width: 178px; height: 118px;
   margin: 1px; padding: 0;
   overflow: hidden;
 }
 body.profile .user-profile ul.pics li:first-child {
   float: left;
-  height: 300px;
+  height: 240px;
   max-width: 450px;
 }
 body.profile .user-profile ul.pics li .no-pic {

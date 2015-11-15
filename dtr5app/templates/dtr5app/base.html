@@ -23,22 +23,24 @@
 
     <header>
       <div class="site-logo">
+        <a class="site-icon" href="/"><img src="/static/logo100.gif" alt=""></a>
         <a class="site-name" href="/">redddate</a>
       </div>
       <div class="site-links">
         {% if user.is_authenticated %}
-          <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a>
-          {% if DEBUG %}
-            <span href="#" class="userid"> (User ID: {{user.id}})</span>
-          {% endif %} |
+          <a class="item username" href="{% url 'profile_page' user.username %}">{{user.username}}</a>
+          <span class="sep"> | </span>
         {% endif %}
-        <a class="matches" href="{% url 'matches_page' %}">matches ({{user.profile.matches_count|default:0}})</a> |
-        <a class="reddit-mailbox" href="https://www.reddit.com/message/messages/">reddit mailbox</a> |
-        <a class="settings" href="{% url 'me_page' %}">preferences</a> |
+        <a class="item matches" href="{% url 'matches_page' %}">matches ({{user.profile.matches_count|default:0}})</a>
+        <span class="sep"> | </span>
+        <a class="item reddit-mailbox" href="https://www.reddit.com/message/messages/">reddit mailbox</a>
+        <span class="sep"> | </span>
+        <a class="item settings" href="{% url 'me_page' %}">preferences</a>
+        <span class="sep"> | </span>
         {% if user.is_authenticated %}
-          <a class="logout" href="{% url 'logout_page' %}">logout</a>
+          <a class="item logout" href="{% url 'logout_page' %}">logout</a>
         {% else %}
-          <a class="login" href="/">signup+login</a>
+          <a class="item login" href="/">signup+login</a>
         {% endif %}
       </div>
     </header>
@@ -57,13 +59,14 @@
 
     <footer>
       {% if DEBUG %}
-      refresh_token: {{request.session.refresh_token}} --
-      access_token: {{request.session.access_token}} --
-      expires: {{request.session.expires}} --
-      now {{unixtime}} --
-      secs.left: {{timeleft}}
+        auth_user_id: {{user.id}} --
+        refresh_token: {{request.session.refresh_token}} --
+        access_token: {{request.session.access_token}} --
+        expires: {{request.session.expires}} --
+        now {{unixtime}} --
+        secs.left: {{timeleft}}
       {% else %}
-      &copy; 2015 - CC-SA-BY
+        &copy; 2015 - CC-SA-BY
       {% endif %}
     </footer>
 

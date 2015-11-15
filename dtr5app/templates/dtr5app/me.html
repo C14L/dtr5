@@ -48,8 +48,8 @@
 
 <article>
 
-  <div class="settings-btns">
-    <p><a href="{% url 'me_search_page' %}">Search</a> settings</p>
+  <div class="settings-section">
+    <h2>Search settings</h2>
     <div class="item">
       <form method="POST" action="{% url 'me_search_page' %}">
         {% csrf_token %}
@@ -81,8 +81,8 @@
     </div>
   </div>
 
-  <div class="settings-btns">
-    <p>Profile settings for <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a>, a Reddit user since {{user.profile.created}}</p>
+  <div class="settings-section">
+    <h2>Profile settings</h2>
     <form class="item manual" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
       <label class="sex">
@@ -122,7 +122,7 @@
     </div>
   </div>
 
-  <div class="settings-btns">
+  <div class="settings-section">
     <p>Pictures of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></p>
     <div class="item pics-form">
       <form method="POST" action="{% url 'me_picture_page' %}">
@@ -145,7 +145,7 @@
     </div>
   </div>
 
-  <div class="settings-btns">
+  <div class="settings-section">
     <p>All about of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></p>
     <form class="item" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
@@ -156,7 +156,7 @@
 
   <hr>
 
-  <div class="settings-btns">
+  <div class="settings-section">
     <p>Account settings</p>
     <ul>
       <li><a href="{% url 'me_nope_page' %}">noped users</a><span class="help"></span></li>
