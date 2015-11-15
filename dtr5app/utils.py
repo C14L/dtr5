@@ -2,106 +2,11 @@
 All kinds of supporting functions for views and models.
 """
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
 from .models import (Sr, Subscribed, Flag)
-from toolbox import (to_iso8601,
-                     from_iso8601,
-                     get_dob_range,
-                     get_latlng_bounderies)
-
-
-def get_blocked_usernames_list():
-    """Return a list of usernames blocked by admin."""
-    return []
-
-
-def search_users(request):
-    """
-    Return a list of usernames who
-    - match auth user's the search options,
-    - are subbed to similar subreddits as auth user
-    - are not flagged by auth user,
-    - are not blocked by admin via username blocklist,
-    - have at least one picture URL,
-    - ...
-    """
-    SR_LIMIT = getattr(settings, 'SR_LIMIT', 50)
-    SR_MIN_SUBS = getattr(settings, 'SR_MIN_SUBS', 100)
-    SR_MAX_SUBS = getattr(settings, 'SR_MAX_SUBS', 5000000)
-    bufflen = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
-    li = User.objects.all()
-
-    # Search option: sex
-    if request.user.profile.f_sex > 0:
-        li = li.filter(profile__sex=request.user.profile.f_sex)
-    # Search option: age
-    dob_earliest, dob_latest = get_dob_range(request.user.profile.f_minage,
-                                             request.user.profile.f_maxage)
-    li = li.filter(profile__dob__gt=dob_earliest, profile__dob__lt=dob_latest)
-    # Search option: distance
-    if request.user.profile.f_distance:
-        lat_min, lng_min, lat_max, lng_max = get_latlng_bounderies(
-            request.user.profile.lat, request.user.profile.lng,
-            request.user.profile.f_distance)
-        li = li.filter(profile__lat__gte=lat_min, profile__lat__lte=lat_max,
-                       profile__lng__gte=lng_min, profile__lng__lte=lng_max)
-    # Only show SFW profiles?
-    # if request.user.profile.f_over_18:
-    #     li = li.filter(profile__over_18=True)
-    # Only users with a verified email on reddit?
-    # if request.user.profile.f_has_verified_email:
-    #     li = li.filter(profile__has_verified_email=True)
-
-    # exclude auth user themself.
-    li = li.exclude(pk=request.user.pk)
-    # Are not already flagged by auth user ('like', 'nope', 'block')
-    li = li.exclude(flags_received__sender=request.user)
-    # Are not blocked by admin via username blocklist,
-    li = li.exclude(username__in=get_blocked_usernames_list())
-    # Have at least one picture URL,
-    li = li.exclude(profile__pics_str='[]')
-
-    #
-    # Fetch auth user's subreddits, smallest first, but with at least
-    # 50 subscribers. Like on reddit, use only 50 subs at a time.
-    #
-    # --> Give smaller subreddits a higher priority than larger ones.
-    # --> Give subreddits marked "favorite" a higher priority than others.
-    # -->
-    #
-    # TODO: shuffle this a bit more to get a new 50 subreddits every
-    # time, same as on Reddit for the frontpage subs.
-    sr = Sr.objects.filter(
-        subscribers__gt=SR_MIN_SUBS, subscribers__lt=SR_MAX_SUBS,
-        users__user=request.user).order_by('subscribers')[:SR_LIMIT]
-    #
-    # TODO: use the subs as a filter for the user list.
-    #
-    print('--> len(sr): ', len(sr))
-    print('--> sr:', sr)
-
-    # All filters set, limit the list's length and get only usernames.
-    li = list(li[:bufflen].values_list('username', flat=True))
-    return li
-
-
-def search_results_buffer(request, force=False):
-    """
-    Check if there are search results in session cache. If there are
-    not, or 'force' is True, run a search and load the usernames into
-    the buffer.
-    """
-    bt = request.session.get('search_results_buffer_time', None)
-    if (not bt or from_iso8601(bt) + timedelta(days=1) < from_iso8601()):
-        force = True  # if buffer is old, force refresh
-    if request.session.get('search_results_buffer', None) is None:
-        force = True  # no buffer ever set, then do a search
-    if force:
-        request.session['search_results_buffer'] = search_users(request)
-        request.session['search_results_buffer_time'] = to_iso8601()
-        request.session.modified = True
+from .utils_search import search_results_buffer
 
 
 def update_list_of_subscribed_subreddits(user, subscribed):

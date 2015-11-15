@@ -18,12 +18,12 @@ from simple_reddit_oauth import api
 
 from toolbox import force_int, force_float, set_imgur_url
 from .models import Subscribed, Sr, Flag
-from .utils import (search_results_buffer,
-                    update_list_of_subscribed_subreddits,
+from .utils import (update_list_of_subscribed_subreddits,
                     get_user_list_around_view_user,
                     get_prevnext_user,
                     add_auth_user_latlng,
                     get_matches_user_list, count_matches)
+from .utils_search import search_results_buffer
 
 logger = logging.getLogger(__name__)
 
