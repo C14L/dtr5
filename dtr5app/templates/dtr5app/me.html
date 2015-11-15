@@ -49,13 +49,13 @@
 <article>
 
   <div class="settings-section section-search">
-    <h2>Search settings</h2>
+    <h2>search settings</h2>
     <div class="item">
       <form method="POST" action="{% url 'me_search_page' %}">
         {% csrf_token %}
         <input type="hidden" name="next" value="{% url 'me_page' %}">
         <label>
-          <span>Find</span>
+          <span>find</span>
           <select name="f_sex" size="1">
             <option value="">everybody</option>
             {% for sex in sex_choices %}
@@ -81,13 +81,13 @@
   </div>
 
   <div class="settings-section section-profile">
-    <h2>Profile settings</h2>
+    <h2>profile settings</h2>
 
     <form class="item manual" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
       <p>
         <label class="sex">
-          <span>Sex:</span>
+          <span>my gender:</span>
           <select name="sex" size="1">
             {% for sex in sex_choices %}
             <option {% if user.profile.sex == sex.0 %}selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
@@ -97,14 +97,14 @@
       </p>
       <p>
         <label class="dob">
-          <span>Birthday:</span>
+          <span>my birthday:</span>
           <input type="date" name="dob" placeholder="YYYY-MM-DD" maxlength="10" value="{{user.profile.dob|date:'c'}}">
-          <span class="help">Never shown! Only your age, Western zodiac, and Chinese zodiac are shown.</span>
+          <span class="help">never publicly shown! only used to show your age and zodiacs.</span>
         </label>
       </p>
       <p>
         <label class="submit">
-          <input type="submit">
+          <input type="submit" value="submit">
         </label>
       </p>
     </form>
@@ -116,8 +116,8 @@
         <input type="hidden" name="lng" value="">
         <input type="submit" value="locate">
       </form>
-      <span>Update your geolocation, currently <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a></span>
-      <span class="help">Your geolocation will randomly be fuzzied around a 1 km radius.</span>
+      <p>update your geolocation, currently <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a></p>
+      <p class="help">your geolocation will randomly be fuzzied around a 1 km radius.</p>
     </div>
 
     <div class="item">
@@ -125,18 +125,18 @@
         {% csrf_token %}
         <input type="submit" value="update">
       </form>
-      <span>Update your profile with fresh data from your Reddit account. Last updated {{user.profile.updated}}</span>
-      <span class="help">Fetches your subscribed subreddits and reddit profile.</span>
+      <p>update your profile with fresh data from your reddit account. last updated {{user.profile.updated}}</p>
+      <p class="help">fetches your subscribed subreddits and reddit profile.</p>
     </div>
   </div>
 
   <div class="settings-section section-pics">
-    <h2>Pictures of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></h2>
+    <h2>pictures of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></h2>
     <div class="item pics-form">
       <form method="POST" action="{% url 'me_picture_page' %}">
         {% csrf_token %}
         <input type="text" name="pic_url" value="" placeholder="https://imgur.com/??????">
-        <input type="submit">
+        <input type="submit" value="add picture">
       </form>
     </div>
     <div class="item pics-preview">
@@ -154,20 +154,29 @@
   </div>
 
   <div class="settings-section section-about">
-    <h2>About <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></h2>
+    <h2>about <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></h2>
     <form class="item" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
-      <textarea name="about" placeholder="Write about yourself. Or about your favorite subreddits. Or about why you like pizza and bacon. Or about that bird you saw that just escaped that cat last year.">{{user.profile.about}}</textarea>
-      <p><input type="submit"></p>
+      <textarea name="about" placeholder="write about yourself. or about your favorite subreddits. or about why you like pizza and bacon. or about that bird you saw that just escaped that cat last year.">{{user.profile.about}}</textarea>
+      <p><input type="submit" value="submit"></p>
     </form>
   </div>
 
   <div class="settings-section section-account">
-    <h2>Account settings</h2>
+    <h2>account settings</h2>
     <ul>
-      <li><a href="{% url 'me_nope_page' %}">noped users</a><span class="help"></span></li>
-      <li><a href="{% url 'me_flag_del_page' %}">delete all my likes and nopes</a><span class="help"></span></li>
-      <li><a href="{% url 'me_account_del_page' %}">delete account data</a> <span class="help">deletes most account data, all pictures, 'like' votes, profile content, etc.</span></li>
+      <li>
+        <a href="{% url 'me_nope_page' %}">noped users</a>
+        <span class="help"></span>
+      </li>
+      <li>
+        <a href="{% url 'me_flag_del_page' %}">delete all my likes and nopes</a>
+        <span class="help"></span>
+      </li>
+      <li>
+        <a href="{% url 'me_account_del_page' %}">delete account data</a>
+        <span class="help">deletes most account data, all pictures, 'like' votes, profile content, etc.</span>
+      </li>
     </ul>
   </div>
 
