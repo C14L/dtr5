@@ -17,6 +17,11 @@
     <link rel="shortcut icon" href="/static/icon.ico">
     <meta name="msapplication-TileColor" content="#113228">
     <meta name="msapplication-TileImage" content="">
+
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
     {% block head %}{% endblock %}
   </head>
   <body class="{% block body_classes %}{% endblock %}{% if user.is_authenticated %} auth-user{% else %} anon-user{% endif %}">
@@ -28,19 +33,19 @@
       </div>
       <div class="site-links">
         {% if user.is_authenticated %}
-          <a class="item username" href="{% url 'profile_page' user.username %}">{{user.username}}</a>
-          <span class="sep"> | </span>
+          <a class="item username" href="{% url 'profile_page' user.username %}"><span class="text">{{user.username}}</span><span class="icon fa fa-user"></span></a><span class="sep"> | </span>
         {% endif %}
-        <a class="item matches" href="{% url 'matches_page' %}">matches ({{user.profile.matches_count|default:0}})</a>
-        <span class="sep"> | </span>
-        <a class="item reddit-mailbox" href="https://www.reddit.com/message/messages/" title="reddit mailbox">✉</a>
-        <span class="sep"> | </span>
-        <a class="item settings" href="{% url 'me_page' %}">preferences</a>
-        <span class="sep"> | </span>
+
+        <a class="item matches" href="{% url 'matches_page' %}"><span class="text">matches</span><span class="icon fa fa-bullseye"></span><span class="number">{{user.profile.matches_count|default:0}}</span></a><span class="sep"> | </span>
+
+        <a class="item reddit-mailbox" href="https://www.reddit.com/message/messages/" title="reddit mailbox"><span class="text">reddit mailbox</span><span class="icon fa fa-envelope"></span></a><span class="sep"> | </span>
+
+        <a class="item settings" href="{% url 'me_page' %}"><span class="text">preferences</span><span class="icon fa fa-cog"></span></a><span class="sep"> | </span>
+
         {% if user.is_authenticated %}
-          <a class="item logout" href="{% url 'logout_page' %}">logout</a>
+          <a class="item logout" href="{% url 'logout_page' %}"><span class="text">logout</span><span class="icon fa fa-sign-out"></span></a>
         {% else %}
-          <a class="item login" href="/">signup+login</a>
+          <a class="item login" href="/"><span class="text">signup/login</span><span class="icon fa fa-sign-in"></span></a>
         {% endif %}
       </div>
     </header>
@@ -59,15 +64,15 @@
 
     <footer>
       {% if DEBUG %}
-        auth_user_id: {{user.id}} --
-        refresh_token: {{request.session.refresh_token}} --
-        access_token: {{request.session.access_token}} --
-        expires: {{request.session.expires}} --
-        now {{unixtime}} --
-        secs.left: {{timeleft}}
-      {% else %}
-        &copy; 2015 - CC-SA-BY
+        <p>authuser: {{user.id}} -
+        refresh_token: {{request.session.refresh_token}} -
+        access_token: {{request.session.access_token}} -
+        expires: {{request.session.expires}} -
+        now {{unixtime}} -
+        secs.left: {{timeleft}}</p>
       {% endif %}
+      <p>All distances are approximate, because only fuzzied location data is stored to protect privacy.</p>
+      <p>&copy; 2015<p>
     </footer>
 
   </body>

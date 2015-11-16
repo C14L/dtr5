@@ -1,0 +1,36 @@
+{#
+
+include for #sidebar
+
+lists view_user's favourite subreddits
+
+#}
+
+<div class="sr-list-inline subreddit-list">
+  <h2>{{view_user.username}}'s favorite subreddits</h2>
+  <ul class="sr-list">
+    {% for row in view_user.subs.all %}
+      {% if row.is_favorite %}
+        <li>
+          <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
+          <span class="status">
+            {% if row.sr.over_18 %}
+            <span class="nsfw-tag">NSFW</span>
+            {% endif %}
+            {% if row.user_is_moderator %}
+            <span class="mod-tag">moderator</span>
+            {% endif %}
+            {% if row.user_is_banned %}
+            <span class="banned-tag">banned</span>
+            {% endif %}
+            {% if row.user_is_muted %}
+            <span class="muted-tag">muted</span>
+            {% endif %}
+          </span>
+        </li>
+      {% endif %}
+    {% empty %}
+      <p>No favorite subreddits.</p>
+    {% endfor %}
+  </ul>
+</div>

@@ -7,7 +7,7 @@ border-bottom: 1px solid #5F99CF;
 
 body {
   background-color: #F3F3F3;
-  font: normal 16px/16px arial,verdana,helvetica,sans-serif;
+  font: normal 16px/16px 'Roboto',sans-serif;
   margin: 0; padding: 0;
 }
 a {
@@ -103,7 +103,7 @@ Buttons on user profile pages for "like", "nope", or "dunno".
   cursor: pointer;
   display: inline-block;
   font-size: 64px; line-height: 80px;
-  margin: 0 0 0 64px; padding: 0;
+  margin: 0 32px; padding: 0;
   text-align: center;
   width: 80px; height: 80px;
   vertical-align: middle;
@@ -471,18 +471,18 @@ header {
   margin: 0; padding: 0;
   overflow: hidden;
 }
-.site-logo {
+header .site-logo {
   color: white;
   float: left;
   margin: 0; padding: 0;
 }
-.site-logo > a.site-icon > img {
+header .site-logo > a.site-icon > img {
   border: 0;
   height: 3rem;
   margin: 0; padding: 4px 8px;
   vertical-align: middle;
 }
-.site-logo > a.site-name {
+header .site-logo > a.site-name {
   color: inherit; text-decoration: inherit;
   font-size: 2.5rem; line-height: 3rem;
   font-weight: normal;
@@ -490,33 +490,36 @@ header {
   text-shadow: 0 0 2px rgba(0,0,0,0.3);
   vertical-align: middle;
 }
-.site-links {
+header .site-links {
   float: right;
   font-size: 1rem; line-height: 3rem;
   margin: 0; padding: 0;
 }
-.site-links .sep {
-  display: none;
-}
-.site-links .item {
+header .site-links .item {
   background-color: rgba(255,255,255,0);
   border-left: 1px solid rgba(255,255,255,0.28);
   color: white;
   display: inline-block;
   margin: 0; padding: 4px 8px;
-  min-width: 3rem;
+  position: relative;
   text-align: center;
   transition: 0.1s ease-out;
 }
-.site-links .item:hover {
+header .site-links .item:hover {
   background-color: rgba(255,255,255,0.28);
   transition: 0.1s ease-out;
 }
-.site-links .item.reddit-mailbox {
-  font-size: 1.75rem; line-height: 3rem;
-  vertical-align: middle;
+header .site-links .item .number {
+  background-color: red;
+  color: white;
+  display: block; min-width: 1.5rem; height: 1.5rem;
+  font-size: 1rem; line-height: 1.5rem;
+  position: absolute; top: 0; right: 0;
+  text-align: center;
+  text-shadow: 1px 1px 1px black;
 }
-.site-links .item.username {
+header .site-links .item .icon, .site-links .sep {
+  display: none;
 }
 
 
@@ -1000,47 +1003,110 @@ body.signup-steps.step-5 article .overlay input[type="text"] {
 body.signup-steps article div.abouts {
 }
 
+/* ======================================================================= */
+
 @media only screen and (max-width: 1200px) {  /* < lg */
 }
+
+/* ======================================================================= */
 
 @media only screen and (max-width: 960px) {  /* < md */
 }
 
+/* ======================================================================= */
+
 @media only screen and (max-width: 600px) {  /* < sm */
 
+  .match-box {
+    margin: 0; padding: 0;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    text-align: center;
+  }
+  .match-box .like-nope-duno {
+    display: inline-block;
+    margin: 0; padding: 16px 0;
+    background-color: rgba(255,255,255,0.8);
+    border-radius: 40px 40px 0 0;
+    box-shadow: 0 0 3px rgba(0,0,0,0.6);
+  }
+  .match-box .like-nope-duno .opt {
+    margin: 0 16px; padding: 0;
+  }
+
   header .site-logo {}
+  header .site-logo .site-icon {
+  }
   header .site-logo > .site-icon > img {
     height: 2.5rem;
-    padding: 0.5rem 1rem 0 1rem;
+    padding: 0.5rem 1.25rem 0 1.25rem;
   }
   header .site-logo > .site-name {
     display: none;
   }
 
-  .site-links {
+  header .site-links {
     float: none;
     font-size: 1rem; line-height: 3rem;
     margin: 0 auto; padding: 0;
   }
-
-  body.sr #sidebar {
+  header .site-links .item {
+    position: relative;
+    width: 3rem;
+  }
+  header .site-links .item .text {
     display: none;
   }
-  body.sr article {
-    margin: 0; padding: 16px 0;
+  header .site-links .item .icon {
+    display: inline-block;
+    font-size: 1.5rem; line-height: 1em;
+  }
+  header .site-links .item {
+    width: 3.5rem;
+    overflow: hidden;
+    vertical-align: middle;
+    white-space: nowrap;
   }
 
+  body.sr #sidebar { display: none; }
+  body.sr article { margin: 0; padding: 16px 0; }
 
   body.profile #sidebar {
     float: none;
     margin: 0; padding: 0;
     width: auto;
   }
-  body.profile article {
-    margin: 0; padding: 16px 0;
-  }
-  body.profile .prevnext-user-list {
+  body.profile #sidebar .prevnext-user-list {
     display: none;
+  }
+  body.profile #sidebar .subreddit-matches {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  body.profile #sidebar .subreddit-matches .sr-list {
+    margin: 0; padding: 0;
+  }
+  body.profile #sidebar .subreddit-matches .sr-list {
+    display: none;
+  }
+  body.profile article {
+    /* get rid of the right-side "sidebar margin" and the surrounding
+    padding between chrome border and content card. */
+    margin-right: 0; padding: 0;
+  }
+  body.profile article .user-profile {
+    margin-top: 0;
+  }
+  body.profile .user-profile .header {
+    margin-top: 0;
+  }
+  body.profile .user-profile .header h1 {
+    font-size: 1.5rem; line-height: 2.5rem;
+  }
+  body.profile .user-profile .header .asl {
+    font-size: 1rem; line-height: 2rem;
+  }
+  body.profile .user-profile .about {
+    padding: 0;
   }
 
   body.me #sidebar {

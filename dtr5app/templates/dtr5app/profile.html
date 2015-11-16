@@ -7,7 +7,6 @@
 {% block main %}
 
 <aside id="sidebar">
-
   <div class="prevnext-user-list">
     <ul>
       {% for v in user_list %}
@@ -49,34 +48,6 @@
     </div>
   {% endif %}
 
-  <div class="sr-list-inline fav-subreddit-list">
-    <h2>{{view_user.username}}'s favorite subreddits</h2>
-    <ul class="sr-list">
-      {% for row in view_user.subs.all %}
-        {% if row.is_favorite %}
-          <li>
-            <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
-            <span class="status">
-              {% if row.sr.over_18 %}
-              <span class="nsfw-tag">NSFW</span>
-              {% endif %}
-              {% if row.user_is_moderator %}
-              <span class="mod-tag">moderator</span>
-              {% endif %}
-              {% if row.user_is_banned %}
-              <span class="banned-tag">banned</span>
-              {% endif %}
-              {% if row.user_is_muted %}
-              <span class="muted-tag">muted</span>
-              {% endif %}
-            </span>
-          </li>
-        {% endif %}
-      {% empty %}
-        <p>No favorite subreddits.</p>
-      {% endfor %}
-    </ul>
-  </div>
 </aside>
 
 <article>
@@ -131,10 +102,12 @@
 
   <div class="user-profile">
     <div class="header">
+      <!--
       <p class="zodiacs">
         <span class="western" title="occidental zodiac: {{view_user.profile.get_western_zodiac_display}}">{{view_user.profile.get_western_zodiac_symbol}}</span>
         <span class="eastern" title="oriental zodiac: {{view_user.profile.get_eastern_zodiac_display}}">{{view_user.profile.get_eastern_zodiac_symbol}}</span>
       </p>
+      -->
       <h1>{{view_user.username}}</h1>
       <p class="asl">
         a <span>{{view_user.profile.get_age}}</span> years old
@@ -270,9 +243,6 @@
       </div>
 -->
     </div>
-  </div>
-  <div>
-    <p class="help">All distances are approximate, because only fuzzied location data is stored to protect privacy.</p>
   </div>
 </article>
 
