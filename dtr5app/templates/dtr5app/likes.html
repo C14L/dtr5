@@ -1,0 +1,14 @@
+{% extends 'dtr5app/base.html' %}
+
+{% block title %}Likes{% endblock %}
+
+{% block body_classes %}likes{% endblock %}
+
+{% block main %}
+
+<article class="centered">
+  <h1>Likes</h1>
+  {% include 'dtr5app/user_list.html' %}
+</article>
+
+{% endblock %}

@@ -441,6 +441,17 @@ def me_nope_view(request, template_name='dtr5app/nopes.html'):
 
 @login_required
 @require_http_methods(["GET", "HEAD"])
+def me_like_view(request, template_name='dtr5app/likes.html'):
+    user_list = User.objects.filter(flags_received__sender=request.user,
+                                    flags_received__flag=Flag.LIKE_FLAG)
+    user_list = add_auth_user_latlng(request.user, user_list)
+    ctx = {'user_list': user_list}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
 def matches_view(request, template_name='dtr5app/matches.html'):
     """
     Show a page with all matches (i.e. mututal 'like' flags) of auth

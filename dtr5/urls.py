@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^me/pic/$', views.me_picture_view, name="me_picture_page"),
     url(r'^me/pic/delete$', views.me_pic_del_view, name="me_pic_del_page"),
     url(r'^me/flag/delete$', views.me_flag_del_view, name="me_flag_del_page"),
+    url(r'^me/likes$', views.me_like_view, name="me_like_page"),
     url(r'^me/nopes$', views.me_nope_view, name="me_nope_page"),
 
     url(r'^me/account/delete$', views.me_account_del_view, name="me_account_del_page"),
