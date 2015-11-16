@@ -33,7 +33,7 @@
         {% endif %}
         <a class="item matches" href="{% url 'matches_page' %}">matches ({{user.profile.matches_count|default:0}})</a>
         <span class="sep"> | </span>
-        <a class="item reddit-mailbox" href="https://www.reddit.com/message/messages/">reddit mailbox</a>
+        <a class="item reddit-mailbox" href="https://www.reddit.com/message/messages/" title="reddit mailbox">✉</a>
         <span class="sep"> | </span>
         <a class="item settings" href="{% url 'me_page' %}">preferences</a>
         <span class="sep"> | </span>

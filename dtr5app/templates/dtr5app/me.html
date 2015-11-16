@@ -1,5 +1,9 @@
 {% extends 'dtr5app/base.html' %}
 
+{% block title %}settings for /u/{{user.username}}{% endblock %}
+
+{% block body_classes %}me{% endblock %}
+
 {% block main %}
 <aside id="sidebar">
   <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">

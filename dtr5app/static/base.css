@@ -504,11 +504,17 @@ header {
   color: white;
   display: inline-block;
   margin: 0; padding: 4px 8px;
+  min-width: 3rem;
+  text-align: center;
   transition: 0.1s ease-out;
 }
 .site-links .item:hover {
   background-color: rgba(255,255,255,0.28);
   transition: 0.1s ease-out;
+}
+.site-links .item.reddit-mailbox {
+  font-size: 1.75rem; line-height: 3rem;
+  vertical-align: middle;
 }
 .site-links .item.username {
 }
@@ -992,4 +998,58 @@ body.signup-steps.step-5 article .overlay input[type="text"] {
   width: 200px;
 }
 body.signup-steps article div.abouts {
+}
+
+@media only screen and (max-width: 1200px) {  /* < lg */
+}
+
+@media only screen and (max-width: 960px) {  /* < md */
+}
+
+@media only screen and (max-width: 600px) {  /* < sm */
+
+  header .site-logo {}
+  header .site-logo > .site-icon > img {
+    height: 2.5rem;
+    padding: 0.5rem 1rem 0 1rem;
+  }
+  header .site-logo > .site-name {
+    display: none;
+  }
+
+  .site-links {
+    float: none;
+    font-size: 1rem; line-height: 3rem;
+    margin: 0 auto; padding: 0;
+  }
+
+  body.sr #sidebar {
+    display: none;
+  }
+  body.sr article {
+    margin: 0; padding: 16px 0;
+  }
+
+
+  body.profile #sidebar {
+    float: none;
+    margin: 0; padding: 0;
+    width: auto;
+  }
+  body.profile article {
+    margin: 0; padding: 16px 0;
+  }
+  body.profile .prevnext-user-list {
+    display: none;
+  }
+
+  body.me #sidebar {
+    float: none;
+    margin: 0; padding: 0;
+    width: auto;
+  }
+  body.me article {
+    margin: 0; padding: 16px 0;
+  }
+
 }
