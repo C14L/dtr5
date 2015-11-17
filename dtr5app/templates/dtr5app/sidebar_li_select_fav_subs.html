@@ -1,4 +1,4 @@
-{#
+<!--
 
 include for #sidebar
 
@@ -6,7 +6,8 @@ lists auth user's subreddits with checkboxes so they can pick their favorites.
 
 TODO: currently not used, maybe later. doesn't seem too useful.
 
-#}
+-->
+
 <form class="sr-list" method="POST" action="{% url 'me_favsr_page' %}">
   {% csrf_token %}
   <h2>Favorite subreddits</h2>
