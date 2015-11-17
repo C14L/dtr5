@@ -284,7 +284,8 @@ class Sr(models.Model):
         ordering = ['display_name']
 
     def __str__(self):
-        return self.name
+        return '{} ({}/{})'.format(self.name,
+                                   self.subscribers_here, self.subscribers)
 
 
 class Subscribed(models.Model):
