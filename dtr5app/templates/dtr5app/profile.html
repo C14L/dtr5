@@ -22,11 +22,11 @@
       {% if view_user.profile.common_subs|length == 0 %}
         <h2>No subreddit matches :(</h2>
       {% else %}
-        <h2>{{view_user.profile.common_subs|length}} subreddit matches :)</h2>
+        <h2>{{view_user.profile.common_subs|length}} subreddit matches!</h2>
         <ul class="sr-list">
           {% for row in view_user.profile.common_subs %}
             <li>
-              <a href="{% url 'sr_page' row.sr.display_name %}">/r/{{row.sr.display_name}}</a>
+              <a href="{% url 'sr_page' row.sr.display_name %}">r/{{row.sr.display_name}}</a>
               <span class="status">
                 {% if row.sr.over_18 %}
                 <span class="nsfw-tag">NSFW</span>

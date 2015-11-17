@@ -84,6 +84,38 @@ Zodiac symbol boxes.
 
 /*
 
+prettify a list of labeled checkboxes, i.e.
+  <label><checkbox>text text text</label>
+  <label><checkbox>text text text</label>
+  <label><checkbox>text text text</label>
+  ...
+
+ */
+.checkbox-list {
+}
+.checkbox-list label {
+  background-color: orange;
+  border-radius: 1.25rem;
+  display: inline-block;
+  font-size: 1rem; line-height: 1rem;
+  margin: 0.125rem; padding: 0.75rem;
+  text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
+  vertical-align: middle;
+}
+.checkbox-list label input[type="checkbox"] {
+  background-color: rgba(0,0,0,1);
+  border: 0; outline: 0;
+  display: inline-block;
+  font-size: 1rem; line-height: 1rem;
+  margin: 0 0.25rem 0 0; padding: 0;
+  opacity: 0.6;
+  vertical-align: middle;
+  width: 1rem; height: 1rem;
+}
+
+
+/*
+
 Reddit style action button, made only with CSS.
 
  */
@@ -479,6 +511,7 @@ header {
   border-bottom: 1px solid #5F99CF;
   margin: 0; padding: 0;
   overflow: hidden;
+  white-space: nowrap;
 }
 header .site-logo {
   color: white;
@@ -1026,47 +1059,6 @@ body.signup-steps article div.abouts {
 /* ======================================================================= */
 
 @media only screen and (max-width: 960px) {  /* < md */
-}
-
-/* ======================================================================= */
-
-@media only screen and (max-width: 600px) {  /* < sm */
-
-  .match-box {
-    margin: 0; padding: 0;
-    position: fixed; bottom: 0; left: 0; right: 0;
-    text-align: center;
-  }
-  .match-box .like-nope-duno {
-    display: inline-block;
-    margin: 0; padding: 16px 0;
-    background-color: rgba(255,255,255,0.8);
-    border-radius: 40px 40px 0 0;
-    box-shadow: 0 0 3px rgba(0,0,0,0.6);
-  }
-  .match-box .like-nope-duno .opt {
-    margin: 0 16px; padding: 0;
-  }
-
-  ul.user-list-vert li a.pic {
-    margin: 0 8px 0 0; padding: 0;
-    text-align: right;
-    width: 150px; height: 150px;
-    overflow: hidden;
-  }
-  ul.user-list-vert li span.info span.asl.short {
-    display: block;
-  }
-  ul.user-list-vert li span.info span.asl.long {
-    display: none;
-  }
-  ul.user-list-vert li .matched {
-    margin: 16px 0 0 0;
-  }
-  ul.user-list-vert li .mainbtn {
-    margin: 16px 0 0 150px;
-    width: 200px;
-  }
 
   header .site-logo {}
   header .site-logo .site-icon {
@@ -1104,8 +1096,60 @@ body.signup-steps article div.abouts {
     white-space: nowrap;
   }
 
-  body.sr #sidebar { display: none; }
-  body.sr article { margin: 0; padding: 16px 0; }
+  .match-box {
+    margin: 0; padding: 0;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    text-align: center;
+  }
+  .match-box .like-nope-duno {
+    display: inline-block;
+    margin: 0; padding: 16px 0;
+    background-color: rgba(255,255,255,0.8);
+    border-radius: 40px 40px 0 0;
+    box-shadow: 0 0 3px rgba(0,0,0,0.6);
+  }
+  .match-box .like-nope-duno .opt {
+    margin: 0 16px; padding: 0;
+  }
+
+  ul.user-list-vert li a.pic {
+    margin: 0 8px 0 0; padding: 0;
+    text-align: right;
+    width: 150px; height: 150px;
+    overflow: hidden;
+  }
+  ul.user-list-vert li .matched {
+    margin: 16px 0 0 0;
+  }
+  ul.user-list-vert li .mainbtn {
+    margin: 16px 0 0 150px;
+  }
+
+
+  body.matches #sidebar,
+  body.likes #sidebar,
+  body.nopes #sidebar {
+    display: none;
+  }
+  body.matches h1,
+  body.likes h1,
+  body.nopes h1 {
+    display: none;
+  }
+  body.matches article,
+  body.likes article,
+  body.nopes article {
+    margin: 0; padding: 0;
+  }
+
+
+  body.sr #sidebar {
+    display: none;
+  }
+  body.sr article {
+    margin: 0; padding: 16px 0;
+  }
+
 
   body.profile #sidebar {
     float: none;
@@ -1146,12 +1190,14 @@ body.signup-steps article div.abouts {
     padding: 0;
   }
 
+
   body.matches article {
     margin-right: 0; padding: 0;
   }
   body.matches article h1 {
     display: none;
   }
+
 
   body.me #sidebar {
     float: none;
@@ -1162,4 +1208,18 @@ body.signup-steps article div.abouts {
     margin: 0; padding: 16px 0;
   }
 
+}
+
+/* ======================================================================= */
+
+@media only screen and (max-width: 600px) {  /* < sm */
+  ul.user-list-vert li span.info span.asl.short {
+    display: block;
+  }
+  ul.user-list-vert li span.info span.asl.long {
+    display: none;
+  }
+  ul.user-list-vert li .mainbtn {
+    width: 200px;
+  }
 }
