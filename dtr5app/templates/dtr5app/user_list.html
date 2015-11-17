@@ -7,14 +7,19 @@
         </a>
         <span class="info">
           <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
-          <span class="asl">
+          <span class="asl short">
             {{v.profile.get_age}}
             {{v.profile.get_sex_symbol}}
             {{v.profile.get_distance_in_km|floatformat:"1"}} km away
           </span>
+          <span class="asl long">
+            a {{v.profile.get_age}} year old
+            {{v.profile.get_sex_display}}, about
+            {{v.profile.get_distance_in_km|floatformat:"1"}} km away
+          </span>
           {% if v.matched %}
             <span class="matched">matched {{v.matched|timesince}} ago</span>
-            <a class="mainbtn" style="margin-top: 16px; margin-left: 308px;" href="https://www.reddit.com/message/compose/?to={{v.username}}">send message</a>
+            <a class="mainbtn" href="https://www.reddit.com/message/compose/?to={{v.username}}">send message</a>
           {% endif %}
         </span>
       </li>

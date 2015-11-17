@@ -2,16 +2,9 @@
 
 {% block title %}Matches{% endblock %}
 
-{% block body_classes %}matches{% endblock %}
+{% block body_classes %}matches no-sidebar{% endblock %}
 
 {% block main %}
-
-<aside id="sidebar">
-  <div class="info">
-    <div class="matches-count">{{user_list|length}} matches</div>
-    <div class="like-nope-count"></div>
-  </div>
-</aside>
 
 <article>
   <h1>Matches</h1>

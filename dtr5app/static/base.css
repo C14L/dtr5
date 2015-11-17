@@ -84,6 +84,102 @@ Zodiac symbol boxes.
 
 /*
 
+Reddit style action button, made only with CSS.
+
+ */
+.mainbtn {
+  background-color: #FFFFFF;
+  border-radius: 0;
+  border: 1px solid #5F99CF; border-right: 0;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  color: #741A92;
+  cursor: pointer;
+  display: block;
+  font-family: sans-serif;
+  font-size: 19px;
+  font-weight: bold;
+  margin: 0 auto; padding: 7px 0 0 0;
+  overflow: none;
+  position: relative;
+  text-align: center;
+  white-space: nowrap;
+  width: 250px; height: 39px;
+}
+.mainbtn.narrow {
+  width: 150px;
+}
+.mainbtn.wide {
+  width: 350px;
+}
+.mainbtn:before {
+  background-color: #FFFFFF;
+  border-radius: 0;
+  border: 1px solid #5F99CF;
+  border-width: 1px 1px 0 0;
+  content: '';
+  display: block;
+  font-size: 0;
+  margin: 0; padding: 0;
+  position: absolute; top: 5px; right: -14px;
+  width: 26px; height: 26px;
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.mainbtn {
+  background: linear-gradient(0deg, #CEE3F8, #FFFFFF);
+  transition: 0.1s ease-out;
+}
+.mainbtn:before {
+  background: linear-gradient(-45deg, #CEE3F8, #FFFFFF);
+  transition: 0.1s ease-out;
+}
+.mainbtn:hover {
+  background: linear-gradient(0deg, #5F99CF, #CEE3F8);
+  color: #FFFFFF;
+  transition: 0.1s ease-out;
+}
+.mainbtn:hover:before {
+  background: linear-gradient(-45deg, #5F99CF, #CEE3F8);
+  transition: 0.1s ease-out;
+}
+.mainbtn.warning {
+  color: #C00000;
+  border-color: #C00000;
+  transition: 0.2s ease-out;
+}
+.mainbtn.warning:before {
+  border-color: #C00000;
+  transition: 0.2s ease-out;
+}
+.mainbtn.warning:hover {
+  background: #C00000;
+  color: #FFFFFF;
+  transition: 0.2s ease-out;
+}
+.mainbtn.warning:hover:before {
+  background: #C00000;
+  transition: 0.2s ease-out;
+}
+.mainbtn input[type="submit"] {
+  background: 0;
+  border: 0; outline: 0;
+  margin: 0; padding: 0; /* 2px 0 1px 0; */
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+
+/*
+
 Buttons on user profile pages for "like", "nope", or "dunno".
 
  */
@@ -195,7 +291,7 @@ Small box with picture links to more user profiles.
 
 /*
 
-User list on pages: matches, sr, etc.
+User list horizontal (inline-block), for sr, etc.
 
  */
 ul.user-list {
@@ -257,17 +353,18 @@ ul.user-list li span.info span.asl {
 
 /*
 
-Other user list, one user per line.
+User list vertical (one per line): for matches, nopes, etc.
 
  */
 ul.user-list-vert {
+  background-color: white;
   display: block;
   font-size: 0;
   list-style: none;
   margin: 0; padding: 0;
 }
 ul.user-list-vert li {
-  border-top: 1px solid #E9E9E9;
+  border-top: 1px solid rgba(0,0,0,0.12);
   display: block;
   margin: 0; padding: 8px;
   overflow: hidden;
@@ -298,103 +395,15 @@ ul.user-list-vert li span.info span.asl {
   color: #888;
   display: block;
 }
-
-
-/*
-
-Reddit style action button, made only with CSS.
-
- */
-.mainbtn {
-  background-color: #FFFFFF;
-  border-radius: 0;
-  border: 1px solid #5F99CF; border-right: 0;
-  -o-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  color: #741A92;
-  cursor: pointer;
-  display: block;
-  font-family: sans-serif;
-  font-size: 19px;
-  font-weight: bold;
-  margin: 0 auto; padding: 7px 0 0 0;
-  overflow: none;
-  position: relative;
-  text-align: center;
-  white-space: nowrap;
-  width: 250px; height: 39px;
+ul.user-list-vert li span.info span.asl.short {
+  display: none;
 }
-.mainbtn.narrow {
-  width: 150px;
+ul.user-list-vert li .matched {
+  margin-top: 16px;
 }
-.mainbtn.wide {
-  width: 350px;
+ul.user-list-vert li .mainbtn {
+  margin: 16px 0 0 316px;
 }
-.mainbtn:before {
-  background-color: #FFFFFF;
-  border-radius: 0;
-  border: 1px solid #5F99CF;
-  border-width: 1px 1px 0 0;
-  content: '';
-  display: block;
-  font-size: 0;
-  margin: 0; padding: 0;
-  position: absolute; top: 5px; right: -14px;
-  width: 26px; height: 26px;
-  -o-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-.mainbtn {
-  background: linear-gradient(0deg, #CEE3F8, #FFFFFF);
-  transition: 0.1s ease-out;
-}
-.mainbtn:before {
-  background: linear-gradient(-45deg, #CEE3F8, #FFFFFF);
-  transition: 0.1s ease-out;
-}
-.mainbtn:hover {
-  background: linear-gradient(0deg, #5F99CF, #CEE3F8);
-  color: #FFFFFF;
-  transition: 0.1s ease-out;
-}
-.mainbtn:hover:before {
-  background: linear-gradient(-45deg, #5F99CF, #CEE3F8);
-  transition: 0.1s ease-out;
-}
-.mainbtn.warning {
-  color: #C00000;
-  border-color: #C00000;
-  transition: 0.2s ease-out;
-}
-.mainbtn.warning:before {
-  border-color: #C00000;
-  transition: 0.2s ease-out;
-}
-.mainbtn.warning:hover {
-  background: #C00000;
-  color: #FFFFFF;
-  transition: 0.2s ease-out;
-}
-.mainbtn.warning:hover:before {
-  background: #C00000;
-  transition: 0.2s ease-out;
-}
-.mainbtn input[type="submit"] {
-  background: 0;
-  border: 0; outline: 0;
-  margin: 0; padding: 0; /* 2px 0 1px 0; */
-  color: inherit;
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-}
-
 
 /*
 
@@ -549,21 +558,27 @@ Main page content area.
 Usualy contains <article/> and <aside id="sidebar"/>.
 
  */
-main {
+body main {
   overflow: hidden;
 }
-article {
+body article {
   margin: 0 300px 0 0; padding: 16px;
 }
-aside#sidebar {
+body aside#sidebar {
   float: right;
   width: 300px;
   padding-top: 16px;
 }
-aside#sidebar h2 {
+body aside#sidebar h2 {
   font-size: 1.15rem; line-height: 1em;
 }
 
+body.no-sidebar article {
+  margin-right: 0;
+}
+body.no-sidebar aside#sidebar {
+  display: none;
+}
 
 /*
 
@@ -1033,8 +1048,30 @@ body.signup-steps article div.abouts {
     margin: 0 16px; padding: 0;
   }
 
+  ul.user-list-vert li a.pic {
+    margin: 0 8px 0 0; padding: 0;
+    text-align: right;
+    width: 150px; height: 150px;
+    overflow: hidden;
+  }
+  ul.user-list-vert li span.info span.asl.short {
+    display: block;
+  }
+  ul.user-list-vert li span.info span.asl.long {
+    display: none;
+  }
+  ul.user-list-vert li .matched {
+    margin: 16px 0 0 0;
+  }
+  ul.user-list-vert li .mainbtn {
+    margin: 16px 0 0 150px;
+    width: 200px;
+  }
+
   header .site-logo {}
   header .site-logo .site-icon {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
   header .site-logo > .site-icon > img {
     height: 2.5rem;
@@ -1107,6 +1144,13 @@ body.signup-steps article div.abouts {
   }
   body.profile .user-profile .about {
     padding: 0;
+  }
+
+  body.matches article {
+    margin-right: 0; padding: 0;
+  }
+  body.matches article h1 {
+    display: none;
   }
 
   body.me #sidebar {
