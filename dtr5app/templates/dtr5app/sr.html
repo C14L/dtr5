@@ -13,7 +13,8 @@
 </aside>
 
 <article>
-  <h1>People of <a href="https://www.reddit.com/r/{{view_sr.display_name}}">/r/{{view_sr.display_name}}</a></h1>
+  <h1><a href="{% url 'sr_page' view_sr.display_name %}">{{user_count}} people of r/{{view_sr.display_name}}</a></h1>
+  <p><a href="https://www.reddit.com/r/{{view_sr.display_name}}">view r/{{view_sr.display_name}} on reddit.com</a>
   {% if user_list %}
     <ul class="user-list">
       {% for v in user_list %}
@@ -32,6 +33,16 @@
         </li>
       {% endfor %}
     </ul>
+
+    <div class="pagination">
+      {% if user_list.has_previous %}
+        <a class="prev" href="?page={{user_list.previous_page_number}}"><span class="fa fa-arrow-left"></span></a>
+      {% endif %}
+      {% if user_list.has_next %}
+        <a class="next" href="?page={{user_list.next_page_number}}"><span class="fa fa-arrow-right"></span></a>
+      {% endif %}
+    </div>
+
   {% endif %}
 </article>
 

@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse,
                          HttpResponseNotFound)
@@ -326,20 +327,25 @@ def me_search_view(request):
 
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """Display a list of users who are subscribed to a subreddit."""
+    PER_PAGE = getattr(settings, 'SR_USERS_PER_PAGE', 20)
     view_sr = get_object_or_404(Sr, display_name=sr)
-    # fetch sr users geographically closest to auth user. then paginate and
-    # only display some 15 or so per page.
-    user_list = search_subreddit_users(request, view_sr)
-    user_list = user_list[:100].prefetch_related('profile', 'subs')
-    user_list = add_auth_user_latlng(request.user, user_list)
-    #
-    # TODO: instead of auth user's subs, better fetch the 30 subs most of the
-    #       users of this sr are subscribed to. that would be "the most
-    #       relevant/related subreddits" to the one displayed.
-    #
     user_subs_all = request.user.subs.all().prefetch_related('sr')
+    # fetch sr users, then paginate and display some 15 or so per page.
+    user_list = search_subreddit_users(request, view_sr)
+    user_list = user_list.prefetch_related('profile', 'subs')
+    paginated = Paginator(user_list, per_page=PER_PAGE,  orphans=2)
+    try:
+        user_page = paginated.page(int(request.GET.get('page', 1)))
+    except EmptyPage:  # out of range
+        return HttpResponseNotFound()
+    except ValueError:  # not a number
+        return HttpResponseNotFound()
+    user_list = add_auth_user_latlng(request.user, user_page.object_list)
+    user_page.object_list = user_list
+
     ctx = {'view_sr': view_sr,
-           'user_list': user_list,
+           'user_list': user_page,
+           'user_count': paginated.count,
            'user_subs_all': user_subs_all}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

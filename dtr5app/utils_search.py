@@ -13,10 +13,11 @@ from .models import (Sr)  #, Subscribed, Flag)
 
 def search_subreddit_users(request, sr):
     """
-    fetch users subscribed to this subreddit [TODO: ordered by geographic
-    proximity to auth user]. return a queryset that can be paginated.
+    fetch users subscribed to this subreddit return a queryset that can
+    be paginated.
     """
-    return search_users_by_options_queryset(request).filter(subs__sr=sr)
+    return search_users_by_options_queryset(request, include_flagged=True)\
+        .filter(subs__sr=sr).order_by('last_login')
 
 
 def get_blocked_usernames_list():

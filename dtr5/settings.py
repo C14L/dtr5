@@ -134,6 +134,8 @@ SR_MAX_SUBS = 5000000
 SR_LIMIT = 50
 # How many favorite subreddits can a user select.
 SR_FAVS_COUNT_MAX = 10
+# How many subreddit users to show per page in subreddit view
+SR_USERS_PER_PAGE = 20
 
 # Public settings for Reddit oAuth access.
 OAUTH_REDDIT_REDIRECT_URI = CANONICAL_HOST + "/account/redditcallback/"

@@ -84,6 +84,20 @@ Zodiac symbol boxes.
 
 /*
 
+for lists, arrows left and right for previous and next page.
+
+*/
+.pagination { display: block; font-size: 3.5rem; line-height: 5rem; color: white; overflow: hidden; margin: 0; padding: 16px; }
+.pagination > a { color: inherit; display: block; width: 5rem; height: 5rem; background-color: red; border-radius: 50%; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); box-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
+.pagination > a.prev { float: left; }
+.pagination > a.next { float: right; }
+.pagination > a > span {}
+.pagination > a.prev > span {}
+.pagination > a.next > span {}
+
+
+/*
+
 prettify a list of labeled checkboxes, i.e.
   <label><checkbox>text text text</label>
   <label><checkbox>text text text</label>
@@ -325,6 +339,8 @@ Small box with picture links to more user profiles.
 
 User list horizontal (inline-block), for sr, etc.
 
+--> used on body.sr subreddit spcific pages.
+
  */
 ul.user-list {
   display: block;
@@ -361,25 +377,30 @@ ul.user-list li a.pic img {
   height: inherit;
 }
 ul.user-list li span.info {
-  background-color: rgba(255,255,255,1);
+  background-color: rgba(0,0,0,0.6);
   display: block;
   font-size: 1rem; line-height: 1.5em;
-  margin: 0; padding: 4px 8px;
-  opacity: 0;
-  position: absolute; bottom: -100px; left: 0; right: 0;
+  margin: 0; padding: 0; opacity: 0;
+  position: absolute; top: 20px; right: 20px; bottom: 20px; left: 20px;
   transition: 0.3s ease-out;
 }
 ul.user-list li:hover span.info {
-  opacity: 0.8;
-  bottom: 0px;
+  opacity: 1;
   transition: 0.3s ease-out;
 }
 ul.user-list li span.info a.username {
   display: block;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 32px;
 }
 ul.user-list li span.info span.asl {
-  color: #888;
+  color: white;
   display: block;
+  font-size: 0.8rem;
+  margin-top: 16px;
+  text-align: center;
 }
 
 
@@ -887,7 +908,8 @@ body.profile.is-match .match-box .uu > div.u2 {
 
 Subreddit specific page.
 
- */
+--> replaces by .user-list
+
 body.sr ul.sr-user-list {
   font-size: 0;
   list-style: none;
@@ -901,8 +923,8 @@ body.sr ul.sr-user-list > li {
   position: relative;
 }
 body.sr ul.sr-user-list > li > span.info {
-  background-color: #FFFFFF;
-  border-radius: 5px 5px 5px 0;
+  background-color: rgba(0,0,0,0.6);
+  border-radius: 0;
   display: block;
   font-size: 1rem;
   margin: 0; padding: 8px;
@@ -921,14 +943,16 @@ body.sr ul.sr-user-list > li > span.info > a {
 }
 body.sr ul.sr-user-list > li > span.info > span.asl {
   display: block;
-  color: #888;
+  color: black;
 }
 body.sr ul.sr-user-list > li > a {
+  background-color: black;
 }
 body.sr ul.sr-user-list > li > a > img {
   border: 0;
   height: 150px;
 }
+ */
 
 
 /*
