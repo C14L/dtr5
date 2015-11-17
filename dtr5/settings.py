@@ -123,6 +123,32 @@ LOGGING = {
         },
     },
 }
+# Number of user IDs to load into session cache.
+SEARCH_RESULTS_BUFFER_SIZE = 100
+LINKS_IN_PROFILE_HEADER = 5
+RESULTS_BUFFER_LEN = 20 if DEBUG else 1000
+# Ignore subreddits too small or too large.
+SR_MIN_SUBS = 100
+SR_MAX_SUBS = 5000000
+# How many subreddits to use at a time to find matches.
+SR_LIMIT = 50
+# How many favorite subreddits can a user select.
+SR_FAVS_COUNT_MAX = 10
+
+# Public settings for Reddit oAuth access.
+OAUTH_REDDIT_REDIRECT_URI = CANONICAL_HOST + "/account/redditcallback/"
+OAUTH_REDDIT_REDIRECT_AUTH_SUCCESS = CANONICAL_HOST + "/me/"
+OAUTH_REDDIT_REDIRECT_AUTH_ERROR = LOGIN_URL
+# Comma-separated list of API access scope with any of:
+# identity edit flair history modconfig modflair modlog
+# modposts modwiki mysubreddits privatemessages read report
+# save submit subscribe vote wikiedit wikiread
+OAUTH_REDDIT_SCOPE = "identity,mysubreddits"
+OAUTH_REDDIT_DURATION = "permanent"  # or "temporary"
+OAUTH_REDDIT_BASE_HEADERS = {
+    "User-Agent": OAUTH_REDDIT_USER_AGENT, "raw_json": "1", }
+
+# =============================================================================
 
 # Settings for user profile data.
 SEX = (
@@ -149,27 +175,44 @@ SEX_SYMBOL = (  # ♀♂⚥⚢⚣⚤⚪★☆⮕♥
     (8, '⚥♥♂'),
     (9, '⚥♥⚥'),
 )
-# Number of user IDs to load into session cache.
-SEARCH_RESULTS_BUFFER_SIZE = 100
-LINKS_IN_PROFILE_HEADER = 5
-RESULTS_BUFFER_LEN = 20 if DEBUG else 1000
-# Ignore subreddits too small or too large.
-SR_MIN_SUBS = 100
-SR_MAX_SUBS = 5000000
-# How many subreddits to use at a time to find matches.
-SR_LIMIT = 50
-# How many favorite subreddits can a user select.
-SR_FAVS_COUNT_MAX = 10
-
-# Public settings for Reddit oAuth access.
-OAUTH_REDDIT_REDIRECT_URI = CANONICAL_HOST + "/account/redditcallback/"
-OAUTH_REDDIT_REDIRECT_AUTH_SUCCESS = CANONICAL_HOST + "/me/"
-OAUTH_REDDIT_REDIRECT_AUTH_ERROR = LOGIN_URL
-# Comma-separated list of API access scope with any of:
-# identity edit flair history modconfig modflair modlog
-# modposts modwiki mysubreddits privatemessages read report
-# save submit subscribe vote wikiedit wikiread
-OAUTH_REDDIT_SCOPE = "identity,mysubreddits"
-OAUTH_REDDIT_DURATION = "permanent"  # or "temporary"
-OAUTH_REDDIT_BASE_HEADERS = {
-    "User-Agent": OAUTH_REDDIT_USER_AGENT, "raw_json": "1", }
+LOOKINGFOR = (
+    (1, 'someone to chat'),
+    (2, 'hugs and nice words'),
+    (3, 'new friends'),
+    (4, 'sexy time'),
+    (5, 'dating'),
+    (6, 'serious dating'),
+    (7, 'a relationship'),
+    (8, 'marriage'),
+    (9, 'house+car+kids... now!'),
+    (10, 'just another cat'),
+    (11, 'my car keys'),
+    (12, 'world peace'),
+    (13, 'the grand unified theory'),
+    (14, 'this is getting ridiculous'),
+    (15, 'stahp!'),
+    (16, 'just some nice person, really'),
+)
+RELSTATUS = (
+    (2, 'single'),
+    (4, 'seeing someone'),
+    (6, 'in a relationship'),
+    (8, 'open relationship'),
+    (10, 'married'),
+)
+EDUCATION = (
+    (2, 'high school'),
+    (4, 'trade school'),
+    (6, 'university'),
+    (8, 'masters degree'),
+    (10, 'PhD, MD, etc.'),
+    (12, 'yes'),
+    (14, 'no'),
+)
+FITNESS = (
+    (1, 'not really'),
+    (2, 'somewhat'),
+    (3, 'yes'),
+    (4, 'very'),
+    (5, 'even more'),
+)

@@ -197,6 +197,19 @@ def me_manual_view(request):
     if request.POST.get('about', None):
         request.user.profile.about = request.POST.get('about')
 
+    if request.POST.get('lookingfor', None):
+        request.user.profile.lookingfor = request.POST.get('lookingfor')
+    if request.POST.get('relstatus', None):
+        request.user.profile.relstatus = request.POST.get('relstatus')
+    if request.POST.get('education', None):
+        request.user.profile.education = request.POST.get('education')
+    if request.POST.get('height', None):
+        request.user.profile.height = request.POST.get('height')
+    if request.POST.get('weight', None):
+        request.user.profile.weight = request.POST.get('weight')
+    if request.POST.get('fitness', None):
+        request.user.profile.fitness = request.POST.get('fitness')
+
     request.user.profile.save()
     messages.success(request, 'Profile data updated.')
     return redirect(reverse('me_page'))
