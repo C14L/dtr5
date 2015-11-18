@@ -198,6 +198,8 @@ def me_manual_view(request):
     if request.POST.get('about', None):
         request.user.profile.about = request.POST.get('about')
 
+    if request.POST.get('tagline', None):
+        request.user.profile.tagline = request.POST.get('tagline')
     if request.POST.get('lookingfor', None):
         request.user.profile.lookingfor = request.POST.get('lookingfor')
     if request.POST.get('relstatus', None):
@@ -353,8 +355,8 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
 
 def profile_view(request, username, template_name='dtr5app/profile.html'):
     """
-    Display the complete profile of one user, and show a list of
-    other users above for the user to continue browsing.
+    Display the complete profile of one user, together with "like" and "nope"
+    buttons, unless auth user is viewing their own profile.
     """
     view_user = get_object_or_404(User, username=username)
     # Add auth user's latlng, so we can query their distance.
@@ -369,6 +371,10 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     user_list = get_user_list_around_view_user(request, view_user)
     # Find previous and next user on the list, relative to view user.
     prev_user, next_user = get_prevnext_user(request, view_user)
+    # Count the profile view, unless auth user is viewing their own profile.
+    if request.user.pk != view_user.pk:
+        view_user.profile.views_count += 1
+        view_user.profile.save()
 
     ctx = {'view_user': view_user,
            'is_match': request.user.profile.match_with(view_user),
