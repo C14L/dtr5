@@ -49,13 +49,26 @@ class Profile(models.Model):
     # src: char field with the comeplete URL to the pic's source page.
     pics_str = models.TextField(default='')
 
+    # even more manually input data
+    tagline = models.CharField(default='', max_length=160)          # unused
+    height = models.PositiveSmallIntegerField(default=0)  # in cm   # unused
+    weight = models.PositiveSmallIntegerField(default=0)  # in kg   # unused
+    lookingfor = models.PositiveSmallIntegerField(                  # unused
+        blank=True, null=True, default=None, choices=settings.LOOKINGFOR)
+    relstatus = models.PositiveSmallIntegerField(                   # unused
+        blank=True, null=True, default=None, choices=settings.RELSTATUS)
+    education = models.PositiveSmallIntegerField(                   # unused
+        blank=True, null=True, default=None, choices=settings.EDUCATION)
+    fitness = models.PositiveSmallIntegerField(                     # unused
+        blank=True, null=True, default=None, choices=settings.FITNESS)
+
     # Some numbers
-    views_count = models.PositiveSmallIntegerField(default=0)  # unused
+    views_count = models.PositiveSmallIntegerField(default=0)
     matches_count = models.PositiveSmallIntegerField(default=0)
-    like_sent_count = models.PositiveSmallIntegerField(default=0)  # unused
-    like_recv_count = models.PositiveSmallIntegerField(default=0)  # unused
-    nope_sent_count = models.PositiveSmallIntegerField(default=0)  # unused
-    nope_recv_count = models.PositiveSmallIntegerField(default=0)  # unused
+    like_sent_count = models.PositiveSmallIntegerField(default=0)   # unused
+    like_recv_count = models.PositiveSmallIntegerField(default=0)   # unused
+    nope_sent_count = models.PositiveSmallIntegerField(default=0)   # unused
+    nope_recv_count = models.PositiveSmallIntegerField(default=0)   # unused
     block_sent_count = models.PositiveSmallIntegerField(default=0)  # unused
     block_recv_count = models.PositiveSmallIntegerField(default=0)  # unused
 
