@@ -36,7 +36,7 @@
           <a class="item username" href="{% url 'profile_page' user.username %}"><span class="text">{{user.username}}</span><span class="icon fa fa-user"></span></a><span class="sep"> | </span>
         {% endif %}
 
-        <a class="item matches" href="{% url 'matches_page' %}"><span class="text">matches</span><span class="icon fa fa-bullseye"></span><span class="number">{{user.profile.matches_count|default:0}}</span></a><span class="sep"> | </span>
+        <a class="item matches" href="{% url 'matches_page' %}"><span class="text">matches</span><span class="icon fa fa-bullseye"></span>{% if user.profile.matches_count %}<span class="number">{{user.profile.matches_count}}</span>{% endif %}</a><span class="sep"> | </span>
 
         <a class="item reddit-mailbox" href="https://www.reddit.com/message/messages/" title="reddit mailbox"><span class="text">reddit mailbox</span><span class="icon fa fa-envelope"></span></a><span class="sep"> | </span>
 
