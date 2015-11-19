@@ -524,6 +524,36 @@ The list of settings options on the "preferences" page.
 
 /*
 
+List of subreddit matches on profile view.
+
+ */
+.sr-list-inline {
+  background-color: white;
+  border: 1px solid rgba(0,0,0,0.1);
+  display: block;
+  margin: 16px 0; padding: 0;
+}
+.sr-list-inline > ul {
+  list-style: none;
+  margin: 0; padding: 8px;
+}
+.sr-list-inline > ul > li {
+  display: inline-block;
+  margin: 0; padding: 0;
+}
+.sr-list-inline > ul > li > a {
+  background-color: #F3F3F3;
+  border-radius: calc((1.25rem / 2) + 16px);
+  display: block;
+  font-size: 1.25rem;
+  margin: 4px; padding: 16px; border: 0;
+  text-shadow: 1px 1px 1px rgba(255,255,255,0.9);
+}
+
+
+
+/*
+
 Site header.
 
  */
@@ -669,34 +699,6 @@ aside#sidebar > form.sr-list > ul.sr-list > li > .status .muted {
   font-weight: bold;
 }
 
-/*
-
-Sidebar list of subreddit matches on profile view.
-
- */
-aside#sidebar > .sr-list-inline {
-  background-color: white;
-  border: 1px solid rgba(0,0,0,0.1);
-  display: block;
-  margin: 16px 0; padding: 0;
-}
-aside#sidebar > .sr-list-inline > h2 {
-  border-bottom: 1px solid rgba(0,0,0,0.12);
-  margin: 0; padding: 16px;
-  text-align: center;
-}
-aside#sidebar > .sr-list-inline > ul {
-  list-style: none;
-  margin: 0; padding: 8px;
-}
-aside#sidebar > .sr-list-inline > ul > li {
-  display: inline-block;
-  margin: 0; padding: 0;
-}
-aside#sidebar > .sr-list-inline > ul > li > a {
-  display: block;
-  margin: 0; padding: 8px 4px; border: 0;
-}
 
 /*
 
@@ -726,6 +728,12 @@ body.profile .user-profile {
   background-color: white;
   border: 1px solid rgba(0,0,0,0.1);
   margin: 16px 0; padding: 16px;
+}
+body.profile .user-profile > h2 {
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  margin: -16px -16px 16px -16px; padding: 18px 16px 14px 16px;
+  text-align: center;
+  font-size: 1.5rem; line-height: 1.5rem;
 }
 body.profile .user-profile .header {
   display: block;

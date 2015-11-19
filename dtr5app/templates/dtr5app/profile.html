@@ -15,39 +15,6 @@
     </ul>
   </div>
 
-  {% if view_user.username == user.username %}
-    {# pass #}
-  {% else %}
-    <div class="sr-list-inline subreddit-matches">
-      {% if view_user.profile.common_subs|length == 0 %}
-        <h2>No subreddit matches :(</h2>
-      {% else %}
-        <h2>{{view_user.profile.common_subs|length}} subreddit matches!</h2>
-        <ul class="sr-list">
-          {% for row in view_user.profile.common_subs %}
-            <li>
-              <a href="{% url 'sr_page' row.sr.display_name %}">r/{{row.sr.display_name}}</a>
-              <span class="status">
-                {% if row.sr.over_18 %}
-                <span class="nsfw-tag">NSFW</span>
-                {% endif %}
-                {% if row.user_is_moderator %}
-                <span class="mod-tag">moderator</span>
-                {% endif %}
-                {% if row.user_is_banned %}
-                <span class="banned-tag">banned</span>
-                {% endif %}
-                {% if row.user_is_muted %}
-                <span class="muted-tag">muted</span>
-                {% endif %}
-              </span>
-            </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    </div>
-  {% endif %}
-
 </aside>
 
 <article>
@@ -134,6 +101,35 @@
     <div class="account-age">
       a redditor for {{view_user.profile.created|timesince}} and signed up here {{view_user.date_joined|timesince}} ago.
     </div>
+  </div>
+
+  <div class="user-profile sr-list-inline subreddit-matches">
+    {% if view_user.profile.common_subs|length == 0 %}
+      <h2>No subreddit matches :(</h2>
+    {% else %}
+      <h2>{{view_user.profile.common_subs|length}} subreddit matches!</h2>
+      <ul class="sr-list">
+        {% for row in view_user.profile.common_subs %}
+          <li>
+            <a href="{% url 'sr_page' row.sr.display_name %}">r/{{row.sr.display_name}}</a>
+            <span class="status">
+              {% if row.sr.over_18 %}
+              <span class="nsfw-tag">NSFW</span>
+              {% endif %}
+              {% if row.user_is_moderator %}
+              <span class="mod-tag">moderator</span>
+              {% endif %}
+              {% if row.user_is_banned %}
+              <span class="banned-tag">banned</span>
+              {% endif %}
+              {% if row.user_is_muted %}
+              <span class="muted-tag">muted</span>
+              {% endif %}
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
   </div>
 
   <div class="user-profile">
