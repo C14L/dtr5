@@ -218,3 +218,4 @@ FITNESS = (
     (4, 'very'),
     (5, 'even more'),
 )
+# REPORT_REASON_CHOICES = ()

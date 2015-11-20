@@ -291,7 +291,6 @@ class Flag(models.Model):
         for x in cls.objects.filter(sender=sender, receiver=receiver):
             x.delete()
 
-
     @classmethod
     def set_flag(cls, sender, receiver, flag):
         """
@@ -302,6 +301,31 @@ class Flag(models.Model):
         cls.delete_flag(sender, receiver)
         return cls.objects.create(sender=sender, receiver=receiver,
                                   flag=cls.FLAG_DICT[flag])
+
+
+class Report(models.Model):
+    """Reason and details of user profile reports."""
+    REASON_CHOICES = getattr(settings, 'REPORT_REASON_CHOICES', (
+        (1, 'spam'), (2, 'personal information'), (3, 'inapropriate picture'),
+        (4, 'sexualizing minors'), (5, 'other (write below)')))
+
+    sender = models.ForeignKey(User, related_name="reports_sent")
+    receiver = models.ForeignKey(User, related_name="reports_received")
+    created = models.DateTimeField(default=now)
+    resolved = models.DateTimeField(default=None, null=True, blank=True)
+    reason = models.PositiveSmallIntegerField(choices=REASON_CHOICES)
+    details = models.TextField(default='')
+
+    class Meta:
+        verbose_name = 'user report'
+        verbose_name_plural = 'user reports'
+        index_together = [['sender', 'receiver'],
+                          ['reason', 'receiver'], ]
+
+    def __str__(self):
+        return '{} reported for {}'.format(self.receiver.username,
+                                           self.get_reason_display())
+
 
 class Sr(models.Model):
     """List of sr names each user is subscribed to."""

@@ -116,11 +116,7 @@
           </li>
         {% endif %}
         <li class="secondary">
-          <form class="report-profile-form" method="POST" action="{% url 'me_flag_page' 'set' 'report' view_user.username %}">
-            {% csrf_token %}
-            <span class="fa fa-flag-o"></span>
-            <input type="submit" class="report" value="report this profile">
-          </form>
+          <a href="{% url 'me_flag_page' 'set' 'report' view_user.username %}">report this profile</a>
         </li>
       </ul>
     </nav>

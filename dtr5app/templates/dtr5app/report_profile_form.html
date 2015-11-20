@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>report user profile</title>
+  </head>
+  <body>
+    <p>to report the profile of <a href="{% url 'profile_page' view_user.username %}">{{view_user.username}}</a> to the admins, please select the reason below. also, please fill in any important addition information. thanks!</p>
+    <form method="POST" action="">
+      {% csrf_token %}
+      <h3>reason for reporting {{view_user.username}}:</h3>
+      {% for x in report_reasons %}
+      <p><label><input type="radio" name="reason" value="{{x.0}}"> {{x.1}}</label></p>
+      {% endfor %}
+      <h3>additional details:</h3>
+      <p><textarea name="details" cols="50" rows="8"></textarea></p>
+      <p><input type="submit" value="submit report"></p>
+    </form>
+  </body>
+</html>

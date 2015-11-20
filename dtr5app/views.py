@@ -8,17 +8,18 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator, EmptyPage  #, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse,
-                         HttpResponseNotFound)
+                         HttpResponseNotFound,
+                         HttpResponseBadRequest)
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 from simple_reddit_oauth import api
 
 from toolbox import force_int, force_float, set_imgur_url
-from .models import Subscribed, Sr, Flag
+from .models import Subscribed, Sr, Flag, Report
 from .utils import (update_list_of_subscribed_subreddits,
                     get_user_list_around_view_user,
                     get_prevnext_user,
@@ -423,41 +424,70 @@ def me_flag_view(request, action, flag, username):
     print('--> me_flag_view(): {} {} {}'.format(action, flag, username))
     view_user = get_object_or_404(User, username=username)
     flags = {x[1]: x[0] for x in Flag.FLAG_CHOICES}
-    if action == 'set' and flag in flags.keys():
-        Flag.set_flag(request.user, view_user, flag)
-        # For both users, check their match count.
-        if flag == 'like':
-            request.user.profile.matches_count = count_matches(request.user)
-            request.user.profile.save()
-            view_user.profile.matches_count = count_matches(view_user)
-            view_user.profile.save()
-    elif action == 'delete' and flag in flags.keys():
-        Flag.delete_flag(request.user, view_user)
-        # if this was a "remove like" or "remove nope" then display the same
-        # profile again, because most likely the auth user wants to change
-        # their flag.
-        return redirect(reverse('profile_page', args={view_user.username}))
-    else:
+
+    if request.method in ['GET', 'HEAD']:
+        if action == 'set' and flag == 'report':
+            # for "report profile" display a form to fill in.
+            template_name = 'dtr5app/report_profile_form.html'
+            ctx = {'view_user': view_user,
+                   'report_reasons': Report.REASON_CHOICES}
+            return render_to_response(template_name, ctx,
+                                      context_instance=RequestContext(request))
         return HttpResponseNotFound()
-    # Redirect the user, either to the "next profile" if there is any
-    # in the search results buffer, or to the same profile if they were
-    # just looking at a single profile that's maybe not in the results
-    # buffer list. Or, if they ran out of results in the results buffer
-    # then redirect them to the preferences page, so they can run the
-    # search again and maybe fill new profiles into the results buffer.
-    if len(request.session['search_results_buffer']) > 0:
-        if view_user.username in request.session['search_results_buffer']:
-            prev_user, next_user = get_prevnext_user(request, view_user)
-            _next = reverse('profile_page', args={next_user.username})
-            request.session['search_results_buffer'].remove(view_user.username)
-            request.session.modified = True
+
+    elif request.method in ['POST']:
+        if action == 'set' and flag in flags.keys():
+            Flag.set_flag(request.user, view_user, flag)
+
+            if flag == 'like':
+                # if "like", then check for both users their match count
+                request.user.profile.matches_count = \
+                    count_matches(request.user)
+                request.user.profile.save()
+                view_user.profile.matches_count = count_matches(view_user)
+                view_user.profile.save()
+            if flag == 'report':
+                # also create an entry in Report for the moderator
+                reason = request.POST.get('reason', None)
+                details = request.POST.get('details', None)
+                if not reason:
+                    return HttpResponseBadRequest('please select a reason for '
+                                                  'reporting this profile.')
+                Report.objects.create(sender=request.user, receiver=view_user,
+                                      reason=reason, details=details)
+                messages.info(request, '{} was reported to the moderators.'
+                              .format(view_user.username))
+
+        elif action == 'delete' and flag in flags.keys():
+            Flag.delete_flag(request.user, view_user)
+            # if this was a "remove like" or "remove nope" then display the
+            # same profile again, because most likely the auth user wants to
+            # change their flag.
+            return redirect(reverse('profile_page',
+                                    args={view_user.username}))
         else:
-            username = request.session['search_results_buffer'][0]
-            _next = reverse('profile_page', args={username})
-    elif len(request.session['search_results_buffer']) < 1:
-        messages.warning(request, 'Nobody found. Try searching again!')
-        return redirect(reverse('me_page'))
-    return redirect(request.POST.get('next', _next))
+            return HttpResponseNotFound()
+
+        # Redirect the user, either to the "next profile" if there is any
+        # in the search results buffer, or to the same profile if they were
+        # just looking at a single profile that's maybe not in the results
+        # buffer list. Or, if they ran out of results in the results buffer
+        # then redirect them to the preferences page, so they can run the
+        # search again and maybe fill new profiles into the results buffer.
+        if len(request.session['search_results_buffer']) > 0:
+            if view_user.username in request.session['search_results_buffer']:
+                prev_user, next_user = get_prevnext_user(request, view_user)
+                _next = reverse('profile_page', args={next_user.username})
+                request.session['search_results_buffer'].remove(view_user.username)
+                request.session.modified = True
+            else:
+                username = request.session['search_results_buffer'][0]
+                _next = reverse('profile_page', args={username})
+        elif len(request.session['search_results_buffer']) < 1:
+            messages.warning(request, 'Nobody found. Try searching again!')
+            return redirect(reverse('me_page'))
+
+        return redirect(request.POST.get('next', _next))
 
 
 @login_required
