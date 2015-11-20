@@ -98,6 +98,80 @@ for lists, arrows left and right for previous and next page.
 
 /*
 
+The three-dots-menu, usually found at the top right corner of cards.
+
+ */
+nav.dotmenu {
+  color: gray;
+  cursor: pointer;
+  display: block; width: 2.5rem; height: 2.5rem;
+  float: right;
+  font-weight: normal; font-style: normal;
+  font-size: 2.5rem; line-height: 2.5rem;
+  opacity: 1;
+  padding: 0; margin: 0;
+  position: relative;
+  text-align: center;
+}
+nav.dotmenu:hover {
+  transform: 0.1s;
+}
+nav.dotmenu > .opts {
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 1px 6px 0 rgba(0,0,0,0.6);
+  color: rgba(0,0,0,1);
+  display:none;
+  font-size: 1rem;
+  line-height: 1rem;
+  list-style: none;
+  margin: 0; padding: 0;
+  position: absolute; right: 0; top: 2rem;
+  text-align: left;
+  width: 220px;
+  z-index: 50;
+}
+nav.dotmenu > input[type="checkbox"] {
+  display: block; width: 2.5rem; height: 2.5rem;
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  opacity: 0; cursor: pointer;
+}
+nav.dotmenu > input[type="checkbox"]:checked + .opts {
+  display: block;
+}
+nav.dotmenu > .opts > li {
+  border-top: 1px solid #ccc;
+  margin: 0; padding: 0;
+  transition: 0.1s ease-in;
+}
+nav.dotmenu > .opts > li:hover {
+  background-color: #F3F3F3;
+  transition: 0.1s ease-out;
+}
+nav.dotmenu > .opts > li:first-child {
+  border-top: 0;
+}
+nav.dotmenu > .opts > li > span,
+nav.dotmenu > .opts > li > a {
+  color: inherit;
+  cursor: pointer;
+  display: block;
+  font-weight: normal;
+  margin: 0; padding: 1rem;
+  text-decoration: inherit;
+}
+nav.dotmenu > .opts > li > span > span,
+nav.dotmenu > .opts > li > a > span {
+  margin-right: 0.75rem;
+}
+nav.dotmenu > .opts > li.sep {
+  height: 8px;
+  background-color: #FFCDD2;
+}
+
+
+/*
+
 prettify a list of labeled checkboxes, i.e.
   <label><checkbox>text text text</label>
   <label><checkbox>text text text</label>

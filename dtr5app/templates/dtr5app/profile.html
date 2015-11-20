@@ -40,12 +40,6 @@
           <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
           <a class="later" href="{% url 'me_search_page' %}">Not now</a>
         </div>
-        <div class="like-nope-duno small">
-          <form method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
-            {% csrf_token %}
-            <input type="submit" class="nope opt" value="❌" title="nope!">
-          </form>
-        </div>
 
       {% else %}
 
@@ -68,6 +62,25 @@
   {% endif %}
 
   <div class="user-profile">
+    <nav class="dotmenu">
+      <span class="fa fa-ellipsis-h"></span>
+      <input type="checkbox">
+      <ul class="opts">
+        {% if view_user.username == user.username %}
+          <li><a href="/me/">Edit my profile</a></li>
+        {% endif %}
+        {% if is_like %}
+          <li><a href="#">Remove from likes</a></li>
+        {% endif %}
+        {% if is_nope %}
+          <li><a href="#">Remove from nopes</a></li>
+        {% endif %}
+        <li><a href="#">Option 3</a></li>
+        <li><a href="#">Option 4</a></li>
+        <li><a href="#">Option 5</a></li>
+        <li><a href="#">Report this profile</a></li>
+      </ul>
+    </nav>
     <div class="header">
       <!--
       <p class="zodiacs">

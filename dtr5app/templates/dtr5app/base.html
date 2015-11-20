@@ -75,6 +75,9 @@
       <p>&copy; 2015<p>
     </footer>
 
+    <script>/* hackadihack: make overflow menues close onclick anywhere. */
+(function(){ document.getElementsByTagName('body')[0].addEventListener('click', function(ev){ var els=document.querySelectorAll('nav.dotmenu input[type="checkbox"]'); for (var i=0;i<els.length;i++) if(els[i]!=ev.target && els[i].checked) els[i].checked = false;});})();
+    </script>
   </body>
 </html>
 {% endspaceless %}
