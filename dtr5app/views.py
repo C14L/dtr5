@@ -378,6 +378,8 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
 
     ctx = {'view_user': view_user,
            'is_match': request.user.profile.match_with(view_user),
+           'is_like': request.user.profile.does_like(view_user),
+           'is_nope': request.user.profile.does_nope(view_user),
            'user_list': user_list,
            'prev_user': prev_user,
            'next_user': next_user}

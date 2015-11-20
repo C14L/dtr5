@@ -198,6 +198,14 @@ class Profile(models.Model):
             Q(sender=self.user, receiver=view_user) |
             Q(receiver=self.user, sender=view_user)).count() == 2)
 
+    def does_like(self, view_user):
+        return (Flag.objects.filter(flag=Flag.LIKE_FLAG, sender=self.user,
+                                    receiver=view_user).exists())
+
+    def does_nope(self, view_user):
+        return (Flag.objects.filter(flag=Flag.NOPE_FLAG, sender=self.user,
+                                    receiver=view_user).exists())
+
     def reset_all(self):
         # TODO: find generic method to do this, using each field's default.
         self.created = None
