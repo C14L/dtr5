@@ -80,44 +80,45 @@
       <ul class="opts">
         {% if view_user.username == user.username %}
           <li><a href="/me/">Edit my profile</a></li>
-        {% endif %}
-        {% if is_like %}
-          <li>
-            <form class="delete-like-form" method="POST" action="{% url 'me_flag_page' 'delete' 'like' view_user.username %}">
-              {% csrf_token %}
-              <span class="fa fa-ban"></span>
-              <input type="submit" class="del-like opt" value="Remove from likes">
-             </form>
+        {% else %}
+          {% if is_like %}
+            <li>
+              <form class="delete-like-form" method="POST" action="{% url 'me_flag_page' 'delete' 'like' view_user.username %}">
+                {% csrf_token %}
+                <span class="fa fa-ban"></span>
+                <input type="submit" class="del-like opt" value="Remove from likes">
+               </form>
+            </li>
+          {% endif %}
+          {% if is_nope %}
+            <li>
+              <form class="delete-nope-form" method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
+                {% csrf_token %}
+                <span class="fa fa-ban"></span>
+                <input type="submit" class="del-nope opt" value="Remove from nopes">
+              </form>
+            </li>
+          {% endif %}
+          {% if not is_like and not is_nope %}
+            <li>
+              <form class="set-like-form" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
+                {% csrf_token %}
+                <span class="fa fa-heart"></span>
+                <input type="submit" class="like opt" value="I like!">
+              </form>
+            </li>
+            <li>
+              <form class="set-nope-form" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
+                {% csrf_token %}
+                <span class="fa fa-close"></span>
+                <input type="submit" class="nope opt" value="oh nope!">
+              </form>
+            </li>
+          {% endif %}
+          <li class="secondary">
+            <a href="{% url 'me_flag_page' 'set' 'report' view_user.username %}">report this profile</a>
           </li>
         {% endif %}
-        {% if is_nope %}
-          <li>
-            <form class="delete-nope-form" method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
-              {% csrf_token %}
-              <span class="fa fa-ban"></span>
-              <input type="submit" class="del-nope opt" value="Remove from nopes">
-            </form>
-          </li>
-        {% endif %}
-        {% if not is_like and not is_nope %}
-          <li>
-            <form class="set-like-form" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
-              {% csrf_token %}
-              <span class="fa fa-heart"></span>
-              <input type="submit" class="like opt" value="I like!">
-            </form>
-          </li>
-          <li>
-            <form class="set-nope-form" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
-              {% csrf_token %}
-              <span class="fa fa-close"></span>
-              <input type="submit" class="nope opt" value="oh nope!">
-            </form>
-          </li>
-        {% endif %}
-        <li class="secondary">
-          <a href="{% url 'me_flag_page' 'set' 'report' view_user.username %}">report this profile</a>
-        </li>
       </ul>
     </nav>
     <div class="header">
