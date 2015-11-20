@@ -249,8 +249,9 @@ class Flag(models.Model):
     LIKE_FLAG = 1
     NOPE_FLAG = 2
     BLOCK_FLAG = 3
+    REPORT_FLAG = 4
     FLAG_CHOICES = ((LIKE_FLAG, 'like'), (NOPE_FLAG, 'nope'),
-                    (BLOCK_FLAG, 'block'), )
+                    (BLOCK_FLAG, 'block'), (REPORT_FLAG, 'report'), )
     FLAG_DICT = {x[1]: x[0] for x in FLAG_CHOICES}
 
     sender = models.ForeignKey(User, related_name="flags_sent")
@@ -269,17 +270,26 @@ class Flag(models.Model):
                                       self.receiver.username)
 
     @classmethod
+    def delete_flag(cls, sender, receiver):
+        """
+        All flag relations are unique, so that there is only ever one flag set
+        between a pair of users. Deleting a flag between two users always
+        deletes all flags between them.
+        """
+        for x in cls.objects.filter(sender=sender, receiver=receiver):
+            x.delete()
+
+
+    @classmethod
     def set_flag(cls, sender, receiver, flag):
         """
         All current flags are "unique", so that setting one of them
         on a user, automatically removes all previously set flags on
         that user.
         """
-        for x in cls.objects.filter(sender=sender, receiver=receiver):
-            x.delete()
+        cls.delete_flag(sender, receiver)
         return cls.objects.create(sender=sender, receiver=receiver,
                                   flag=cls.FLAG_DICT[flag])
-
 
 class Sr(models.Model):
     """List of sr names each user is subscribed to."""

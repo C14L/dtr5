@@ -36,8 +36,8 @@ urlpatterns = [
     url(r'^me/flag/delete$', views.me_flag_del_view, name="me_flag_del_page"),
     url(r'^me/likes$', views.me_like_view, name="me_like_page"),
     url(r'^me/nopes$', views.me_nope_view, name="me_nope_page"),
-
-    url(r'^me/account/delete$', views.me_account_del_view, name="me_account_del_page"),
+    url(r'^me/account/delete$', views.me_account_del_view,
+        name="me_account_del_page"),
 
     url(r'^search/$', views.me_search_view, name="me_search_page"),
     # Show a list of matches (auth user and view user mutual likes).
@@ -48,6 +48,6 @@ urlpatterns = [
     # Show "view user"'s profile page.
     url(r'^u/' + R_USERNAME + r'/$', views.profile_view, name="profile_page"),
     # Let auth user set a flag on view user (like, nope, block, etc).
-    url(r'^flag/(?P<action>set|remove)/(?P<flag>[a-zA-Z0-9_-]{2,30})/' +
+    url(r'^flag/(?P<action>set|delete)/(?P<flag>[a-zA-Z0-9_-]{2,30})/' +
         R_USERNAME + r'/$', views.me_flag_view, name="me_flag_page"),
 ]

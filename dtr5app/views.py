@@ -417,7 +417,8 @@ def me_flag_view(request, action, flag, username):
     Let auth user set a flag for their relation to view user. Then
     redirect to the next user in session[search_results_buffer] list.
 
-    Possible flag values are 'like', 'nope', 'block'
+    Valid action values: 'set', 'delete'.
+    Valid flag values: 'like', 'nope', 'report'.
     """
     print('--> me_flag_view(): {} {} {}'.format(action, flag, username))
     view_user = get_object_or_404(User, username=username)
@@ -430,8 +431,12 @@ def me_flag_view(request, action, flag, username):
             request.user.profile.save()
             view_user.profile.matches_count = count_matches(view_user)
             view_user.profile.save()
-    elif action == 'delete':
-        return HttpResponseNotFound()
+    elif action == 'delete' and flag in flags.keys():
+        Flag.delete_flag(request.user, view_user)
+        # if this was a "remove like" or "remove nope" then display the same
+        # profile again, because most likely the auth user wants to change
+        # their flag.
+        return redirect(reverse('profile_page', args={view_user.username}))
     else:
         return HttpResponseNotFound()
     # Redirect the user, either to the "next profile" if there is any
