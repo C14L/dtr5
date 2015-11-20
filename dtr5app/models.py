@@ -163,15 +163,27 @@ class Profile(models.Model):
         except:
             return ''
 
-    def set_common_subs(self, subs_all):
-        """  ...  """
+    def set_subscribed_subs(self):
+        if not hasattr(self, 'subscribed_subs'):
+            qs = self.user.subs.all().prefetch_related('sr')
+            self.subscribed_subs = list(qs)
+
+    def set_common_subs(self, subs_list):
+        """
+        sets the common_subs and not_common_subs properties on the instance.
+        lists of all subs the instance user is (not) subscribed to and that
+        also appear in the subs_list list. the subs_list list is usually a
+        QuerySet of auth user's subs.
+        """
         self.common_subs = []
-        li = list(self.user.subs.all())
-        for s1 in subs_all:
-            for s2 in li:
-                if s1.sr.pk == s2.sr.pk:
-                    self.common_subs.append(s2)
-                    break
+        self.not_common_subs = []
+        self.set_subscribed_subs()
+        subs_list_pks = [x.sr.pk for x in subs_list]
+        for x in self.subscribed_subs:
+            if x.sr.pk in subs_list_pks:
+                self.common_subs.append(x)
+            else:
+                self.not_common_subs.append(x)
 
     def set_viewer_latlng(self, vlat, vlng):
         self.viewer_lat = vlat

@@ -161,21 +161,20 @@
       <ul class="sr-list">
         {% for row in view_user.profile.common_subs %}
           <li>
+            {% if row.user_is_banned %}
+              <span class="banned-tag">banned from</span>
+            {% endif %}
+            {% if row.user_is_muted %}
+              <span class="muted-tag">muted on</span>
+            {% endif %}
+            {% if row.user_is_moderator %}
+              <span class="mod-tag">moderator for</span>
+            {% endif %}
             <a href="{% url 'sr_page' row.sr.display_name %}">r/{{row.sr.display_name}}</a>
-            <span class="status">
-              {% if row.sr.over_18 %}
+            {% if row.sr.over_18 %}
               <span class="nsfw-tag">NSFW</span>
-              {% endif %}
-              {% if row.user_is_moderator %}
-              <span class="mod-tag">moderator</span>
-              {% endif %}
-              {% if row.user_is_banned %}
-              <span class="banned-tag">banned</span>
-              {% endif %}
-              {% if row.user_is_muted %}
-              <span class="muted-tag">muted</span>
-              {% endif %}
-            </span>
+            {% endif %}
+            <a href="https://www.reddit.com/r/{{row.sr.display_name}}"><span class="fa fa-reddit"></span></a>
           </li>
         {% endfor %}
       </ul>
@@ -297,9 +296,33 @@
           </tbody>
         </table>
       </div>
-
     </div>
   </div>
+
+  <div class="user-profile sr-list-inline subreddit-not-matches">
+    <h2>other subreddits {{view_user.username}} is subscribed to</h2>
+    <ul class="sr-list">
+      {% for row in view_user.profile.not_common_subs %}
+        <li>
+          {% if row.user_is_banned %}
+            <span class="banned-tag">banned from</span>
+          {% endif %}
+          {% if row.user_is_muted %}
+            <span class="muted-tag">muted on</span>
+          {% endif %}
+          {% if row.user_is_moderator %}
+            <span class="mod-tag">moderator for</span>
+          {% endif %}
+          <a href="{% url 'sr_page' row.sr.display_name %}">r/{{row.sr.display_name}}</a>
+          {% if row.sr.over_18 %}
+            <span class="nsfw-tag">NSFW</span>
+          {% endif %}
+          <a href="https://www.reddit.com/r/{{row.sr.display_name}}"><span class="fa fa-reddit"></span></a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
 </article>
 
 {% endblock %}

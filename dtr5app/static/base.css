@@ -47,7 +47,8 @@ Slightly smaller and slightly lighter than regular text.
 Tags next to subreddit names in subreddit sidebar lists.
 
  */
-.nsfw-tag, .subscr-tag, .contrib-tag, .mod-tag, .banned-tag, .muted-tag {
+
+/* .nsfw-tag, .subscr-tag, .contrib-tag, .mod-tag, .banned-tag, .muted-tag {
   opacity: 0.5;
   background-color: blue;
   font-family: sans-serif;
@@ -56,7 +57,7 @@ Tags next to subreddit names in subreddit sidebar lists.
   margin: 0 0.25rem; padding: 0 0.5rem;
   border-radius: 0.4rem;
   vertical-align: middle;
-}
+} */
 .subscr-tag {
   background-color: green;
 }
@@ -618,22 +619,48 @@ List of subreddit matches on profile view.
 }
 .sr-list-inline > ul {
   list-style: none;
-  margin: 0; padding: 8px;
-}
-.sr-list-inline > ul > li {
-  display: inline-block;
   margin: 0; padding: 0;
 }
-.sr-list-inline > ul > li > a {
-  background-color: #F3F3F3;
+.sr-list-inline > ul > li {
+  background-color: transparent;
   border-radius: calc((1.25rem / 2) + 16px);
-  display: block;
-  font-size: 1.25rem;
-  margin: 4px; padding: 16px; border: 0;
+  border: 2px solid gray;
+  display: inline-block;
+  font-size: 0;
+  margin: 4px; padding: 0;
+  overflow: hidden;
+}
+.sr-list-inline > ul > li > a {
+  border: 0;
+  display: inline-block;
+  font-size: 1.25rem; line-height: 2.25rem;
+  padding: 0 8px;
+  text-decoration: inherit;
   text-shadow: 1px 1px 1px rgba(255,255,255,0.9);
 }
-
-
+.sr-list-inline > ul > li > a[href^="https://"] {
+  border-left: 1px solid gray;
+  color: gray;
+  display: inline-block;
+}
+.sr-list-inline > ul > li > a[href^="https://"] > span.fa {
+  margin: 0; padding: 0;
+}
+.sr-list-inline > ul > li > .banned-tag,
+.sr-list-inline > ul > li > .muted-tag,
+.sr-list-inline > ul > li > .mod-tag,
+.sr-list-inline > ul > li > .nsfw-tag {
+  background-color: gray;
+  color: white;
+  display: inline-block;
+  font-size: 1.25rem; line-height: 2.25rem;
+  margin: 0; padding: 0 8px;
+}
+.sr-list-inline > ul > li > .mod-tag {
+  background-color: transparent;
+  color: red;
+  padding-right: 0;
+}
 
 /*
 
