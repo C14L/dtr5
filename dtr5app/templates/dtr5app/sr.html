@@ -7,14 +7,17 @@
 {% block main %}
 
 <aside id="sidebar">
-  {% with user as view_user %}
-    {% include 'dtr5app/sidebar_li_subs.html' %}
-  {% endwith %}
+  <section class="card">
+    <h2>about this subreddit</h2>
+  </section>
 </aside>
 
 <article>
-  <h1><a href="{% url 'sr_page' view_sr.display_name %}">{{user_count}} people of r/{{view_sr.display_name}}</a></h1>
-  <p><a href="https://www.reddit.com/r/{{view_sr.display_name}}">view r/{{view_sr.display_name}} on reddit.com</a>
+  <h1>
+    {{user_count}} people of r/{{view_sr.display_name}}
+    <a class="reddit-link" href="https://www.reddit.com/r/{{view_sr.display_name}}"><span class="fa fa-reddit"></span><span>/r/{{view_sr.display_name}}</span></a>
+  </h1>
+
   {% if user_list %}
     <ul class="user-list">
       {% for v in user_list %}
