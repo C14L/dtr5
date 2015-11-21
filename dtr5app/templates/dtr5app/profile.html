@@ -179,6 +179,15 @@
   </div>
 
   <div class="user-profile">
+    <h2>more about {{view_user.username}}</h2>
+
+    <ul class="links-to-reddit-profile">
+      <li><a href="https://www.reddit.com/user/{{view_user.username}}/comments/">comments history</a></li>
+      <li><a href="https://www.reddit.com/user/{{view_user.username}}/submitted/">submitted history</a></li>
+      <li><a href="https://www.reddit.com/user/{{view_user.username}}/?sort=top">most upvoted posts</a></li>
+      <li><a href="https://www.reddit.com/user/{{view_user.username}}/?sort=controversial">most controversial posts</a></li>
+    </ul>
+
     <div class="info-tables">
       <div class="info">
         <table>

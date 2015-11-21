@@ -914,6 +914,17 @@ body.profile .user-profile .account-age {
 body.profile .user-profile .about {
   margin: 0; padding: 16px;
 }
+body.profile .user-profile ul.links-to-reddit-profile {
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  display: block;
+  list-style: none;
+  margin: -16px; margin-bottom: 0; padding: 0;
+  text-align: center;
+}
+body.profile .user-profile ul.links-to-reddit-profile li {
+  display: inline-block;
+  margin: 0; padding: 16px;
+}
 body.profile .user-profile .info-tables {
   overflow: hidden;
   margin: 0; padding: 0;
