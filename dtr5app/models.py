@@ -53,8 +53,8 @@ class Profile(models.Model):
     tagline = models.CharField(default='', max_length=160)          # unused
     height = models.PositiveSmallIntegerField(default=0)  # in cm   # unused
     weight = models.PositiveSmallIntegerField(default=0)  # in kg   # unused
-    lookingfor = models.CommaSeparatedIntegerField(  # settings.LOOKINGFOR
-        max_length=250, blank=True, default='')
+    _lookingfor = models.CommaSeparatedIntegerField(  # settings.LOOKINGFOR
+        max_length=50, blank=True, default='')
     relstatus = models.PositiveSmallIntegerField(                   # unused
         blank=True, null=True, default=None, choices=settings.RELSTATUS)
     education = models.PositiveSmallIntegerField(                   # unused
@@ -73,33 +73,35 @@ class Profile(models.Model):
     block_recv_count = models.PositiveSmallIntegerField(default=0)  # unused
 
     # f_ --> user search settings: who shows up in search results?
+
     f_sex = models.PositiveSmallIntegerField(default=0)
     f_distance = models.PositiveSmallIntegerField(default=0)  # km, max 32767
     f_minage = models.PositiveSmallIntegerField(default=18)
     f_maxage = models.PositiveSmallIntegerField(default=100)
     # find users with the over_18 profile value set to True or who
     # are subscribed to any "over_18" subreddits?
-    f_over_18 = models.BooleanField(default=True)
+    f_over_18 = models.BooleanField(default=True)                   # unused
     # find only users that have a verified email on reddit?
-    f_has_verified_email = models.BooleanField(default=False)
+    f_has_verified_email = models.BooleanField(default=False)       # unused
 
     # x_ --> only show my profile listed in another redditor's
     # search results, if the other redditor...
+
     # ...matches all my above search (f_*) options.
-    x_match_search_options = models.BooleanField(default=False)
+    x_match_search_options = models.BooleanField(default=False)     # unused
     # ...is not subbed to any over_18 subreddits and their reddit
     # account is not set to "over_18" either.
-    x_only_no_over_18 = models.BooleanField(default=False)
+    x_only_no_over_18 = models.BooleanField(default=False)          # unused
     # ...has a verified email address on reddit.
-    x_has_verified_email = models.BooleanField(default=False)
+    x_has_verified_email = models.BooleanField(default=False)       # unused
     # ...has an account that is at least so many days old.
     # (do not use models.DurationField, the resolution is too high,
     # its less compatible, and the functionality isn't needed here)
     x_min_account_age_days = models.PositiveSmallIntegerField(default=2)
-    # ...has at least so much comment karma.
-    x_min_comment_karma = models.PositiveIntegerField(default=50)
+    # ...has at least so much comment karma.                        # unused
+    x_min_comment_karma = models.PositiveIntegerField(default=50)   # unused
     # ...has at least so much link karma.
-    x_min_link_karma = models.PositiveIntegerField(default=0)
+    x_min_link_karma = models.PositiveIntegerField(default=0)       # unused
 
     # Can be set for distance calculation.
     viewer_lat = None
@@ -117,12 +119,6 @@ class Profile(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Profile, self).__init__(*args, **kwargs)
-        # instafix Django's weird CommaSeparatedIntegerField.
-        if isinstance(self.lookingfor, str):
-            if self.lookingfor:
-                self.lookingfor = [int(x) for x in self.lookingfor.split(',')]
-            else:
-                self.lookingfor = []
         # Unserialilze pictures JSON string into list.
         try:
             self.pics = json.loads(self.pics_str)
@@ -130,9 +126,6 @@ class Profile(models.Model):
             self.pics = []
 
     def save(self, *args, **kwargs):
-        # instafix Django's weird CommaSeparatedIntegerField.
-        if isinstance(self.lookingfor, list):
-            self.lookingfor = ','.join([str(x) for x in self.lookingfor])
         # Don't store more than 10 pictures per profile.
         if len(self.pics) > 10:
             self.pics = self.pics[:10]
@@ -145,6 +138,20 @@ class Profile(models.Model):
         # Serialilze pics list into JSON string.
         self.pics_str = json.dumps(self.pics, ensure_ascii=False)
         super(Profile, self).save(*args, **kwargs)
+
+    @property
+    def lookingfor(self):
+        if self._lookingfor:
+            return [int(x) for x in self._lookingfor.split(',')]
+        else:
+            return []
+
+    @lookingfor.setter
+    def lookingfor(self, li):
+        if isinstance(li, list):
+            self._lookingfor = ','.join([str(x) for x in li])
+        else:
+            raise ValueError('list expected')
 
     def get_sex_symbol(self):
         """Returns the symbol for the user's sex."""
@@ -195,11 +202,15 @@ class Profile(models.Model):
                 self.not_common_subs.append(x)
 
     def set_viewer_latlng(self, vlat, vlng):
+        """Retuired to set view_user lat/lng before calling get_distance()."""
         self.viewer_lat = vlat
         self.viewer_lng = vlng
 
     def get_distance(self):
-        """Return distance in meters between lat/lng and instance's loc."""
+        """
+        Return distance in meters between instance location and viewer_lat/lng
+        as set by a previous call of set_viewer_latlng().
+        """
         try:
             return int(distance_between_geolocations(
                 (self.lat, self.lng), (self.viewer_lat, self.viewer_lng)))
@@ -207,10 +218,11 @@ class Profile(models.Model):
             return 99999999
 
     def get_distance_in_km(self):
-        """Returns distance in km between lat/lng and instance's location"""
+        """Returns above distance in km."""
         return float(self.get_distance() / 1000)
 
     def get_distance_in_miles(self):
+        """Returns above distance in miles."""
         return float(self.get_distance_in_km() * 0.621371)
 
     def match_with(self, view_user):
@@ -220,10 +232,12 @@ class Profile(models.Model):
             Q(receiver=self.user, sender=view_user)).count() == 2)
 
     def does_like(self, view_user):
+        """Return True is the instance user "liked" view_user."""
         return (Flag.objects.filter(flag=Flag.LIKE_FLAG, sender=self.user,
                                     receiver=view_user).exists())
 
     def does_nope(self, view_user):
+        """Return True is the instance user "noped" view_user."""
         return (Flag.objects.filter(flag=Flag.NOPE_FLAG, sender=self.user,
                                     receiver=view_user).exists())
 
