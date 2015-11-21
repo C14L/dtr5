@@ -78,17 +78,24 @@
           <label class="dob">
             <input type="date" name="dob" placeholder="YYYY-MM-DD" maxlength="10" value="{{user.profile.dob|date:'c'}}">
           </label>
-          &nbsp;<span class="help">never publicly shown! only used to show your age and zodiacs.</span>
+          &nbsp;
+          <span class="help">
+            never publicly shown! only used to show your age and zodiacs.
+          </span>
         </span>
       </p>
-      <p class="lookingfor">
+      <p>
         <span class="key-col">looking for:</span>
-        <span class="val-col checkbox-list">
-          {% for x in lookingfor_choices %}
-            <label>
-              <input {% if x.0 in user.profile.lookingfor %}checked{% endif %} type="checkbox" name="lookingfor" value="{{x.0}}"> {{x.1}}
-            </label>
-          {% endfor %}
+        <span class="val-col">
+          <span class="lookingfor-list">
+            {% for x in lookingfor_choices %}
+              <span>
+                <label>
+                  <input {% if x.0 in user.profile.lookingfor %}checked{% endif %} type="checkbox" name="lookingfor" value="{{x.0}}"> {{x.1}}
+                </label>
+              </span>
+            {% endfor %}
+          </span>
         </span>
       </p>
       <p>

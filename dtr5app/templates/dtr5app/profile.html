@@ -165,7 +165,7 @@
               <span class="muted-tag">muted on</span>
             {% endif %}
             {% if row.user_is_moderator %}
-              <span class="mod-tag">moderator for</span>
+              <span class="mod-tag">moderator of</span>
             {% endif %}
             <a href="{% url 'sr_page' row.sr.display_name %}">r/{{row.sr.display_name}}</a>
             {% if row.sr.over_18 %}
@@ -190,13 +190,13 @@
 
     <p>
       <span>{{view_user.username}} is looking for:</span>&nbsp;
-      <ul class="lookingfor-list">
-      {% for x in lookingfor_choices %}
-        {% if x.0 in view_user.profile.lookingfor %}
-          <li>{{x.1}}</li>
-        {% endif %}
-      {% endfor %}
-      </ul>
+      <span class="lookingfor-list">
+        {% for x in lookingfor_choices %}
+          {% if x.0 in view_user.profile.lookingfor %}
+            <span>{{x.1}}</span>
+          {% endif %}
+        {% endfor %}
+      </span>
     </p>
 
     <div class="info-tables">

@@ -188,20 +188,30 @@ prettify a list of labeled checkboxes, i.e.
   width: 1rem; height: 1rem;
 }
 
-ul.lookingfor-list {
+.lookingfor-list {
   display: inline-block;
   list-style: none;
   margin: 0; padding: 0;
+  line-height: 2rem;
 }
-ul.lookingfor-list li {
+.lookingfor-list > span {
   background-color: white;
   border: 2px solid orange;
   border-radius: 1.25rem;
   display: inline-block;
-  font-size: 1rem; line-height: 1rem;
-  margin: 2px; padding: 0.5rem 0.75rem;
+  font-size: 1rem; line-height: 2rem;
+  margin: 2px; padding: 0 0.75rem;
   text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
   vertical-align: middle;
+}
+.lookingfor-list > span input[type="checkbox"] {
+  margin: 0 0.25rem 0 0; padding: 0;
+  opacity: 0.2;
+  vertical-align: middle;
+  width: 1rem; height: 1rem;
+}
+.lookingfor-list > span input[type="checkbox"]:checked {
+  opacity: 0.9;
 }
 
 
@@ -594,17 +604,18 @@ The list of settings options on the "preferences" page.
   border-top: 1px solid rgba(0,0,0,0.12);
   margin: 0 -16px 0 -16px; padding: 16px;
 }
-.settings-section.section-profile p {
+.settings-section.section-profile > form > p {
   overflow: hidden;
 }
-.settings-section.section-profile p .key-col {
-  display: block; float: left;
+.settings-section.section-profile > form > p > .key-col {
+  display: block;
+  float: left;
   width: 120px;
   margin: 0; padding: 0;
   text-align: right;
   line-height: 3rem;
 }
-.settings-section.section-profile p .val-col {
+.settings-section.section-profile > form > p > .val-col {
   display: block;
   margin: 0 0 0 130px; padding: 0;
   line-height: 3rem;
