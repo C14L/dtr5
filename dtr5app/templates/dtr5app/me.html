@@ -42,12 +42,14 @@
           <input type="submit" value="search">
         </label>
       </p>
+      <!-- TODO
       <p>
         <label>
           <span><b>exclude</b> people subscribed to these subreddits:</span>
           <input type="text" name="exclude_sr_li" value="" maxlength="250" size="50" placeholder="r/shitredditsays r/AdviceAnimals r/dragonsfuckingcars">
         </label>
       </p>
+      -->
     </form>
     <p class="help">
       find people subscribed to the same subreddit as you.
@@ -55,49 +57,42 @@
   </div>
 
   <div class="settings-section section-profile">
-    <h2>profile settings</h2>
+    <h2>your profile settings</h2>
     <form class="item manual" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
       <p>
-        <label class="sex">
-          <span>my gender:</span>
-          <select name="sex" size="1">
-            {% for sex in sex_choices %}
-              <option {% if user.profile.sex == sex.0 %}selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
-            {% endfor %}
-          </select>
-        </label>
-      </p>
-      <p>
-        <label class="dob">
-          <span>my birthday:</span>
-          <input type="date" name="dob" placeholder="YYYY-MM-DD" maxlength="10" value="{{user.profile.dob|date:'c'}}">
-          <span class="help">never publicly shown! only used to show your age and zodiacs.</span>
-        </label>
-      </p>
-      <div class="lookingfor">
-        <span>looking for:</span>
-        <span class="checkbox-list">
-          <label><input type="checkbox" name="lookingfor" value="">someone to chat</label>
-          <label><input type="checkbox" name="lookingfor" value="">new friends</label>
-          <label><input type="checkbox" name="lookingfor" value="">hugs and nice words</label>
-          <label><input type="checkbox" name="lookingfor" value="">sexy time</label>
-          <label><input type="checkbox" name="lookingfor" value="">dating</label>
-          <label><input type="checkbox" name="lookingfor" value="">serious dating</label>
-          <label><input type="checkbox" name="lookingfor" value="">a relationship</label>
-          <label><input type="checkbox" name="lookingfor" value="">marriage</label>
-          <label><input type="checkbox" name="lookingfor" value="">house+car+kids... now!</label>
-          <label><input type="checkbox" name="lookingfor" value="">(another) cat</label>
-          <label><input type="checkbox" name="lookingfor" value="">my car keys</label>
-          <label><input type="checkbox" name="lookingfor" value="">the grand unified theory</label>
-          <label><input type="checkbox" name="lookingfor" value="">world peace</label>
-          <label><input type="checkbox" name="lookingfor" value="">this is getting ridiculous</label>
-          <label><input type="checkbox" name="lookingfor" value="">stahp!</label>
-          <label><input type="checkbox" name="lookingfor" value="">just some nice person, really.</label>
+        <span class="key-col">my gender:</span>
+        <span class="val-col">
+          <label class="sex">
+            <select name="sex" size="1">
+              {% for sex in sex_choices %}
+                <option {% if user.profile.sex == sex.0 %}selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+              {% endfor %}
+            </select>
+          </label>
         </span>
-      </div>
+      </p>
       <p>
-        <label class="submit">
+        <span class="key-col">my birthday:</span>
+        <span class="val-col">
+          <label class="dob">
+            <input type="date" name="dob" placeholder="YYYY-MM-DD" maxlength="10" value="{{user.profile.dob|date:'c'}}">
+          </label>
+          &nbsp;<span class="help">never publicly shown! only used to show your age and zodiacs.</span>
+        </span>
+      </p>
+      <p class="lookingfor">
+        <span class="key-col">looking for:</span>
+        <span class="val-col checkbox-list">
+          {% for x in lookingfor_choices %}
+            <label>
+              <input {% if x.0 in user.profile.lookingfor %}checked{% endif %} type="checkbox" name="lookingfor" value="{{x.0}}"> {{x.1}}
+            </label>
+          {% endfor %}
+        </span>
+      </p>
+      <p>
+        <label class="val-col submit">
           <input type="submit" value="submit">
         </label>
       </p>

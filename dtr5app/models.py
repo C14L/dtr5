@@ -53,8 +53,8 @@ class Profile(models.Model):
     tagline = models.CharField(default='', max_length=160)          # unused
     height = models.PositiveSmallIntegerField(default=0)  # in cm   # unused
     weight = models.PositiveSmallIntegerField(default=0)  # in kg   # unused
-    lookingfor = models.PositiveSmallIntegerField(                  # unused
-        blank=True, null=True, default=None, choices=settings.LOOKINGFOR)
+    lookingfor = models.CommaSeparatedIntegerField(  # settings.LOOKINGFOR
+        max_length=250, blank=True, default='')
     relstatus = models.PositiveSmallIntegerField(                   # unused
         blank=True, null=True, default=None, choices=settings.RELSTATUS)
     education = models.PositiveSmallIntegerField(                   # unused
@@ -117,6 +117,12 @@ class Profile(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Profile, self).__init__(*args, **kwargs)
+        # instafix Django's weird CommaSeparatedIntegerField.
+        if isinstance(self.lookingfor, str):
+            if self.lookingfor:
+                self.lookingfor = [int(x) for x in self.lookingfor.split(',')]
+            else:
+                self.lookingfor = []
         # Unserialilze pictures JSON string into list.
         try:
             self.pics = json.loads(self.pics_str)
@@ -124,6 +130,9 @@ class Profile(models.Model):
             self.pics = []
 
     def save(self, *args, **kwargs):
+        # instafix Django's weird CommaSeparatedIntegerField.
+        if isinstance(self.lookingfor, list):
+            self.lookingfor = ','.join([str(x) for x in self.lookingfor])
         # Don't store more than 10 pictures per profile.
         if len(self.pics) > 10:
             self.pics = self.pics[:10]

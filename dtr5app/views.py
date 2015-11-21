@@ -44,7 +44,9 @@ def me_view(request, template_name="dtr5app/me.html"):
     """Show a settings page for auth user's profile."""
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
-    ctx = {'sex_choices': settings.SEX, 'unixtime': unixtime(),
+    ctx = {'sex_choices': settings.SEX,
+           'lookingfor_choices': settings.LOOKINGFOR,
+           'unixtime': unixtime(),
            'timeleft': request.session['expires'] - unixtime()}
     # Check if the user has filled on the basics of their profile. If
     # they haven't, show special pages for it.
@@ -201,8 +203,8 @@ def me_manual_view(request):
 
     if request.POST.get('tagline', None):
         request.user.profile.tagline = request.POST.get('tagline')
-    if request.POST.get('lookingfor', None):
-        request.user.profile.lookingfor = request.POST.get('lookingfor')
+    if request.POST.getlist('lookingfor', None):
+        request.user.profile.lookingfor = request.POST.getlist('lookingfor')
     if request.POST.get('relstatus', None):
         request.user.profile.relstatus = request.POST.get('relstatus')
     if request.POST.get('education', None):
@@ -381,6 +383,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
            'is_match': request.user.profile.match_with(view_user),
            'is_like': request.user.profile.does_like(view_user),
            'is_nope': request.user.profile.does_nope(view_user),
+           'lookingfor_choices': settings.LOOKINGFOR,
            'user_list': user_list,
            'prev_user': prev_user,
            'next_user': next_user}
@@ -478,7 +481,8 @@ def me_flag_view(request, action, flag, username):
             if view_user.username in request.session['search_results_buffer']:
                 prev_user, next_user = get_prevnext_user(request, view_user)
                 _next = reverse('profile_page', args={next_user.username})
-                request.session['search_results_buffer'].remove(view_user.username)
+                request.session[
+                    'search_results_buffer'].remove(view_user.username)
                 request.session.modified = True
             else:
                 username = request.session['search_results_buffer'][0]

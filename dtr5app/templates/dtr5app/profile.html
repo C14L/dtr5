@@ -188,6 +188,17 @@
       <li><a href="https://www.reddit.com/user/{{view_user.username}}/?sort=controversial">most controversial posts</a></li>
     </ul>
 
+    <p>
+      <span>{{view_user.username}} is looking for:</span>&nbsp;
+      <ul class="lookingfor-list">
+      {% for x in lookingfor_choices %}
+        {% if x.0 in view_user.profile.lookingfor %}
+          <li>{{x.1}}</li>
+        {% endif %}
+      {% endfor %}
+      </ul>
+    </p>
+
     <div class="info-tables">
       <div class="info">
         <table>
