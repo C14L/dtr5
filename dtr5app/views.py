@@ -24,8 +24,11 @@ from .utils import (update_list_of_subscribed_subreddits,
                     get_user_list_around_view_user,
                     get_prevnext_user,
                     add_auth_user_latlng,
-                    get_matches_user_list, count_matches)
-from .utils_search import search_results_buffer, search_subreddit_users
+                    get_matches_user_list,
+                    count_matches,
+                    get_user_and_related_or_404)
+from .utils_search import (search_results_buffer,
+                           search_subreddit_users)
 
 logger = logging.getLogger(__name__)
 
@@ -361,7 +364,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     Display the complete profile of one user, together with "like" and "nope"
     buttons, unless auth user is viewing their own profile.
     """
-    view_user = get_object_or_404(User, username=username)
+    view_user = get_user_and_related_or_404(username, 'profile', 'subs')
     # Add auth user's latlng, so we can query their distance.
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
                                         request.user.profile.lng)

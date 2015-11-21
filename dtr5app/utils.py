@@ -5,6 +5,7 @@ import pytz
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.http import HttpResponseNotFound
 from .models import (Sr, Subscribed, Flag)
 from .utils_search import search_results_buffer
 
@@ -177,3 +178,17 @@ def get_matches_user_list(user):
         setattr(x, 'matched', c1 if c1 > c2 else c2)
     user_list.sort(key=lambda row: row.matched, reverse=True)
     return user_list
+
+
+def get_user_and_related_or_404(username, *args):
+    """Like get_user_or_404 but prefetches the givem related items."""
+    if isinstance(username, str):
+        q = {'username': username}
+    elif isinstance(username, int):
+        q = {'pk': username}
+    else:
+        return HttpResponseNotFound()
+    try:
+        return User.objects.prefetch_related(*args).get(**q)
+    except User.DoesNotExist:
+        return HttpResponseNotFound()
