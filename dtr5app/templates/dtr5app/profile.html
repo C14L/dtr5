@@ -14,7 +14,6 @@
       {% endfor %}
     </ul>
   </div>
-
 </aside>
 
 <article>
@@ -187,7 +186,7 @@
       <li><a href="https://www.reddit.com/user/{{view_user.username}}/?sort=top">most upvoted posts</a></li>
       <li><a href="https://www.reddit.com/user/{{view_user.username}}/?sort=controversial">most controversial posts</a></li>
     </ul>
-
+{{view_user.profile.lookingfor}}
     <p>
       <span>{{view_user.username}} is looking for:</span>&nbsp;
       <span class="lookingfor-list">

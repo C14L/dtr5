@@ -428,7 +428,7 @@ def me_flag_view(request, action, flag, username):
     Valid flag values: 'like', 'nope', 'report'.
     """
     print('--> me_flag_view(): {} {} {}'.format(action, flag, username))
-    view_user = get_object_or_404(User, username=username)
+    view_user = get_user_and_related_or_404(username)
     flags = {x[1]: x[0] for x in Flag.FLAG_CHOICES}
 
     if request.method in ['GET', 'HEAD']:
@@ -502,6 +502,7 @@ def me_flag_view(request, action, flag, username):
 def me_nope_view(request, template_name='dtr5app/nopes.html'):
     user_list = User.objects.filter(flags_received__sender=request.user,
                                     flags_received__flag=Flag.NOPE_FLAG)
+    user_list = user_list.prefetch_related('profile')
     user_list = add_auth_user_latlng(request.user, user_list)
     ctx = {'user_list': user_list}
     return render_to_response(template_name, ctx,
@@ -513,6 +514,7 @@ def me_nope_view(request, template_name='dtr5app/nopes.html'):
 def me_like_view(request, template_name='dtr5app/likes.html'):
     user_list = User.objects.filter(flags_received__sender=request.user,
                                     flags_received__flag=Flag.LIKE_FLAG)
+    user_list = user_list.prefetch_related('profile')
     user_list = add_auth_user_latlng(request.user, user_list)
     ctx = {'user_list': user_list}
     return render_to_response(template_name, ctx,
