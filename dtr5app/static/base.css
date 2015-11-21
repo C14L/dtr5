@@ -144,6 +144,7 @@ nav.dotmenu > .opts > li > a {
 nav.dotmenu > .opts > li > form > input[type="submit"] {
   width: calc(100% - 2rem);
 }
+nav.dotmenu > .opts > li > span.fa,
 nav.dotmenu > .opts > li > form > span.fa {
   display: block; float: left;
   font-size: 1.25rem; line-height: inherit;
@@ -677,8 +678,8 @@ Site header.
 header {
   background-color: #003B6F; /* reddit default color: #CEE3F8; */
   border-bottom: 1px solid #5F99CF;
+  height: 56px;
   margin: 0; padding: 0;
-  overflow: hidden;
   white-space: nowrap;
 }
 header .site-logo {
@@ -704,6 +705,12 @@ header .site-links {
   float: right;
   font-size: 1rem; line-height: 3rem;
   margin: 0; padding: 0;
+}
+header .site-links .dotmenu {
+  border-left: 1px solid rgba(255,255,255,0.28);
+  color: white;
+  height: 46px; width: 64px;
+  padding-top: 10px;
 }
 header .site-links .item {
   background-color: rgba(255,255,255,0);
@@ -741,6 +748,7 @@ between "header" and "main" only if there are any messeges.
  */
 ul#site-messages {
   background-color: #C00;
+  clear: both;
   color: #FFF;
   font-size: 1.15rem;
   list-style: none;
@@ -760,6 +768,7 @@ Usualy contains <article/> and <aside id="sidebar"/>.
 
  */
 body main {
+  clear: both;
   overflow: hidden;
 }
 body article {
@@ -876,21 +885,13 @@ body.profile .user-profile > h2 {
 }
 body.profile .user-profile .header {
   display: block;
-}
-body.profile .user-profile .header .zodiacs {
-  float: right;
-  margin: 0; padding: 0;
-}
-body.profile .user-profile .header .zodiacs > span {
-  background-color: gray;
-  color: white;
-  display: inline-block;
-  font-size: 1.5rem; line-height: 1.5rem;
-  margin: 0; margin-left: 0.5rem; padding: 0.5rem;
+  margin: 16px; padding: 0;
 }
 body.profile .user-profile .header h1 {
   display: inline-block;
   font-size: 2.5rem; line-height: 2.5rem;
+  letter-spacing: 0.2rem;
+  font-weight: bold;
   margin: 0; padding: 0;
   vertical-align: middle;
 }
@@ -1256,26 +1257,24 @@ body.signup-steps article div.abouts {
   }
 
   header .site-links {
-    float: none;
-    font-size: 1rem; line-height: 3rem;
+    font-size: 1rem; line-height: 50px;
     margin: 0 auto; padding: 0;
   }
   header .site-links .item {
     position: relative;
-    width: 3rem;
+    width: 3.5rem; height: 50px;
+    padding-top: 6px; padding-bottom: 0;
+    overflow: hidden;
+    vertical-align: middle;
+    white-space: nowrap;
   }
   header .site-links .item .text {
     display: none;
   }
   header .site-links .item .icon {
     display: inline-block;
-    font-size: 1.5rem; line-height: 1em;
-  }
-  header .site-links .item {
-    width: 3.5rem;
-    overflow: hidden;
-    vertical-align: middle;
-    white-space: nowrap;
+    margin: 0; padding: 0;
+    font-size: 1.5rem; line-height: 1rem;
   }
 
   .match-box {
