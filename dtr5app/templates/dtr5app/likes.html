@@ -6,9 +6,11 @@
 
 {% block main %}
 
-<article class="centered">
-  <h1>Likes</h1>
-  {% include 'dtr5app/user_list.html' %}
+<article>
+  <div class="card">
+    <h2>likes</h2>
+    {% include 'dtr5app/user_list.html' %}
+  </div>
 </article>
 
 {% endblock %}

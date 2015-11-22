@@ -6,22 +6,11 @@
 
 {% block main %}
 
-<!--
-<aside id="sidebar">
-  <div class="info">
-    <p class="nope-count">There are {{user_list|length}} people on your nope list.</p>
-    <form class="mainbtn narrow" method="POST" action="{% url 'me_flag_del_page' %}">
-      {% csrf_token %}
-      <input type="hidden" name="flags" value="nope">
-      <input type="submit" value="clear nope list">
-    </form>
+<article>
+  <div class="card">
+    <h2>nopes</h2>
+    {% include 'dtr5app/user_list.html' %}
   </div>
-</aside>
--->
-
-<article class="centered">
-  <h1>Nopes</h1>
-  {% include 'dtr5app/user_list.html' %}
 </article>
 
 {% endblock %}

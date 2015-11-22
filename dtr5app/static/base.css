@@ -20,6 +20,12 @@ form, button {
   display: inline;
   margin: 0
 }
+form {
+  padding: 0;
+}
+ul > li  {
+  line-height: 1.5rem;
+}
 input[type="text"], input[type="date"], input[type="submit"], select {
   margin: 4px; padding: 4px;
 }
@@ -159,35 +165,10 @@ nav.dotmenu > .opts > li.secondary {
 
 /*
 
-prettify a list of labeled checkboxes, i.e.
-  <label><checkbox>text text text</label>
-  <label><checkbox>text text text</label>
-  <label><checkbox>text text text</label>
-  ...
+list of "lookingfor" options in profile and settings,
+with and without "checkbox" selectors.
 
  */
-.checkbox-list {
-}
-.checkbox-list label {
-  background-color: orange;
-  border-radius: 1.25rem;
-  display: inline-block;
-  font-size: 1rem; line-height: 1rem;
-  margin: 0.125rem; padding: 0.75rem;
-  text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
-  vertical-align: middle;
-}
-.checkbox-list label input[type="checkbox"] {
-  background-color: rgba(0,0,0,1);
-  border: 0; outline: 0;
-  display: inline-block;
-  font-size: 1rem; line-height: 1rem;
-  margin: 0 0.25rem 0 0; padding: 0;
-  opacity: 0.6;
-  vertical-align: middle;
-  width: 1rem; height: 1rem;
-}
-
 .lookingfor-list {
   display: inline-block;
   list-style: none;
@@ -318,20 +299,16 @@ Standard content card, simplefied Material-style.
  */
 .card {
   background-color: white;
-  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
   margin: 16px 0; padding: 16px;
 }
-.card:first-child {
-  margin-top: 0;
-}
 .card > h2 {
-  font-size: 1.5rem; line-height: 1em;
+  font-size: 1.5rem; line-height: 3.5rem;
   border-bottom: 1px solid rgba(0,0,0,0.12);
   font-weight: bold;
-  margin: 0 -16px 16px -16px; padding: 0 16px 16px 16px;
+  margin: -16px -16px 16px -16px; padding: 0;
   text-align: center;
 }
-
 
 
 /*
@@ -528,10 +505,10 @@ ul.user-list-vert {
   display: block;
   font-size: 0;
   list-style: none;
-  margin: 0; padding: 0;
+  margin: -16px; padding: 0;
 }
 ul.user-list-vert li {
-  border-top: 1px solid rgba(0,0,0,0.12);
+  border-bottom: 1px solid rgba(0,0,0,0.12);
   display: block;
   margin: 0; padding: 8px;
   overflow: hidden;
@@ -556,11 +533,12 @@ ul.user-list-vert li span.info {
 }
 ul.user-list-vert li span.info a.username {
   display: block;
-  font-size: 1.5rem; line-height: 1em;
+  font-size: 1.5rem; line-height: 2rem;
 }
 ul.user-list-vert li span.info span.asl {
-  color: #888;
+  color: gray;
   display: block;
+  font-size: 1rem; line-height: 2rem;
 }
 ul.user-list-vert li span.info span.asl.short {
   display: none;
@@ -577,37 +555,20 @@ ul.user-list-vert li .mainbtn {
 The list of settings options on the "preferences" page.
 
  */
-.settings-section {
-  background-color: white;
-  border: 1px solid rgba(0,0,0,0.1);
-  margin: 16px 0; padding: 16px;
-}
-.settings-section > h2 {
-  font-size: 1.5rem; line-height: 1em;
-  border-bottom: 1px solid rgba(0,0,0,0.12);
-  font-weight: bold;
-  margin: 0 -16px 16px -16px; padding: 0 16px 16px 16px;
-}
-.settings-section ul > li  {
-  line-height: 1.5rem;
-}
-.settings-section form {
+body.me .card .item {
   margin: 0; padding: 0;
 }
-.settings-section .item {
-  margin: 0; padding: 0;
-}
-.settings-section .item > span {
+body.me .card .item > span {
   margin-left: 4px;
 }
-.settings-section.section-profile > div.item:not(:first-child) {
+body.me .card.section-profile > div.item:not(:first-child) {
   border-top: 1px solid rgba(0,0,0,0.12);
   margin: 0 -16px 0 -16px; padding: 16px;
 }
-.settings-section.section-profile > form > p {
+body.me .card.section-profile > form > p {
   overflow: hidden;
 }
-.settings-section.section-profile > form > p > .key-col {
+body.me .card.section-profile > form > p > .key-col {
   display: block;
   float: left;
   width: 120px;
@@ -615,43 +576,44 @@ The list of settings options on the "preferences" page.
   text-align: right;
   line-height: 3rem;
 }
-.settings-section.section-profile > form > p > .val-col {
+body.me .card.section-profile > form > p > .val-col {
   display: block;
   margin: 0 0 0 130px; padding: 0;
   line-height: 3rem;
 }
 
-.settings-section.section-about textarea {
+body.me .card.section-about textarea {
   width: 400px; height: 100px;
   resize: both;
 }
-.settings-section.section-pics .item.pics-preview {
-  font-size: 0; /* remove vertical gap between pics */
+body.me .card.section-pics .item.pics-preview {
+  font-size: 0;
+  margin-top: 16px;
 }
-.settings-section.section-pics .item.pics-form input[type="text"] {
+body.me .card.section-pics .item.pics-form input[type="text"] {
   width: 300px;
 }
-.settings-section.section-pics .item.pics-preview > .pic {
+body.me .card.section-pics .item.pics-preview > .pic {
   background-color: #CCC;
   display: inline-block;
   margin: 1px; padding: 0;
   min-width: 150px; height: 200px;
   overflow: hidden;
   position: relative;
-  vertical-align: middle; /* remove horizontal gap between pics */
+  vertical-align: middle;
 }
-.settings-section.section-pics .item.pics-preview > .pic > img {
+body.me .card.section-pics .item.pics-preview > .pic img {
   max-width: 300px; height: inherit;
   border: 0;
 }
-.settings-section.section-pics .item.pics-preview > .pic > form > input[type="submit"] {
+body.me .card.section-pics .item.pics-preview > .pic input[type="submit"] {
   cursor: pointer;
   font-size: 1rem; line-height: 1em;
   opacity: 0.1;
   position: absolute; top: 10px; right: 10px;
   transition: 0.3s ease-out;
 }
-.settings-section.section-pics .item.pics-preview > .pic:hover > form > input[type="submit"] {
+body.me .card.section-pics .item.pics-preview > .pic:hover input[type="submit"] {
   opacity: 1;
   transition: 0.3s ease-out;
 }
@@ -662,12 +624,6 @@ The list of settings options on the "preferences" page.
 List of subreddit matches on profile view.
 
  */
-.sr-list-inline {
-  background-color: white;
-  border: 1px solid rgba(0,0,0,0.1);
-  display: block;
-  margin: 16px 0; padding: 0;
-}
 .sr-list-inline > ul {
   list-style: none;
   margin: 0; padding: 0;
@@ -713,6 +669,7 @@ List of subreddit matches on profile view.
   padding-right: 0;
 }
 
+
 /*
 
 Site header.
@@ -721,6 +678,7 @@ Site header.
 header {
   background-color: #003B6F; /* reddit default color: #CEE3F8; */
   border-bottom: 1px solid #5F99CF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
   height: 56px;
   margin: 0; padding: 0;
   white-space: nowrap;
@@ -807,65 +765,29 @@ ul#site-messages li a {
 /*
 
 Main page content area.
-Usualy contains <article/> and <aside id="sidebar"/>.
+Usualy contains <article/> and sometimes <aside id="sidebar"/>.
 
- */
+*/
 body main {
   clear: both;
   overflow: hidden;
 }
 body article {
-  margin: 0 300px 0 0; padding: 16px;
+  display: block;
+  max-width: 1000px;
+  margin: 0 auto; padding: 0;
 }
 body aside#sidebar {
+  display: none;
+}
+body.has-sidebar article {
+  margin: 0 300px 0 0;
+}
+body.has-sidebar aside#sidebar {
+  display: block;
   float: right;
   width: 300px;
   padding-top: 16px;
-}
-body aside#sidebar h2 {
-  font-size: 1.15rem; line-height: 1em;
-}
-
-body.no-sidebar article {
-  margin-right: 0;
-}
-body.no-sidebar aside#sidebar {
-  display: none;
-}
-
-/*
-
-Sidebar list of subreddits, with selector for favourite subs.
-
- */
-aside#sidebar > form.sr-list > ul.sr-list {
-}
-aside#sidebar > form.sr-list > ul.sr-list p {
-}
-aside#sidebar > form.sr-list > ul.sr-list {
-  list-style: none;
-  margin: 0; padding: 0;
-}
-aside#sidebar > form.sr-list > ul.sr-list > li {
-  margin: 0; padding: 0;
-  margin-bottom: 8px;
-}
-aside#sidebar  > form.sr-list > ul.sr-list > li label {
-  vertical-align: middle;
-}
-aside#sidebar > form.sr-list > ul.sr-list > li input[type="checkbox"] {
-}
-aside#sidebar > form.sr-list > ul.sr-list > li > a {
-}
-aside#sidebar > form.sr-list > ul.sr-list > li > .status {
-  display: inline;
-  font-size: 0.9rem;
-  color: #999;
-}
-aside#sidebar > form.sr-list > ul.sr-list > li > .status .banned,
-aside#sidebar > form.sr-list > ul.sr-list > li > .status .muted {
-  color: #F33;
-  font-weight: bold;
 }
 
 
@@ -877,33 +799,11 @@ and whatnot statements.
 
  */
 footer {
-  background-color: #F3F3F3;
-  border-top: 1px solid #888;
+  background-color: gray;
   clear: both;
+  color: silver;
   font-size: 0.9rem;
   margin: 0; padding: 16px;
-}
-
-
-/*
-
-Subreddit user list page.
-
- */
-body.sr {
-}
-body.sr article > h1 {
-  vertical-align: middle;
-}
-body.sr article > h1 > a.reddit-link {
-  display: inline-block;
-  font-size: 1.25rem; line-height: 1.25rem;
-  vertical-align: middle;
-  margin: 0 0 0 2rem; padding: 0 0 0.25rem 0;
-}
-body.sr article > h1 > a.reddit-link > span:first-child {
-}
-body.sr article > h1 > a.reddit-link > span:last-child {
 }
 
 
@@ -912,127 +812,112 @@ body.sr article > h1 > a.reddit-link > span:last-child {
 User profile page.
 
  */
-body.profile {
-}
-
-body.profile .user-profile {
-  background-color: white;
-  border: 1px solid rgba(0,0,0,0.1);
-  margin: 16px 0; padding: 16px;
-}
-body.profile .user-profile > h2 {
-  border-bottom: 1px solid rgba(0,0,0,0.12);
-  margin: -16px -16px 16px -16px; padding: 18px 16px 14px 16px;
-  text-align: center;
-  font-size: 1.5rem; line-height: 1.5rem;
-}
-body.profile .user-profile .header {
+body.profile .header {
   display: block;
   margin: 16px; padding: 0;
 }
-body.profile .user-profile .header h1 {
+body.profile .header h1 {
   display: inline-block;
   font-size: 2.5rem; line-height: 2.5rem;
   letter-spacing: 0.2rem;
   font-weight: bold;
-  margin: 0; padding: 0;
+  margin: 0 0 8px 0; padding: 0;
   vertical-align: middle;
 }
-body.profile .user-profile .header .asl {
+body.profile .header .asl {
   display: block;
   font-size: 1.5rem; line-height: 2.5rem;
   margin: 0; padding: 0;
   vertical-align: middle;
 }
-body.profile .user-profile .header .asl span {
+body.profile .header .asl span {
   display: inline-block;
   margin: 0; padding: 0 0.25rem;
 }
-body.profile .user-profile .account-age {
+body.profile .account-age {
   border-top: 1px solid rgba(0,0,0,0.12);
   color: gray;
   display: block;
   font-size: 0.9rem; line-height: 1em;
   margin: 0 -16px; padding: 16px 16px 0 16px;
 }
-body.profile .user-profile .about {
+body.profile .about {
   margin: 0; padding: 16px;
 }
-body.profile .user-profile ul.links-to-reddit-profile {
+body.profile .links-to-reddit-profile {
   border-bottom: 1px solid rgba(0,0,0,0.12);
   display: block;
   list-style: none;
   margin: -16px; margin-bottom: 0; padding: 0;
   text-align: center;
 }
-body.profile .user-profile ul.links-to-reddit-profile li {
+body.profile .links-to-reddit-profile li {
   display: inline-block;
   margin: 0; padding: 16px;
 }
-body.profile .user-profile .info-tables {
+body.profile .info-tables {
   overflow: hidden;
   margin: 0; padding: 0;
 }
-body.profile .user-profile .info {
+body.profile .info {
   float: left;
   margin: 0 16px; padding: 0;
 }
-body.profile .user-profile .info table {
+body.profile .info table {
   margin: 16px 0;
   border-spacing: 0;
   border-collapse: collapse;
 }
-body.profile .user-profile .info table thead tr td {
+body.profile .info table thead tr td {
   text-align: center;
   font-weight: bold;
   padding: 8px;
 }
-body.profile .user-profile .info table tbody tr {
-}
-body.profile .user-profile .info table tbody tr td {
+body.profile .info table tbody tr td {
   background-color: #FFFFFF;
   padding: 0 8px;
   line-height: 40px;
   border: 1px solid #CCC;
 }
 
-body.profile .user-profile ul.pics {
+body.profile ul.pics {
   display: block;
   list-style: none;
   margin: 0; padding: 0;
   overflow: hidden;
   height: 240px;
 }
-body.profile .user-profile ul.pics li {
+body.profile ul.pics li {
   display: block;
   float: left;
   max-width: 178px; height: 118px;
   margin: 1px; padding: 0;
   overflow: hidden;
 }
-body.profile .user-profile ul.pics li:first-child {
+body.profile ul.pics li:first-child {
   float: left;
   height: 240px;
   max-width: 450px;
 }
-body.profile .user-profile ul.pics li .no-pic {
+body.profile ul.pics li .no-pic {
   display: block; width: 175px; height: 150px;
   background-color: #CCC;
 }
-body.profile .user-profile ul.pics li .pic {
+body.profile ul.pics li .pic {
   display: inline-block;
   height: inherit;
 }
-body.profile .user-profile ul.pics li .pic img {
+body.profile ul.pics li .pic img {
   border: 0;
   height: inherit;
 }
 
-body.profile.is-match {
-}
 
-/* the big "you like each other" box when authuser views a profile they "liked" */
+/*
 
+the big "you like each other" box when authuser views a profile they "liked"
+
+*/
 body.profile.is-match .match-box {
   background-color: #CC0000;
   margin: 0; padding: 24px 16px;
@@ -1105,67 +990,11 @@ body.profile.is-match .match-box .uu > div.u2 {
 }
 
 
-
 /*
 
-Subreddit specific page.
-
---> replaces by .user-list
-
-body.sr ul.sr-user-list {
-  font-size: 0;
-  list-style: none;
-  margin: 0; padding: 0;
-}
-body.sr ul.sr-user-list > li {
-  display: inline-block;
-  height: 150px;
-  vertical-align: top;
-  margin: 1px; padding: 0;
-  position: relative;
-}
-body.sr ul.sr-user-list > li > span.info {
-  background-color: rgba(0,0,0,0.6);
-  border-radius: 0;
-  display: block;
-  font-size: 1rem;
-  margin: 0; padding: 8px;
-  opacity: 0;
-  position: absolute; top: 10px; left: calc(50% - 108px);
-  transition: 0.3s ease-out;
-  width: 200px;
-  z-index: 999;
-}
-body.sr ul.sr-user-list > li:hover > span.info {
-  opacity: 1;
-  transition: 0.3s ease-out;
-}
-body.sr ul.sr-user-list > li > span.info > a {
-  display: block;
-}
-body.sr ul.sr-user-list > li > span.info > span.asl {
-  display: block;
-  color: black;
-}
-body.sr ul.sr-user-list > li > a {
-  background-color: black;
-}
-body.sr ul.sr-user-list > li > a > img {
-  border: 0;
-  height: 150px;
-}
- */
-
-
-/*
-
-Matches page.
+list of matches page.
 
  */
-body.matches {
-}
-body.matches article {
-}
 body.matches article ul.user-list li form.like-nope-duno {
   box-shadow: none;
   background-color: transparent;
@@ -1349,24 +1178,6 @@ body.signup-steps article div.abouts {
     margin: 16px 0 0 150px;
   }
 
-
-  body.matches #sidebar,
-  body.likes #sidebar,
-  body.nopes #sidebar {
-    display: none;
-  }
-  body.matches h1,
-  body.likes h1,
-  body.nopes h1 {
-    display: none;
-  }
-  body.matches article,
-  body.likes article,
-  body.nopes article {
-    margin: 0; padding: 0;
-  }
-
-
   body.sr #sidebar {
     display: none;
   }
@@ -1374,27 +1185,7 @@ body.signup-steps article div.abouts {
     margin: 0; padding: 16px 0;
   }
 
-  body.profile #sidebar {
-    float: none;
-    margin: 0; padding: 0;
-    width: auto;
-  }
-  body.profile #sidebar .prevnext-user-list {
-    display: none;
-  }
-  body.profile #sidebar .subreddit-matches {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-  body.profile #sidebar .subreddit-matches .sr-list {
-    margin: 0; padding: 0;
-  }
-  body.profile #sidebar .subreddit-matches .sr-list {
-    display: none;
-  }
   body.profile article {
-    /* get rid of the right-side "sidebar margin" and the surrounding
-    padding between chrome border and content card. */
     margin-right: 0; padding: 0;
   }
   body.profile article .user-profile {
@@ -1419,16 +1210,6 @@ body.signup-steps article div.abouts {
   }
   body.matches article h1 {
     display: none;
-  }
-
-
-  body.me #sidebar {
-    float: none;
-    margin: 0; padding: 0;
-    width: auto;
-  }
-  body.me article {
-    margin: 0; padding: 16px 0;
   }
 
 }

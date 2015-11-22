@@ -2,7 +2,7 @@
 
 {% block title %}/r/{{view_sr.display_name}}{% endblock %}
 
-{% block body_classes %}sr{% endblock %}
+{% block body_classes %}sr has-sidebar{% endblock %}
 
 {% block main %}
 
@@ -11,7 +11,6 @@
     <h2>r/{{view_sr.display_name}}</h2>
     <p>there are {{view_sr.subscribers_here}} out of the {{view_sr.subscribers}} subscribers of <a class="reddit-link" href="https://www.reddit.com/r/{{view_sr.display_name}}"><span class="fa fa-reddit"></span><span>/r/{{view_sr.display_name}}</span></a> here</p>
     <p>viewing {{user_count}} people from r/{{view_sr.display_name}} that match <a href="{% url 'me_page' %}">your search options</a></p>
-
   </section>
 </aside>
 

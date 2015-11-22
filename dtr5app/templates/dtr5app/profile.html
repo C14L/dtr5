@@ -72,7 +72,7 @@
     </div>
   {% endif %}
 
-  <div class="user-profile">
+  <div class="user-profile card">
     <nav class="dotmenu">
       <span class="fa fa-ellipsis-h"></span>
       <input type="checkbox">
@@ -149,7 +149,7 @@
     </div>
   </div>
 
-  <div class="user-profile sr-list-inline subreddit-matches">
+  <div class="user-profile card sr-list-inline subreddit-matches">
     {% if view_user.profile.common_subs|length == 0 %}
       <h2>No subreddit matches :(</h2>
     {% else %}
@@ -177,7 +177,7 @@
     {% endif %}
   </div>
 
-  <div class="user-profile">
+  <div class="user-profile card">
     <h2>more about {{view_user.username}}</h2>
 
     <ul class="links-to-reddit-profile">
@@ -319,7 +319,7 @@
     </div>
   </div>
 
-  <div class="user-profile sr-list-inline subreddit-not-matches">
+  <div class="user-profile card sr-list-inline subreddit-not-matches">
     <h2>other subreddits {{view_user.username}} is subscribed to</h2>
     <ul class="sr-list">
       {% for row in view_user.profile.not_common_subs %}
