@@ -33,6 +33,7 @@ from .utils_search import (search_results_buffer,
 logger = logging.getLogger(__name__)
 
 
+@require_http_methods(["GET", "HEAD"])
 def home_view(request):
     if request.user.is_authenticated():
         return redirect(reverse('me_search_page'))
@@ -43,6 +44,7 @@ def home_view(request):
                               context_instance=RequestContext(request))
 
 
+@login_required
 def me_view(request, template_name="dtr5app/me.html"):
     """Show a settings page for auth user's profile."""
     if not request.user.is_authenticated():
@@ -102,6 +104,7 @@ def me_account_del_view(request, template_name="dtr5app/account_del.html"):
                               context_instance=RequestContext(request))
 
 
+@login_required
 @require_http_methods(["POST"])
 def me_update_view(request):
     """
@@ -146,9 +149,10 @@ def me_update_view(request):
     else:
         messages.warning(request, 'Could not find any user profile data.')
     # Go back to user's "me" page, the updated data should show up there.
-    return redirect(reverse('me_page'))
+    return redirect(reverse('me_page') + '#id_srlist')
 
 
+@login_required
 @require_http_methods(["GET", "POST"])
 def me_locate_view(request):
     """
@@ -166,9 +170,10 @@ def me_locate_view(request):
         request.user.profile.lng = force_float(request.POST.get('lng', 0.0))
         request.user.profile.save()
         messages.success(request, 'Location data updated.')
-        return redirect(reverse('me_page'))
+        return redirect(reverse('me_page') + '#id_geolocation')
 
 
+@login_required
 @require_http_methods(["POST"])
 def me_favsr_view(request):
     """
@@ -189,6 +194,7 @@ def me_favsr_view(request):
     return redirect(reverse('me_page'))
 
 
+@login_required
 @require_http_methods(["POST"])
 def me_manual_view(request):
     """
@@ -222,9 +228,10 @@ def me_manual_view(request):
 
     request.user.profile.save()
     messages.success(request, 'Profile data updated.')
-    return redirect(reverse('me_page'))
+    return redirect(reverse('me_page') + '#id_profile')
 
 
+@login_required
 @require_http_methods(["POST"])
 def me_pic_del_view(request):
     """
@@ -238,9 +245,10 @@ def me_pic_del_view(request):
         messages.info(request, 'Picture removed.')
     except:
         messages.info(request, 'Picture not found.')
-    return redirect(reverse('me_page'))
+    return redirect(reverse('me_page') + '#id_pics')
 
 
+@login_required
 @require_http_methods(["POST"])
 def me_picture_view(request):
     """
@@ -285,9 +293,10 @@ def me_picture_view(request):
 
     request.user.profile.pics.append({'url': pic_url})
     request.user.profile.save()
-    return redirect(reverse('me_page'))
+    return redirect(reverse('me_page') + '#id_pics')
 
 
+@login_required
 @require_http_methods(["POST", "GET", "HEAD"])
 def me_search_view(request):
     """

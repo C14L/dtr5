@@ -7,7 +7,7 @@
 {% block main %}
 
 <article>
-  <div class="card section-search">
+  <div class="card section-search" id="id_search">
     <h2>search settings</h2>
     <form class="item" method="POST" action="{% url 'me_search_page' %}">
       {% csrf_token %}
@@ -51,7 +51,7 @@
     </p>
   </div>
 
-  <div class="card section-profile">
+  <div class="card section-profile" id="id_profile">
     <h2>your profile settings</h2>
     <form class="item manual" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
@@ -101,7 +101,7 @@
     </form>
   </div>
 
-  <div class="card section-geolocation">
+  <div class="card section-geolocation" id="id_geolocation">
     <h2>update geolocation</h2>
     <form class="item" method="GET" action="{% url 'me_locate_page' %}" onsubmit="geoloc(this);return false;">
       {% csrf_token %}
@@ -114,7 +114,7 @@
     </p>
   </div>
 
-  <div class="card section-srlist">
+  <div class="card section-srlist" id="id_srlist">
     <h2>update subreddits</h2>
     <form method="POST" action="{% url 'me_update_page' %}">
       {% csrf_token %}
@@ -125,7 +125,7 @@
     </p>
   </div>
 
-  <div class="card section-pics">
+  <div class="card section-pics" id="id_pics">
     <h2>pictures of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></h2>
     <div class="item pics-form">
       <form method="POST" action="{% url 'me_picture_page' %}">
@@ -148,7 +148,7 @@
     </div>
   </div>
 
-  <div class="card section-about">
+  <div class="card section-about" id="id_about">
     <h2>about <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></h2>
     <form class="item" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
@@ -157,7 +157,7 @@
     </form>
   </div>
 
-  <div class="card section-account">
+  <div class="card section-account" id="id_account">
     <h2>account settings</h2>
     <ul>
       <li>
