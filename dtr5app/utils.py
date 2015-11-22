@@ -55,46 +55,26 @@ def update_list_of_subscribed_subreddits(user, subscribed):
         row.delete()
 
 
-def get_usernames_around_view_user(userbuff, view_user, n=None):
+def get_user_list_after(request, view_user, n=5):
     """
-    From a list of usernames and a focus user, return a list of n
-    usernames to the left, and n usernames to the right of the focus
-    user's username. If the list gets to one of either ends, the focus
-    username shoud be centered as much as possible.
-
-    TODO: wrap the user list around to have an "endless" list.
-    """
-    if not n:
-        n = int(getattr(settings, 'LINKS_IN_PROFILE_HEADER', 5) / 2)
-    if len(userbuff) > (2*n)+1:
-        if view_user.username in userbuff:
-            i = userbuff.index(view_user.username)
-            min_i = i-n if i-n > 0 else 0
-            max_i = i+n if i+n < len(userbuff) else len(userbuff)
-            li = userbuff[min_i:max_i+1]
-        else:
-            # The view_user's username is not part of the usernames
-            # list. This should not happen usually, but there may be
-            # situations, so handle it gracefully by returning just
-            # the beginning part of the usernames list.
-            li = userbuff[0:(2*n)+1]
-    else:
-        li = userbuff
-    return li
-
-
-def get_user_list_around_view_user(request, view_user, n=None):
-    """
-    Return a list of "n" user objects, with view user as centered
-    as possible.
+    From the search buffer, return a list of "n" user objects after view_user.
     """
     search_results_buffer(request)
-    # Fetch a short list of match usernames from session cache.
-    username_list = get_usernames_around_view_user(
-        request.session['search_results_buffer'], view_user)
-    user_list = get_user_list_from_username_list(username_list)
-    user_list = add_auth_user_latlng(request.user, user_list)
-    return user_list
+    buff = request.session['search_results_buffer']
+    try:
+        idx = buff.index(view_user.username)
+    except ValueError:  # view_user is not part of buffer, begin at index 0
+        return get_user_list_from_username_list(buff[:n])
+
+    if (len(buff)-1) <= n:
+        # buff minus view_user is n? then use entire list minus view_user
+        return get_user_list_from_username_list(buff[:idx] + buff[idx+1:])
+
+    usernames = buff[idx+1:idx+1+n]  # get n users after view_user
+    if len(usernames) < n:  # if end-of-list was reached, wrap around
+        n2 = n - len(usernames)
+        usernames += buff[0:n2]
+    return get_user_list_from_username_list(usernames)
 
 
 def get_user_list_from_username_list(username_list):

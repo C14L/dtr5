@@ -20,13 +20,13 @@ from simple_reddit_oauth import api
 
 from toolbox import force_int, force_float, set_imgur_url
 from .models import Subscribed, Sr, Flag, Report
-from .utils import (update_list_of_subscribed_subreddits,
-                    get_user_list_around_view_user,
-                    get_prevnext_user,
-                    add_auth_user_latlng,
-                    get_matches_user_list,
+from .utils import (add_auth_user_latlng,
                     count_matches,
-                    get_user_and_related_or_404)
+                    get_matches_user_list,
+                    get_prevnext_user,
+                    get_user_and_related_or_404,
+                    get_user_list_after,
+                    update_list_of_subscribed_subreddits)
 from .utils_search import (search_results_buffer,
                            search_subreddit_users)
 
@@ -383,8 +383,8 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     view_user.pics_list += [None] * (10 - len(view_user.pics_list))
     # Find the subs that auth user and view user have in common.
     view_user.profile.set_common_subs(request.user.subs.all())
-    # Get a list of user objects around view user, all with latlng.
-    user_list = get_user_list_around_view_user(request, view_user)
+    # Get the next five users to be displayed at the end of the profile page.
+    user_list = get_user_list_after(request, view_user, 5)
     # Find previous and next user on the list, relative to view user.
     prev_user, next_user = get_prevnext_user(request, view_user)
     # Count the profile view, unless auth user is viewing their own profile.

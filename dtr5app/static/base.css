@@ -302,6 +302,14 @@ Standard content card, simplefied Material-style.
   box-shadow: 0 1px 3px rgba(0,0,0,0.28);
   margin: 16px 0; padding: 16px;
 }
+.card > a:first-child {
+  background-color: gray;
+  color: white;
+  float: right;
+  font-size: 1.5rem; line-height: 1.5rem;
+  margin: -16px -16px 0 0; padding: 1rem;
+  opacity: 0.2;
+}
 .card > h2 {
   font-size: 1.5rem; line-height: 3.5rem;
   border-bottom: 1px solid rgba(0,0,0,0.12);
@@ -381,7 +389,7 @@ Small box with picture links to more user profiles.
  */
 .prevnext-user-list {
   display: block;
-  margin: 0; padding: 0;
+  margin: 32px; padding: 0;
   overflow: hidden;
 }
 .prevnext-user-list > ul {
@@ -395,37 +403,22 @@ Small box with picture links to more user profiles.
 .prevnext-user-list > ul > li {
   display: inline-block;
   font-size: 0;
-  height: 50px; width: 50px;
-  margin: 0; padding: 0; border: 1px solid transparent;
+  margin: 0; padding: 0;
   vertical-align: middle;
   position: relative;
 }
 .prevnext-user-list > ul > li > a {
   display: block;
-  height: inherit; width: inherit;
   overflow: hidden;
   position: relative;
 }
 .prevnext-user-list > ul > li > a > img {
-  border: 0;
-  height: inherit; width: inherit;
-  opacity: 0.2;
-  transform: scale(0.6);
-}
-.prevnext-user-list > ul > li.curr {
-  border-color: rgba(0,0,0,0.3);
-}
-.prevnext-user-list > ul > li.curr > a > img {
-  opacity: 1;
-  transform: scale(1);
-}
-.prevnext-user-list > ul > li.curr + li > a > img {
-  opacity: 0.5;
-  transform: scale(0.8);
+  border: 5px solid white;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  height: 100px;
+  margin: 16px; padding: 0;
 }
 
-.prevnext-user-list > ul > li:not(.curr) > a > img {
-}
 
 /*
 
@@ -781,9 +774,6 @@ body article {
   max-width: 1000px;
   margin: 0 auto; padding: 0;
 }
-body aside#sidebar {
-  display: none;
-}
 body.has-sidebar article {
   margin: 0 300px 0 0;
 }
@@ -826,6 +816,11 @@ body.profile .header h1 {
   letter-spacing: 0.2rem;
   font-weight: bold;
   margin: 0 0 8px 0; padding: 0;
+  vertical-align: middle;
+}
+body.profile .header h1 > a {
+  font-size: 1rem; line-height: inherit;
+  letter-spacing: normal;
   vertical-align: middle;
 }
 body.profile .header .asl {
@@ -1119,6 +1114,25 @@ body.signup-steps article div.abouts {
 
 @media only screen and (max-width: 960px) {  /* < md */
 
+  body article,
+  body.has-sidebar article {
+    width: 100vw;
+    margin: 0; padding: 0;
+  }
+  body.has-sidebar aside#sidebar {
+    display: block;
+    float: none;
+    width: 100vw;
+    margin: 0; padding: 0;
+  }
+  body.has-sidebar aside#sidebar section {
+    margin: 0 0 16px 0;
+  }
+
+  body article .card {
+    margin-top: 0;
+  }
+
   header .site-logo {}
   header .site-logo .site-icon {
     padding-left: 0.75rem;
@@ -1153,19 +1167,25 @@ body.signup-steps article div.abouts {
     font-size: 1.5rem; line-height: 1rem;
   }
 
-  .match-box {
+  body.profile.is-match .match-box {
+    margin: 0; padding: 24px 0 0 0;
+  }
+  body.profile.is-match .match-box .uu img {
+    width: 40vw; height: auto;
+  }
+  body.profile.is-none .match-box {
     margin: 0; padding: 0;
     position: fixed; bottom: 0; left: 0; right: 0;
     text-align: center;
   }
-  .match-box .like-nope-duno {
+  body.profile.is-none .match-box .like-nope-duno {
     display: inline-block;
     margin: 0; padding: 16px 0;
     background-color: rgba(255,255,255,0.8);
     border-radius: 40px 40px 0 0;
     box-shadow: 0 0 3px rgba(0,0,0,0.6);
   }
-  .match-box .like-nope-duno .opt {
+  body.profile.is-none .match-box .like-nope-duno .opt {
     margin: 0 16px; padding: 0;
   }
 
@@ -1182,38 +1202,18 @@ body.signup-steps article div.abouts {
     margin: 16px 0 0 150px;
   }
 
-  body.sr #sidebar {
-    display: none;
-  }
-  body.sr article {
-    margin: 0; padding: 16px 0;
-  }
-
-  body.profile article {
-    margin-right: 0; padding: 0;
-  }
-  body.profile article .user-profile {
-    margin-top: 0;
-  }
-  body.profile .user-profile .header {
-    margin-top: 0;
-  }
-  body.profile .user-profile .header h1 {
+  body.profile .header h1 {
     font-size: 1.5rem; line-height: 2.5rem;
   }
-  body.profile .user-profile .header .asl {
+  body.profile .header .asl {
     font-size: 1rem; line-height: 2rem;
   }
-  body.profile .user-profile .about {
+  body.profile .about {
     padding: 0;
   }
 
-
-  body.matches article {
-    margin-right: 0; padding: 0;
-  }
-  body.matches article h1 {
-    display: none;
+  body.sr article {
+    text-align: center;
   }
 
 }

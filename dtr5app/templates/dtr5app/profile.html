@@ -2,19 +2,9 @@
 
 {% block title %}{{view_user.username}} - {{view_user.profile.get_age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.distance}} km{% endblock %}
 
-{% block body_classes %}profile{% if is_match %} is-match{% endif %}{% endblock %}
+{% block body_classes %}profile{% if is_match %} is-match{% elif is_like %} is-like{% elif is_nope %} is-nope{% else %} is-none{% endif %}{% endblock %}
 
 {% block main %}
-
-<aside id="sidebar">
-  <div class="prevnext-user-list">
-    <ul>
-      {% for v in user_list %}
-        <li class="{% if v.username == view_user.username %}curr{% else %}not-curr{% endif %}"><a href="{% url 'profile_page' v.username %}"><img src="{{v.profile.pics.0.url}}" alt="{{v.username}}"></a></li>
-      {% endfor %}
-    </ul>
-  </div>
-</aside>
 
 <article>
 
@@ -76,7 +66,7 @@
     </div>
   {% endif %}
 
-  <div class="user-profile card">
+  <div class="card" id="id_header">
     <nav class="dotmenu">
       <span class="fa fa-ellipsis-h"></span>
       <input type="checkbox">
@@ -125,7 +115,12 @@
       </ul>
     </nav>
     <div class="header">
-      <h1>{{view_user.username}}</h1>
+      <h1>
+        {{view_user.username}}
+        {% if view_user.profile.common_subs|length > 0 %}
+          <a href="#id_matches">{{view_user.profile.common_subs|length}} subreddit matches!</a>
+        {% endif %}
+      </h1>
       <p class="asl">
         a <span>{{view_user.profile.get_age}}</span> years old
         <span title="{{view_user.profile.get_sex_symbol}}">{{view_user.profile.get_sex_display}}</span> -
@@ -153,7 +148,8 @@
     </div>
   </div>
 
-  <div class="user-profile card sr-list-inline subreddit-matches">
+  <div class="card sr-list-inline subreddit-matches" id="id_matches">
+    <a href="#" class="fa fa-arrow-up"></a>
     {% if view_user.profile.common_subs|length == 0 %}
       <h2>No subreddit matches :(</h2>
     {% else %}
@@ -181,7 +177,8 @@
     {% endif %}
   </div>
 
-  <div class="user-profile card">
+  <div class="card" id="id_about">
+    <a href="#" class="fa fa-arrow-up"></a>
     <h2>more about {{view_user.username}}</h2>
 
     <ul class="links-to-reddit-profile">
@@ -323,7 +320,8 @@
     </div>
   </div>
 
-  <div class="user-profile card sr-list-inline subreddit-not-matches">
+  <div class="card sr-list-inline subreddit-not-matches" id="id_subs">
+    <a href="#" class="fa fa-arrow-up"></a>
     <h2>other subreddits {{view_user.username}} is subscribed to</h2>
     <ul class="sr-list">
       {% for row in view_user.profile.not_common_subs %}
@@ -343,6 +341,14 @@
           {% endif %}
           <a href="https://www.reddit.com/r/{{row.sr.display_name}}"><span class="fa fa-reddit"></span></a>
         </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="prevnext-user-list">
+    <ul>
+      {% for v in user_list %}
+        <li class="{% if v.username == view_user.username %}curr{% else %}not-curr{% endif %}"><a href="{% url 'profile_page' v.username %}"><img src="{{v.profile.pics.0.url}}" alt="{{v.username}}"></a></li>
       {% endfor %}
     </ul>
   </div>
