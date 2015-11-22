@@ -55,17 +55,21 @@
       {% else %}
 
         <div class="like-nope-duno">
-          <form class="like-form" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
-            {% csrf_token %}
-            <input type="submit" class="like opt" value="♥" title="like!">
+
+          <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">{% csrf_token %}
+            <span class="fa fa-times"></span>
+            <input type="submit" value="">
           </form>
+
           {% if next_user.username %}
-            <a href="{% url 'profile_page' next_user.username %}" class="duno opt" title="dunno...">?</a>
+            <a href="{% url 'profile_page' next_user.username %}" class="opt duno" title="dunno..."><span class="fa fa-refresh"></span></a>
           {% endif %}
-          <form class="nope-form" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
-            {% csrf_token %}
-            <input type="submit" class="nope opt" value="❌" title="nope!">
+
+          <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">{% csrf_token %}
+            <span class="fa fa-heart"></span>
+            <input type="submit" value="">
           </form>
+
         </div>
 
       {% endif %}
