@@ -79,22 +79,23 @@ def me_view(request, template_name="dtr5app/me.html"):
 @login_required
 @require_http_methods(["GET", "HEAD", "POST"])
 def me_account_del_view(request, template_name="dtr5app/account_del.html"):
+    """delete all account data."""
     if request.method in ["POST"]:
-        #
-        # TODO: delete all account data.
-        #
-
-        # request.user.profile.reset_all()
-        # request.user.subs.all().delete()
-        # request.user.flags_sent.all().delete()
+        request.user.profile.reset_all_and_save()
+        request.user.subs.all().delete()
+        request.user.flags_sent.all().delete()
+        request.user.flags_received.all().delete()
         # request.user.date_joined = None
         # request.user.last_active = None
+        #
+        # Setting an account to "is_active = False" will prevent the user from
+        # using the same reddit account to sign up again. If "is_active = True"
+        # then the user will be able to sign up again, using the same reddit
+        # account.
         # request.user.is_active = False
-        # request.user.save()
-
-        # api.delete_token(request)
-        txt = 'All account data was deleted and you logged out.'
-        messages.success(request, txt)
+        request.user.save()
+        api.delete_token(request)
+        messages.success(request, 'All account data was deleted.')
         return redirect(request.POST.get('next', settings.LOGIN_URL))
     ctx = {}
     return render_to_response(template_name, ctx,

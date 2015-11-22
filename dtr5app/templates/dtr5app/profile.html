@@ -186,16 +186,20 @@
       <li><a href="https://www.reddit.com/user/{{view_user.username}}/?sort=top">most upvoted posts</a></li>
       <li><a href="https://www.reddit.com/user/{{view_user.username}}/?sort=controversial">most controversial posts</a></li>
     </ul>
-{{view_user.profile.lookingfor}}
+
     <p>
       <span>{{view_user.username}} is looking for:</span>&nbsp;
-      <span class="lookingfor-list">
-        {% for x in lookingfor_choices %}
-          {% if x.0 in view_user.profile.lookingfor %}
-            <span>{{x.1}}</span>
-          {% endif %}
-        {% endfor %}
-      </span>
+      {% if view_user.profile.lookingfor %}
+        <span class="lookingfor-list">
+          {% for x in lookingfor_choices %}
+            {% if x.0 in view_user.profile.lookingfor %}
+              <span>{{x.1}}</span>
+            {% endif %}
+          {% endfor %}
+        </span>
+      {% else %}
+        <span>nothing so far</span>
+      {% endif %}
     </p>
 
     <div class="info-tables">
