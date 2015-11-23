@@ -32,34 +32,30 @@
 
       {% elif is_like %}
 
-        <p>you like them!</p>
-
-        <b>TODO: show nicer "you like them" and "you dont like them" thingies here. also, replace the heart and cross sign with css "fa" icons.</b>
+        <div class="announce like">
+          <span class="fa fa-heart"></span>
+          <span class="tx">you like them!</span>
+        </div>
 
       {% elif is_nope %}
 
-        <p>you don't like them!</p>
-
-        <b>TODO: show nicer "you like them" and "you dont like them" thingies here. also, replace the heart and cross sign with css "fa" icons.</b>
+        <div class="announce nope">
+          <span class="fa fa-times"></span>
+          <span class="tx">you don't like them</span>
+        </div>
 
       {% else %}
 
         <div class="like-nope-duno">
-
           <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">{% csrf_token %}
             <span class="fa fa-times"></span>
             <input type="submit" value="">
           </form>
-
-          {% if next_user.username %}
-            <a href="{% url 'profile_page' next_user.username %}" class="opt duno" title="dunno..."><span class="fa fa-refresh"></span></a>
-          {% endif %}
-
+          <a href="{% url 'me_search_page' %}" class="opt duno" title="dunno..."><span class="fa fa-refresh"></span></a>
           <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">{% csrf_token %}
             <span class="fa fa-heart"></span>
             <input type="submit" value="">
           </form>
-
         </div>
 
       {% endif %}

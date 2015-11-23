@@ -60,7 +60,7 @@
     </header>
 
     {% if messages %}
-    <ul id="site-messages">
+    <ul id="site-messages" onclick="this.parentNode.removeChild(this)">
       {% for msg in messages %}
       <li{% if msg.tags %} class="{{msg.tags}}"{% endif %}>{{msg}}</li>
       {% endfor %}
