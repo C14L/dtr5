@@ -16,19 +16,14 @@ import os
 # Import "secret" settings.
 from .settings_secrets import *
 
+DEBUG = os.path.exists('/islocal.txt')
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
 if DEBUG:
+    ALLOWED_HOSTS = ['localhost']
     CANONICAL_HOST = 'http://localhost:8000'
 else:
+    ALLOWED_HOSTS = ['redddate.com']
     CANONICAL_HOST = 'http://www.redddate.com'
 
 LOGIN_URL = CANONICAL_HOST + '/'
@@ -38,8 +33,6 @@ AUTHENTICATION_BACKENDS = (
     # 'django.contrib.auth.backends.RemoteUserBackend',
     'simple_reddit_oauth.backends.RedditBackend',
 )
-
-# Application definition
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -85,37 +78,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dtr5.wsgi.application'
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.8/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
+USE_I18N = False  # english only, for now
 USE_L10N = True
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.8/howto/static-files/
-
 STATIC_URL = '/static/'
 
-
-# Write all logging to the console, including logleves INFO and DEBUG,
-# when DEBUG is True.
+# all logging to console, incl. logleves INFO and DEBUG, when DEBUG is True
 # See https://docs.djangoproject.com/en/1.8/topics/logging/
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
+    'handlers': {'console': {'class': 'logging.StreamHandler'}},
     'loggers': {
         'django': {
             'handlers': ['console'],
@@ -123,17 +98,26 @@ LOGGING = {
         },
     },
 }
+
+# =====================================
+# settings for "dtr5app"
+# =====================================
+
 # Number of user IDs to load into session cache.
 SEARCH_RESULTS_BUFFER_SIZE = 100
 LINKS_IN_PROFILE_HEADER = 5
 RESULTS_BUFFER_LEN = 20 if DEBUG else 1000
+
 # Ignore subreddits too small or too large.
 SR_MIN_SUBS = 100
 SR_MAX_SUBS = 5000000
+
 # How many subreddits to use at a time to find matches.
 SR_LIMIT = 50
+
 # How many favorite subreddits can a user select.
 SR_FAVS_COUNT_MAX = 10
+
 # How many subreddit users to show per page in subreddit view
 SR_USERS_PER_PAGE = 20
 
@@ -141,6 +125,7 @@ SR_USERS_PER_PAGE = 20
 OAUTH_REDDIT_REDIRECT_URI = CANONICAL_HOST + "/account/redditcallback/"
 OAUTH_REDDIT_REDIRECT_AUTH_SUCCESS = CANONICAL_HOST + "/me/"
 OAUTH_REDDIT_REDIRECT_AUTH_ERROR = LOGIN_URL
+
 # Comma-separated list of API access scope with any of:
 # identity edit flair history modconfig modflair modlog
 # modposts modwiki mysubreddits privatemessages read report
@@ -149,8 +134,6 @@ OAUTH_REDDIT_SCOPE = "identity,mysubreddits"
 OAUTH_REDDIT_DURATION = "permanent"  # or "temporary"
 OAUTH_REDDIT_BASE_HEADERS = {
     "User-Agent": OAUTH_REDDIT_USER_AGENT, "raw_json": "1", }
-
-# =============================================================================
 
 # Settings for user profile data.
 SEX = (
@@ -195,14 +178,14 @@ LOOKINGFOR = (
     (15, 'stahp!'),
     (16, 'just some nice person, really'),
 )
-RELSTATUS = (
+RELSTATUS = (  # unused
     (2, 'single'),
     (4, 'seeing someone'),
     (6, 'in a relationship'),
     (8, 'open relationship'),
     (10, 'married'),
 )
-EDUCATION = (
+EDUCATION = (  # unused
     (2, 'high school'),
     (4, 'trade school'),
     (6, 'university'),
@@ -211,7 +194,7 @@ EDUCATION = (
     (12, 'yes'),
     (14, 'no'),
 )
-FITNESS = (
+FITNESS = (  # unused
     (1, 'not really'),
     (2, 'somewhat'),
     (3, 'yes'),
