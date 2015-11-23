@@ -522,25 +522,24 @@ body.me .card.section-about textarea {
   width: 400px; height: 100px;
   resize: both;
 }
-body.me .card.section-pics .item.pics-preview {
-  font-size: 0;
-  margin-top: 16px;
-}
 body.me .card.section-pics .item.pics-form input[type="text"] {
   width: 300px;
 }
+body.me .card.section-pics .item.pics-preview {
+  font-size: 0;
+  margin: 8px -8px 0 -8px;
+}
 body.me .card.section-pics .item.pics-preview > .pic {
-  background-color: #CCC;
   display: inline-block;
-  margin: 1px; padding: 0;
-  min-width: 150px; height: 200px;
-  overflow: hidden;
+  margin: 8px; padding: 0;
   position: relative;
   vertical-align: middle;
 }
 body.me .card.section-pics .item.pics-preview > .pic img {
-  max-width: 300px; height: inherit;
-  border: 0;
+  background-color: #F3F3F3;
+  max-width: 500px; height: 200px;
+  border: 8px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
 }
 body.me .card.section-pics .item.pics-preview > .pic input[type="submit"] {
   cursor: pointer;
