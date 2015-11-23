@@ -13,7 +13,15 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-# Import "secret" settings.
+# Import the following "secret" settings
+SECRET_KEY = ''
+DATABASES = {'default': {
+    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    'HOST': 'localhost', 'NAME': '', 'USER': '', 'PASSWORD': '', }}
+OAUTH_REDDIT_CLIENT_ID = ''
+OAUTH_REDDIT_CLIENT_SECRET = ''
+OAUTH_REDDIT_USER_AGENT = ''
+#######################################
 from .settings_secrets import *
 
 DEBUG = os.path.exists('/islocal.txt')
