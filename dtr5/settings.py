@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+DEBUG = os.path.exists('/islocal.txt')
 
 # Import the following "secret" settings
 SECRET_KEY = ''
@@ -24,7 +25,6 @@ OAUTH_REDDIT_USER_AGENT = ''
 #######################################
 from .settings_secrets import *
 
-DEBUG = os.path.exists('/islocal.txt')
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 if DEBUG:
@@ -111,13 +111,25 @@ LOGGING = {
 # settings for "dtr5app"
 # =====================================
 
+# block signups, logins, or all access.
+ALLOW_USER_SIGNUP = True  # new users can register               # unused
+ALLOW_USER_LOGIN = True  # existing users can login              # unused
+SITE_TEMPORARILY_UNAVAILABLE = False  # turn OFF entire site.    # unused
+
+# minimum limits for new users: must be older that X days AND have
+# either Y link or Z comment karma.
+USER_MIN_SUBSCRIBED_SUBREDDITS = 10    # show warning only if less subs
+USER_MIN_DAYS_REDDIT_ACCOUNT_AGE = 30  # min. 30 days reddit member
+USER_MIN_LINK_KARMA = 200              # AND either 200 link karma
+USER_MIN_COMMENT_KARMA = 300           # OR 200 comment karma.
+
 # Number of user IDs to load into session cache.
 SEARCH_RESULTS_BUFFER_SIZE = 100
 LINKS_IN_PROFILE_HEADER = 5
 RESULTS_BUFFER_LEN = 20 if DEBUG else 1000
 
 # Ignore subreddits too small or too large.
-SR_MIN_SUBS = 100
+SR_MIN_SUBS = 10
 SR_MAX_SUBS = 5000000
 
 # How many subreddits to use at a time to find matches.

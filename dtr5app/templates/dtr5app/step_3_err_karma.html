@@ -1,0 +1,22 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}Oh, noes!{% endblock %}
+
+{% block body_classes %}ohnoes min-karma{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block main %}
+
+<article>
+  <div class="overlay">
+    <h1>oh, noes!</h1>
+  </div>
+  <div class="abouts">
+    <p>To be able to use redddate, you need to have some karma on reddit. Either {{USER_MIN_LINK_KARMA}} link karma or {{USER_MIN_COMMENT_KARMA}} comment karma is fine.</p>
+    <p>Currently, your reddit account has {{user.profile.link_karma}} link and {{user.profile.comment_karma}} comment karma.</p>
+  </div>
+</article>
+
+{% endblock %}

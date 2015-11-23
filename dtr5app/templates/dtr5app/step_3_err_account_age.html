@@ -1,0 +1,21 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+
+{% block title %}Oh, noes!{% endblock %}
+
+{% block body_classes %}ohnoes account-age{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block main %}
+
+<article>
+  <div class="overlay">
+    <h1>oh, noes!</h1>
+  </div>
+  <div class="abouts">
+    <p>To be able to use redddate, your reddit account has to be at least {{USER_MIN_DAYS_REDDIT_ACCOUNT_AGE}} days old, but your account is only {{user.profile.created|timesince}} old.</p>
+  </div>
+</article>
+
+{% endblock %}

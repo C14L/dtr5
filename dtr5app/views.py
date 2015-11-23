@@ -3,7 +3,7 @@ import logging
 import pytz
 import requests  # to check image URLs for HTTO 200 responses
 from time import time as unixtime
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -49,31 +49,41 @@ def me_view(request, template_name="dtr5app/me.html"):
     """Show a settings page for auth user's profile."""
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
+
     ctx = {'sex_choices': settings.SEX,
            'lookingfor_choices': settings.LOOKINGFOR,
            'unixtime': unixtime(),
            'timeleft': request.session['expires'] - unixtime()}
-    # Check if the user has filled on the basics of their profile. If
+
+    # Check if the user has filled in the basics of their profile. If
     # they haven't, show special pages for it.
     if not request.user.subs.all():
-        return render_to_response('dtr5app/step_2.html', ctx,
-                                  context_instance=RequestContext(request))
-    if not (request.user.profile.lat and request.user.profile.lng):
-        return render_to_response('dtr5app/step_3.html', ctx,
-                                  context_instance=RequestContext(request))
-    if not (request.user.profile.dob and
-            request.user.profile.sex and request.user.profile.about):
-        return render_to_response('dtr5app/step_4.html', ctx,
-                                  context_instance=RequestContext(request))
-    if len(request.user.profile.pics) == 0:
-        return render_to_response('dtr5app/step_5.html', ctx,
-                                  context_instance=RequestContext(request))
-    if not (request.user.profile.f_distance):
-        return render_to_response('dtr5app/step_6.html', ctx,
-                                  context_instance=RequestContext(request))
-    if (request.GET.get('done', 0) == '1'):
-        return render_to_response('dtr5app/step_7.html', ctx,
-                                  context_instance=RequestContext(request))
+        template_name = 'dtr5app/step_2.html'
+    elif not (
+        request.user.profile.link_karma > settings.USER_MIN_LINK_KARMA or
+        request.user.profile.comment_karma > settings.USER_MIN_COMMENT_KARMA
+            ):
+        template_name = 'dtr5app/step_3_err_karma.html'
+
+    elif ((datetime.now().date() - request.user.profile.created) <
+            timedelta(settings.USER_MIN_DAYS_REDDIT_ACCOUNT_AGE)):
+        template_name = 'dtr5app/step_3_err_account_age.html'
+    elif not (request.user.profile.lat and request.user.profile.lng):
+        template_name = 'dtr5app/step_3.html'
+    elif not (request.user.profile.dob and
+              request.user.profile.sex and request.user.profile.about):
+        template_name = 'dtr5app/step_4.html'
+    elif len(request.user.profile.pics) == 0:
+        template_name = 'dtr5app/step_5.html'
+    elif not (request.user.profile.f_distance):
+        template_name = 'dtr5app/step_6.html'
+    elif (request.GET.get('done', 0) == '1'):
+        template_name = 'dtr5app/step_7.html'
+
+    print('link_karma: {}'.format(request.user.profile.link_karma))
+    print('comment_karma: {}'.format(request.user.profile.comment_karma))
+    print(settings.USER_MIN_LINK_KARMA, settings.USER_MIN_COMMENT_KARMA)
+
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
@@ -116,18 +126,19 @@ def me_update_view(request):
     subscribed = api.get_sr_subscriber(request)
     if subscribed:
         update_list_of_subscribed_subreddits(request.user, subscribed)
-        if len(subscribed) > 10:
+
+        if len(subscribed) > settings.USER_MIN_SUBSCRIBED_SUBREDDITS:
             messages.success(request, 'Subreddit list updated.')
         else:
-            messages.success(request, 'Subreddit list updated, but you are onl'
-                                      'y subbed to {} subreddits. Find some mo'
-                                      're that interest you for better results'
-                                      ' here :)'.format(len(subscribed)))
+            messages.success(request, 'Subreddit list updated, but you are '
+                             'only subscribed to {} subreddits. Find some '
+                             'more that interest you for better results '
+                             'here :)'.format(len(subscribed)))
     else:
-        messages.warning(request, 'Could not find any subscribed subreddits. M'
-                                  'ost likely, because you are still only subs'
-                                  'cribed to the default subs and have not yet'
-                                  ' picked your own selection.')
+        messages.warning(request, 'Could not find any subscribed subreddits. '
+                         'Most likely, because you are still only subscribed '
+                         'to the default subs and have not yet picked your '
+                         'own selection.')
 
     # Reload user profile data from Reddit.
     reddit_user = api.get_user(request)
