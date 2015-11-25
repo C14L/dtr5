@@ -1186,6 +1186,9 @@ body.signup-steps article div.abouts {
     background-color: red; color: white;
     text-shadow: 1px 1px 1px black;
   }
+  .card > h2 > a {
+    color: inherit;
+  }
   body article .card {
     margin-top: 0;
     padding: 8px;
@@ -1357,6 +1360,30 @@ body.signup-steps article div.abouts {
   }
   body.profile.is-none .match-box .like-nope-duno .opt.duno {
     display: none;
+  }
+
+
+  /*
+
+  List of system messages to respond to user input etc. Shown
+  between "header" and "main" only if there are any messeges.
+
+   */
+  ul#site-messages {
+    background-color: white; color: black;
+    box-shadow: 0 0 16px black;
+    display: block;
+    font-size: 1rem;
+    list-style: none;
+    cursor: pointer;
+    margin: 0; padding: 8px;
+    min-height: 100px;
+    opacity: 1;
+    position: fixed; top: 32px; left: 16px; right: 16px;
+    z-index: 9999;
+  }
+  ul#site-messages li {
+    margin: 0; padding: 8px;
   }
 
 }
