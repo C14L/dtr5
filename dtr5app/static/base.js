@@ -1,4 +1,17 @@
 
+(function () { /* hackadihack: make dotmenus close onclick anywhere. */
+  document.getElementsByTagName('body')[0].addEventListener('click',
+    function (ev) {
+      var els = document.querySelectorAll('nav.dotmenu input[type="checkbox"]');
+      for (var i = 0; i < els.length; i++) {
+        if (els[i] != ev.target && els[i].checked) {
+          els[i].checked = false;
+        }
+      }
+    }
+  );
+})();
+
 function getRandom(min, max) {
   // Return a random Float between min and max.
   return Math.random() * (max - min) + min;
