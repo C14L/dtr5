@@ -372,8 +372,11 @@ def me_search_view(request):
         messages.warning(request, txt_not_found)
         return redirect(request.POST.get('next', reverse('me_page')))
     # messages.success(request, 'Search options updated.')
-    x = {'username': request.session['search_results_buffer'][0]}
-    return redirect(reverse('profile_page', kwargs=x))
+    if (request.session.get('view_post_signup', False)):
+        return redirect(request.POST.get('next', reverse('me_page')))
+    else:
+        x = {'username': request.session['search_results_buffer'][0]}
+        return redirect(reverse('profile_page', kwargs=x))
 
 
 @login_required
@@ -414,7 +417,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     if not view_user.is_active:
         # user was banned
         return HttpResponseNotFound('404 - user was banned')
-    if not view_user.last_login:
+    if not view_user.last_login or not view_user.profile.pics:
         # user deleted their account
         return HttpResponseNotFound('404 - user does not exist')
 
