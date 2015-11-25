@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 DEBUG = os.path.exists('/islocal.txt')
+print('--> DEBUG: {}'.format(DEBUG))
 
 # Import the following "secret" settings
 SECRET_KEY = ''
@@ -32,7 +33,7 @@ if DEBUG:
     CANONICAL_HOST = 'http://localhost:8000'
 else:
     ALLOWED_HOSTS = ['redddate.com']
-    CANONICAL_HOST = 'http://www.redddate.com'
+    CANONICAL_HOST = 'http://redddate.com'
 
 LOGIN_URL = CANONICAL_HOST + '/'
 
@@ -91,7 +92,9 @@ TIME_ZONE = 'UTC'
 USE_I18N = False  # english only, for now
 USE_L10N = True
 USE_TZ = True
+
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 
 # all logging to console, incl. logleves INFO and DEBUG, when DEBUG is True
 # See https://docs.djangoproject.com/en/1.8/topics/logging/
@@ -119,9 +122,9 @@ SITE_TEMPORARILY_UNAVAILABLE = False  # turn OFF entire site.    # unused
 # minimum limits for new users: must be older that X days AND have
 # either Y link or Z comment karma.
 USER_MIN_SUBSCRIBED_SUBREDDITS = 10    # show warning only if less subs
-USER_MIN_DAYS_REDDIT_ACCOUNT_AGE = 30  # min. 30 days reddit member
+USER_MIN_DAYS_REDDIT_ACCOUNT_AGE = 19  # min. 30 days reddit member
 USER_MIN_LINK_KARMA = 200              # AND either 200 link karma
-USER_MIN_COMMENT_KARMA = 300           # OR 200 comment karma.
+USER_MIN_COMMENT_KARMA = 200           # OR 200 comment karma.
 
 # Number of user IDs to load into session cache.
 SEARCH_RESULTS_BUFFER_SIZE = 100
