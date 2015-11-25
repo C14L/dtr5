@@ -105,8 +105,15 @@
             </li>
           {% endif %}
           <li class="secondary">
+            <span class="fa fa-flag-o"></span>
             <a href="{% url 'me_flag_page' 'set' 'report' view_user.username %}">report this profile</a>
           </li>
+          {% if user.is_staff %}
+            <li class="secondary staff-only">
+              <span class="fa fa-exclamation-circle"></span>
+              <a href="{% url 'mod_deluser_page' view_user.id %}">delete this profile</a>
+            </li>
+          {% endif %}
         {% endif %}
       </ul>
     </nav>

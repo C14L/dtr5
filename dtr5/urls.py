@@ -51,8 +51,10 @@ urlpatterns = [
     url(r'^flag/(?P<action>set|delete)/(?P<flag>[a-zA-Z0-9_-]{2,30})/' +
         R_USERNAME + r'/$', views.me_flag_view, name="me_flag_page"),
 
-    url(r'^reports/$', views.mod_report_view, name="mod_report_page"),
-    url(r'^reports/(?P<pk>\d*)/$', views.mod_report_view,
+    url(r'^mod/deluser/(?P<pk>\d*)/$', views.mod_deluser_view,
+        name="mod_deluser_page"),
+    url(r'^mod/reports/$', views.mod_report_view,
+        name="mod_report_page"),
+    url(r'^mod/reports/(?P<pk>\d*)/$', views.mod_report_view,
         name="mod_report_item_page"),
-
 ]

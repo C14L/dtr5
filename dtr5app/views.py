@@ -636,3 +636,34 @@ def mod_report_view(request, pk=None):
     ctx = {'reports': reports, 'show': show}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
+
+
+@require_http_methods(["GET", "POST"])
+@staff_member_required
+def mod_deluser_view(request, pk):
+    """for moderators to delete a user profile and ban the user"""
+    view_user = get_object_or_404(User, pk=pk)
+
+    if request.method in ["POST"]:
+        view_user.profile.reset_all_and_save()
+        view_user.subs.all().delete()
+        view_user.flags_sent.all().delete()
+        view_user.flags_received.all().delete()
+        # if user's last_login is None means they have not activated their
+        # account or have deleted it. either way, treat it as if it doesn't
+        # exist. ~~view_user.last_login = None~~
+        # view_user.date_joined = None  # can't be None, so leave it
+        #
+        # Setting an account to "is_active = False" will prevent the user from
+        # using the same reddit account to sign up again. If "is_active = True"
+        # then the user will be able to sign up again, using the same reddit
+        # account.
+        view_user.is_active = False
+        view_user.save()
+        kwargs = {'username': view_user.username}
+        return redirect(reverse('profile_page', kwargs=kwargs))
+
+    template_name = 'dtr5app/mod_del_profile.html'
+    ctx = {'view_user': view_user}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))

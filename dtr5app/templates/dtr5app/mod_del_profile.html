@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>moderator</title>
+  </head>
+  <body>
+    <p>delete user profile "{{view_user.username}}"?</p>
+    <form method="POST" action="{% url 'mod_deluser_page' view_user.id %}">
+      {% csrf_token %}
+      <p><input type="submit" value="yep, delete"></p>
+    </form>
+  </body>
+</html>

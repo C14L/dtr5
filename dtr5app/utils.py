@@ -5,7 +5,7 @@ import pytz
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, Http404
 from .models import (Sr, Subscribed, Flag)
 from .utils_search import search_results_buffer
 
@@ -167,8 +167,8 @@ def get_user_and_related_or_404(username, *args):
     elif isinstance(username, int):
         q = {'pk': username}
     else:
-        return HttpResponseNotFound()
+        raise Http404
     try:
         return User.objects.prefetch_related(*args).get(**q)
     except User.DoesNotExist:
-        return HttpResponseNotFound()
+        raise Http404
