@@ -51,15 +51,23 @@ def search_users_by_options_queryset(request, include_flagged=False):
         li = li.filter(profile__lat__gte=lat_min, profile__lat__lte=lat_max,
                        profile__lng__gte=lng_min, profile__lng__lte=lng_max)
     # x only show SFW profiles?
-    if request.user.profile.f_over_18:
+    if request.user.profile.f_over_18:  # unused
         pass
         # li = li.filter(profile__over_18=True)
     # x only users with a verified email on reddit?
-    if request.user.profile.f_has_verified_email:
+    if request.user.profile.f_has_verified_email:  # unused
         pass
         # li = li.filter(profile__has_verified_email=True)
     # 5 exclude auth user themself.
     li = li.exclude(pk=request.user.pk)
+    # 5a. exclude banned users
+    li = li.exclude(is_active=False)
+    # 5b. exclude users who deleted their account (deleted last_login)
+    li = li.exclude(last_login=None)
+    # 5c. exclude users with low karma
+    li = li.exclude(
+        profile__link_karma__lte=settings.USER_MIN_LINK_KARMA,
+        profile__comment_karma__lte=settings.USER_MIN_COMMENT_KARMA)
     # 6 are not already flagged by auth user ('like', 'nope', 'block')
     if not include_flagged:
         li = li.exclude(flags_received__sender=request.user)
@@ -68,6 +76,7 @@ def search_users_by_options_queryset(request, include_flagged=False):
     # 8 have at least one picture URL,
     li = li.exclude(profile__pics_str='"[]"')
 
+    print('--> li.query', li.query)
     return li
 
 
@@ -120,7 +129,9 @@ def search_users(request, usernames_only=True):
             ON r1.sr_id = r2.sr_id AND r1.user_id <> r2.user_id
         INNER JOIN auth_user au
             ON r2.user_id = au.id
-        WHERE r1.user_id = %s AND au.id IN (
+        WHERE au.is_active IS TRUE
+        AND last_login IS NOT NULL
+        AND r1.user_id = %s AND au.id IN (
             SELECT id FROM auth_user u
             INNER JOIN dtr5app_profile p ON u.id = p.user_id
             WHERE 1=1 '''
@@ -197,7 +208,7 @@ def search_results_buffer(request, force=False):
     the buffer.
     """
     bt = request.session.get('search_results_buffer_time', None)
-    if (not bt or from_iso8601(bt) + timedelta(days=1) < from_iso8601()):
+    if (not bt or from_iso8601(bt) + timedelta(minutes=1) < from_iso8601()):
         force = True  # if buffer is old, force refresh
     if request.session.get('search_results_buffer', None) is None:
         force = True  # no buffer ever set, then do a search

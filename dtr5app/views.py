@@ -116,8 +116,11 @@ def me_account_del_view(request, template_name="dtr5app/account_del.html"):
         request.user.subs.all().delete()
         request.user.flags_sent.all().delete()
         request.user.flags_received.all().delete()
-        # request.user.date_joined = None
-        # request.user.last_active = None
+        # if user's last_login is None means they have not activated their
+        # account or have deleted it. either way, treat it as if it doesn't
+        # exist.
+        request.user.last_login = None  # can be None since dj 1.8
+        # request.user.date_joined = None  # can't be None, so leave it
         #
         # Setting an account to "is_active = False" will prevent the user from
         # using the same reddit account to sign up again. If "is_active = True"
@@ -407,8 +410,13 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     buttons, unless auth user is viewing their own profile.
     """
     view_user = get_user_and_related_or_404(username, 'profile', 'subs')
+
     if not view_user.is_active:
-        return HttpResponseNotFound('404 - this user does not exist')
+        # user was banned
+        return HttpResponseNotFound('404 - user was banned')
+    if not view_user.last_login:
+        # user deleted their account
+        return HttpResponseNotFound('404 - user does not exist')
 
     # Add auth user's latlng, so we can query their distance.
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
