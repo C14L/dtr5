@@ -123,8 +123,8 @@ SITE_TEMPORARILY_UNAVAILABLE = False  # turn OFF entire site.    # unused
 # either Y link or Z comment karma.
 USER_MIN_SUBSCRIBED_SUBREDDITS = 10    # show warning only if less subs
 USER_MIN_DAYS_REDDIT_ACCOUNT_AGE = 19  # min. 30 days reddit member
-USER_MIN_LINK_KARMA = 200              # AND either 200 link karma
-USER_MIN_COMMENT_KARMA = 200           # OR 200 comment karma.
+USER_MIN_LINK_KARMA = 0              # AND either xy link karma
+USER_MIN_COMMENT_KARMA = 0           # OR xy comment karma.
 
 # Number of user IDs to load into session cache.
 SEARCH_RESULTS_BUFFER_SIZE = 100

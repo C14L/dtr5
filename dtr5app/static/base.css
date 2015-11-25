@@ -849,7 +849,7 @@ body.profile ul.pics li:first-child {
 }
 body.profile ul.pics li .no-pic {
   display: block; width: 175px; height: 150px;
-  background-color: #CCC;
+  background-color: #F3F3F3;
 }
 body.profile ul.pics li .pic {
   display: inline-block;
@@ -1144,6 +1144,67 @@ body.signup-steps.step-5 article .overlay input[type="text"] {
   width: 200px;
 }
 body.signup-steps article div.abouts {
+}
+
+
+
+body.reports .navlinks {
+  text-align: center;
+  padding: 16px;
+}
+body.reports .navlinks a,
+body.reports .navlinks span {
+  margin: 0; padding: 8px 16px;
+  vertical-align: middle;
+}
+body.reports .navlinks a {
+  font-size: 1rem; line-height: 1.25rem;
+}
+body.reports .navlinks span {
+  font-size: 1.25rem; line-height: 1.25rem;
+}
+body.reports .report.card {
+  position: relative;
+}
+body.reports .report.card .receiver {
+  font-size: 1.25rem;
+}
+body.reports .report.card .receiver form {
+  display: block; float: right;
+  margin: 0; padding: 0;
+  opacity: 0.5;
+}
+body.reports .report.card .receiver form:hover {
+  opacity: 1;
+}
+body.reports .report.card .receiver form input[type="submit"] {
+  font-size: 0.8rem; line-height: 0.8rem;
+  margin: 0; padding: 2px;
+  vertical-align: top;
+}
+body.reports .report.card .receiver .reason {
+  font-weight: bold;
+}
+body.reports .report.card .receiver .counter {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
+  display: inline-block;
+  font-size: 20px; line-height: 20px;
+  font-weight: bold;
+  margin: 0; padding: 16px;
+  position: absolute; top: -8px; left: -44px;
+  text-align: center;
+  width: 20px; height: 20px;
+}
+body.reports .report.card .details {
+  border-top: 1px solid rgba(0,0,0,0.12);
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  margin: 16px 0; padding: 16px;
+  color: gray;
+}
+body.reports .report.card .sender {
 }
 
 /* ======================================================================= */

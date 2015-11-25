@@ -50,4 +50,9 @@ urlpatterns = [
     # Let auth user set a flag on view user (like, nope, block, etc).
     url(r'^flag/(?P<action>set|delete)/(?P<flag>[a-zA-Z0-9_-]{2,30})/' +
         R_USERNAME + r'/$', views.me_flag_view, name="me_flag_page"),
+
+    url(r'^reports/$', views.mod_report_view, name="mod_report_page"),
+    url(r'^reports/(?P<pk>\d*)/$', views.mod_report_view,
+        name="mod_report_item_page"),
+
 ]

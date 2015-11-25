@@ -1,0 +1,55 @@
+{% extends 'dtr5app/base.html' %}
+
+{% block title %}reported user profiles{% endblock %}
+
+{% block body_classes %}reports{% endblock %}
+
+{% block main %}
+
+<article>
+  <p class="navlinks">
+    {% if show == "open" %}
+      <span>open reports: {{reports.paginator.count}}</span>
+      <a href="{% url 'mod_report_page' %}?show=resolved">resolved reports</a>
+    {% elif show == "resolved" %}
+      <a href="{% url 'mod_report_page' %}">open reports</a>
+      <span>resolved reports: {{reports.paginator.count}}</span>
+    {% endif %}
+  </p>
+
+  {% for item in reports %}
+    <div class="report card">
+      <div class="receiver">
+        <form method="POST" action="{% url 'mod_report_item_page' item.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="show" value="{{show}}">
+          {% if show == "open" %}
+            <input type="submit" value="resolved">
+          {% elif show == "resolved" %}
+            <input type="submit" value="re-open">
+          {% endif %}
+        </form>
+        <span class="counter">{{forloop.counter}}</span>
+        <a class="username" href="{% url 'profile_page' item.receiver.username %}">{{item.receiver.username}}</a> was reported for <span class="reason">{{item.get_reason_display}}</span>
+      </div>
+      <div class="details">
+        {{item.details}}
+      </div>
+      <div class="sender">
+        <span class="datetime">{{item.created|date:"DATETIME_FORMAT"}}</span> by <a class="username" href="{% url 'profile_page' item.sender.username %}">{{item.sender.username}}</a>
+      </div>
+    </div>
+  {% endfor %}
+
+  <div class="pagination">
+    {% if reports.has_previous %}
+      <a class="prev" href="?page={{reports.previous_page_number}}"><span class="fa fa-arrow-left"></span></a>
+    {% endif %}
+    {% if reports.has_next %}
+      <a class="next" href="?page={{reports.next_page_number}}"><span class="fa fa-arrow-right"></span></a>
+    {% endif %}
+  </div>
+
+</article>
+
+{% endblock %}

@@ -6,13 +6,15 @@ from time import time as unixtime
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage  #, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse,
                          HttpResponseNotFound,
-                         HttpResponseBadRequest)
+                         HttpResponseBadRequest,
+                         HttpResponseForbidden)
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
@@ -590,5 +592,47 @@ def matches_view(request, template_name='dtr5app/matches.html'):
     request.user.profile.matches_count = count_matches(request.user)
     request.user.profile.save()
     ctx = {'user_list': user_list}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+@staff_member_required
+@require_http_methods(["GET", "POST"])
+def mod_report_view(request, pk=None):
+    """
+    For staff users to review reported profiles. If a pk is given on a POST,
+    set that report to "resolved".
+    """
+    show = request.POST.get('show', None) or request.GET.get('show', 'open')
+
+    if request.method in ['POST']:
+        # toggle the resove state of the report.
+        report = get_object_or_404(Report, pk=pk)
+        if report.resolved:
+            report.resolved = None
+        else:
+            report.resolved = datetime.now().replace(tzinfo=pytz.utc)
+        report.save()
+        # then show the same list, either "open" or "resolved"
+        return redirect(reverse('mod_report_page') + '?show=' + show)
+
+    template_name = 'dtr5app/reports.html'
+    li = Report.objects.prefetch_related('sender', 'receiver')
+    if show == 'resolved':
+        # show list of old resolved reports
+        li = li.filter(resolved__isnull=False).order_by('-resolved')
+    else:
+        # or a list of fresh open reports
+        li = li.filter(resolved__isnull=True).order_by('-created')
+
+    paginator = Paginator(li, per_page=100)
+    try:
+        reports = paginator.page(int(request.GET.get('page', 1)))
+    except EmptyPage:  # out of range
+        return HttpResponseNotFound()
+    except ValueError:  # not a number
+        return HttpResponseNotFound()
+
+    ctx = {'reports': reports, 'show': show}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
