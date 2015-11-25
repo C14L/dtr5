@@ -8,9 +8,7 @@
 
     <title>{% block title %}{{request.user.username}}{% endblock %}</title>
 
-    <script src="{% static 'base.js' %}"></script>
     <link rel="stylesheet" href="{% static 'base.css' %}">
-
     <!-- Favicons -->
     <link rel="icon" sizes="32x32" href="/static/icon32.png">
     <link rel="icon" sizes="64x64" href="/static/icon64.png">
@@ -88,7 +86,11 @@
       <p>
         &copy; 2015 redddate.com - discuss on <a href="https://www.reddit.com/r/redddate">r/redddate</a> - view source on <a href="https://github.com/C14L/dtr5">Github</a>
       <p>
+      <p>
+        Sorry, distances are in kilometer for now :) 1 km ~~ 0.62 miles
+      </p>
     </footer>
   </body>
+  <script src="{% static 'base.js' %}"></script>
 </html>
 {% endspaceless %}
