@@ -43,9 +43,6 @@
         <a class="site-name" href="/">redddate</a>
       </div>
       <div class="site-links">
-        {% if user.is_authenticated %}
-          <a class="item username" href="{% url 'profile_page' user.username %}"><span class="text">{{user.username}}</span><span class="icon fa fa-user"></span></a><span class="sep"> | </span>
-        {% endif %}
 
         <a class="item matches" href="{% url 'matches_page' %}"><span class="text">matches</span><span class="icon fa fa-bullseye"></span>{% if user.profile.matches_count %}<span class="number">{{user.profile.matches_count}}</span>{% endif %}</a><span class="sep"> | </span>
 
@@ -58,6 +55,10 @@
             <span class="fa fa-ellipsis-h"></span>
             <input type="checkbox">
             <ul class="opts">
+              <li>
+                <span class="icon fa fa-user"></span>
+                <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a>
+              </li>
               <li>
                 <span class="fa fa-sign-out"></span>
                 <a class="logout" href="{% url 'logout_page' %}">logout</a>

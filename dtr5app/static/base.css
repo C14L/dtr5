@@ -108,9 +108,10 @@ nav.dotmenu > .opts {
   font-size: 1rem; line-height: 1rem;
   list-style: none;
   margin: 0; padding: 0;
-  position: absolute; right: 0; top: 2rem;
+  overflow: hidden;
+  position: absolute; right: 8px; top: 32px;
   text-align: left;
-  width: 220px;
+  width: 250px;
   z-index: 50;
 }
 nav.dotmenu > input[type="checkbox"] {
@@ -317,7 +318,6 @@ Standard content card, simplefied Material-style.
   margin: -16px -16px 16px -16px; padding: 0;
   text-align: center;
 }
-
 
 
 /*
@@ -616,12 +616,13 @@ header {
   box-shadow: 0 1px 3px rgba(0,0,0,0.28);
   height: 56px;
   margin: 0; padding: 0;
+  position: relative;
   white-space: nowrap;
 }
 header .site-logo {
   color: white;
-  float: left;
   margin: 0; padding: 0;
+  position: absolute; top: 0; left: 0;
 }
 header .site-logo > a.site-icon > img {
   border: 0;
@@ -638,9 +639,9 @@ header .site-logo > a.site-name {
   vertical-align: middle;
 }
 header .site-links {
-  float: right;
   font-size: 1rem; line-height: 3rem;
   margin: 0; padding: 0;
+  position: absolute; top: 0; right: 0;
 }
 header .site-links .dotmenu {
   border-left: 1px solid rgba(255,255,255,0.28);
@@ -1042,21 +1043,6 @@ body.profile.is-nope .match-box .announce .tx {
 
 /*
 
-list of matches page.
-
- */
-body.matches article ul.user-list li form.like-nope-duno {
-  box-shadow: none;
-  background-color: transparent;
-  margin: 0; padding: 0; border: 0;
-  transform: scale(0.5);
-}
-body.matches article ul.user-list li form.like-nope-duno .opt.nope {
-}
-
-
-/*
-
 Home page signup screen for anonymous users.
 
  */
@@ -1184,8 +1170,25 @@ body.signup-steps article div.abouts {
     margin: 0 0 16px 0;
   }
 
+  body {  /* make header menu fixed */
+    padding-top: 56px;
+  }
+  header {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 1000;
+  }
+
+  .card > a:first-child {  /* remove to link "go to top" arrow */
+    display: none;
+  }
+  .card > h2 {  /* removing the link breaks the top padding */
+    margin-top: -8px;
+    background-color: red; color: white;
+    text-shadow: 1px 1px 1px black;
+  }
   body article .card {
     margin-top: 0;
+    padding: 8px;
   }
 
   header .site-logo {}
@@ -1222,6 +1225,11 @@ body.signup-steps article div.abouts {
     font-size: 1.5rem; line-height: 1rem;
   }
 
+  /*
+
+  match box on user profiles
+
+   */
   body.profile.is-match .match-box {
     margin: 0; padding: 24px 0 0 0;
   }
@@ -1258,10 +1266,16 @@ body.signup-steps article div.abouts {
   }
 
   body.profile .header h1 {
-    font-size: 1.5rem; line-height: 2.5rem;
+    font-size: 1.5rem; line-height: 1.5rem;
+  }
+  body.profile .header h1 a {
+    display: block;
+    margin: 0; padding: 8px 0 0 0;
+    line-height: 1rem;
   }
   body.profile .header .asl {
-    font-size: 1rem; line-height: 2rem;
+    font-size: 1rem; line-height: 1rem;
+    margin: 8px 0; padding: 0;
   }
   body.profile .about {
     padding: 0;
@@ -1285,4 +1299,64 @@ body.signup-steps article div.abouts {
   ul.user-list-vert li .mainbtn {
     width: 200px;
   }
+
+
+  header .site-logo .site-icon {
+    padding-left: 0.5rem;  /* reduce siede padding a bit */
+    padding-right: 0;
+  }
+  header .site-logo > .site-icon > img {
+    padding-left: 0.5rem;  /* reduce side padding a bit */
+    padding-right: 0;
+  }
+  header .site-logo > .site-name {
+    display: none;
+  }
+  header .site-links .item {
+    position: relative;
+    width: 2.5rem; height: 50px;  /* reduce width a bit */
+    padding-top: 6px; padding-bottom: 0;
+    overflow: hidden;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  header .site-links .item .icon {
+    display: inline-block;
+    margin: 0; padding: 0;
+    font-size: 1.5rem; line-height: 1rem;
+  }
+
+
+  /*
+
+  match box on user profiles
+
+   */
+  body.profile.is-match .match-box {
+    margin: 0; padding: 8px 0 0 0;
+  }
+  body.profile.is-match .match-box .uu img {
+    width: 40vw; height: auto;
+  }
+  body.profile.is-none .match-box {
+    margin: 0; padding: 0;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    text-align: center;
+    z-index: 200;
+  }
+  body.profile.is-none .match-box .like-nope-duno {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    display: block;
+    margin: 0; padding: 8px 0;
+  }
+  body.profile.is-none .match-box .like-nope-duno .opt {
+    margin: 0 8px; padding: 0;
+  }
+  body.profile.is-none .match-box .like-nope-duno .opt.duno {
+    display: none;
+  }
+
 }
