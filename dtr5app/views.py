@@ -80,10 +80,6 @@ def me_view(request, template_name="dtr5app/me.html"):
     elif (request.GET.get('done', 0) == '1'):
         template_name = 'dtr5app/step_7.html'
 
-    print('link_karma: {}'.format(request.user.profile.link_karma))
-    print('comment_karma: {}'.format(request.user.profile.comment_karma))
-    print(settings.USER_MIN_LINK_KARMA, settings.USER_MIN_COMMENT_KARMA)
-
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
@@ -354,6 +350,7 @@ def me_search_view(request):
     return redirect(reverse('profile_page', kwargs=x))
 
 
+@login_required
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """Display a list of users who are subscribed to a subreddit."""
     PER_PAGE = getattr(settings, 'SR_USERS_PER_PAGE', 20)
@@ -380,6 +377,7 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
                               context_instance=RequestContext(request))
 
 
+@login_required
 def profile_view(request, username, template_name='dtr5app/profile.html'):
     """
     Display the complete profile of one user, together with "like" and "nope"
@@ -448,7 +446,6 @@ def me_flag_view(request, action, flag, username):
     Valid action values: 'set', 'delete'.
     Valid flag values: 'like', 'nope', 'report'.
     """
-    print('--> me_flag_view(): {} {} {}'.format(action, flag, username))
     view_user = get_user_and_related_or_404(username)
     flags = {x[1]: x[0] for x in Flag.FLAG_CHOICES}
 
