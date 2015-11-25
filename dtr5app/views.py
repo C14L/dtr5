@@ -54,31 +54,54 @@ def me_view(request, template_name="dtr5app/me.html"):
            'lookingfor_choices': settings.LOOKINGFOR,
            'unixtime': unixtime(),
            'timeleft': request.session['expires'] - unixtime()}
+    LK = settings.USER_MIN_LINK_KARMA
+    CK = settings.USER_MIN_COMMENT_KARMA
 
     # Check if the user has filled in the basics of their profile. If
     # they haven't, show special pages for it.
     if not request.user.subs.all():
+        # the user has no subs in their profile, offer to load them
         template_name = 'dtr5app/step_2.html'
-    elif not (
-        request.user.profile.link_karma > settings.USER_MIN_LINK_KARMA or
-        request.user.profile.comment_karma > settings.USER_MIN_COMMENT_KARMA
-            ):
+        request.session['view_post_signup'] = True
+    elif not request.user.profile.created:
+        # the user reddit profile is incomplete, download it again
+        # template_name = 'dtr5app/step_3_something.html'
+        template_name = 'dtr5app/step_2.html'
+        request.session['view_post_signup'] = True
+    elif not (request.user.profile.link_karma > LK or
+            request.user.profile.comment_karma > CK):
+        # if they don't have sufficient karma, they can't sign up
         template_name = 'dtr5app/step_3_err_karma.html'
-
+        request.user.is_active = False
+        request.user.save()
     elif ((datetime.now().date() - request.user.profile.created) <
             timedelta(settings.USER_MIN_DAYS_REDDIT_ACCOUNT_AGE)):
+        # if the account isn't old enough, they can's sign up
         template_name = 'dtr5app/step_3_err_account_age.html'
+        request.user.is_active = False
+        request.user.save()
     elif not (request.user.profile.lat and request.user.profile.lng):
+        # geolocation missing, offer to auto-set it
         template_name = 'dtr5app/step_3.html'
+        request.session['view_post_signup'] = True
     elif not (request.user.profile.dob and
               request.user.profile.sex and request.user.profile.about):
+        # required manually input profile data is missing
         template_name = 'dtr5app/step_4.html'
+        request.session['view_post_signup'] = True
     elif len(request.user.profile.pics) == 0:
+        # no pics yet, ask to link one picture
         template_name = 'dtr5app/step_5.html'
+        request.session['view_post_signup'] = True
     elif not (request.user.profile.f_distance):
+        # no search settings found, ask user to chose search settings
         template_name = 'dtr5app/step_6.html'
-    elif (request.GET.get('done', 0) == '1'):
+        request.session['view_post_signup'] = True
+    elif (request.session.get('view_post_signup', False)):
+        # user just set at least one required item. now show them the "all
+        # done" page to make display of the first search result less abrupt
         template_name = 'dtr5app/step_7.html'
+        request.session['view_post_signup'] = False
 
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
@@ -99,8 +122,8 @@ def me_account_del_view(request, template_name="dtr5app/account_del.html"):
         # Setting an account to "is_active = False" will prevent the user from
         # using the same reddit account to sign up again. If "is_active = True"
         # then the user will be able to sign up again, using the same reddit
-        # account.
-        # request.user.is_active = False
+        # account. ~~request.user.is_active = False~~
+        #
         request.user.save()
         api.delete_token(request)
         messages.success(request, 'All account data was deleted.')
@@ -384,6 +407,9 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     buttons, unless auth user is viewing their own profile.
     """
     view_user = get_user_and_related_or_404(username, 'profile', 'subs')
+    if not view_user.is_active:
+        return HttpResponseNotFound('404 - this user does not exist')
+
     # Add auth user's latlng, so we can query their distance.
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
                                         request.user.profile.lng)

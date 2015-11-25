@@ -16,11 +16,11 @@
     <h1>update subreddits</h1>
     <form method="POST" action="{% url 'me_update_page' %}">
       {% csrf_token %}
-      <input class="mainbtn" type="submit" value="Update subreddits">
+      <span class="mainbtn"><input type="submit" value="update subreddits"></span>
     </form>
   </div>
   <div class="abouts">
-    <p>Fetches your reddit username and signup date, and the list of subreddits your are subscribed to.</p>
+    <p>fetches your reddit username and signup date, and the list of subreddits your are subscribed to.</p>
     <p></p>
   </div>
 </article>
