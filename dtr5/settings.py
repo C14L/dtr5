@@ -123,14 +123,15 @@ SITE_TEMPORARILY_UNAVAILABLE = False  # turn OFF entire site.    # unused
 # minimum limits for new users: must be older that X days AND have
 # either Y link or Z comment karma.
 USER_MIN_SUBSCRIBED_SUBREDDITS = 10    # show warning only if less subs
-USER_MIN_DAYS_REDDIT_ACCOUNT_AGE = 19  # min. 30 days reddit member
+USER_MIN_DAYS_REDDIT_ACCOUNT_AGE = 0  # days of being a reddit member
 USER_MIN_LINK_KARMA = 0              # AND either xy link karma
 USER_MIN_COMMENT_KARMA = 0           # OR xy comment karma.
 
 # Number of user IDs to load into session cache.
 SEARCH_RESULTS_BUFFER_SIZE = 100
 LINKS_IN_PROFILE_HEADER = 5
-RESULTS_BUFFER_LEN = 20 if DEBUG else 1000
+RESULTS_BUFFER_LEN = 20 if DEBUG else 500
+USER_MAX_PICS_COUNT = 10  # max number of linked pics in user profile
 
 # Ignore subreddits too small or too large.
 SR_MIN_SUBS = 10

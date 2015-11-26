@@ -74,7 +74,7 @@ def search_users_by_options_queryset(request, include_flagged=False):
     # 7 are not blocked by admin via username blocklist,
     li = li.exclude(username__in=get_blocked_usernames_list())
     # 8 have at least one picture URL,
-    li = li.exclude(profile__pics_str='"[]"')
+    li = li.exclude(profile___pics='"[]"')
 
     print('--> li.query', li.query)
     return li
@@ -176,9 +176,9 @@ def search_users(request, usernames_only=True):
     pass
 
     # part 8: have at least one picture URL in the JSON string
-    # li = li.exclude(profile__pics_str='[]')
+    # li = li.exclude(profile___pics='[]')
     # query_params += []
-    query_string += ''' AND NOT (p.pics_str = '[]') '''
+    query_string += ''' AND NOT (p._pics = '[]') '''
 
     # finish up
     query_params += [BUFFER_LEN]

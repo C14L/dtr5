@@ -132,6 +132,7 @@
         {% csrf_token %}
         <input type="text" name="pic_url" value="" placeholder="https://imgur.com/??????">
         <input type="submit" value="add picture">
+        <span class="help">&nbsp;max. {{USER_MAX_PICS_COUNT}} pics</span>
       </form>
     </div>
     <div class="item pics-preview">

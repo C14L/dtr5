@@ -27,6 +27,7 @@ class Profile(models.Model):
     name = models.CharField(default="", max_length=20)
     created = models.DateField(null=True, default=None)  # created_utc
     updated = models.DateTimeField(null=True, default=None)
+    accessed = models.DateTimeField(null=True, default=None)  # last activity
 
     # changeable Reddit user account data:
     link_karma = models.IntegerField(default=0)
@@ -48,7 +49,7 @@ class Profile(models.Model):
     # JSON string with a list of pictures.
     # url: char field with the complete picture URL.
     # src: char field with the comeplete URL to the pic's source page.
-    pics_str = models.TextField(default='')
+    _pics = models.TextField(default='')
 
     # even more manually input data
     tagline = models.CharField(default='', max_length=160)          # unused
@@ -120,25 +121,31 @@ class Profile(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Profile, self).__init__(*args, **kwargs)
-        # Unserialilze pictures JSON string into list.
-        try:
-            self.pics = json.loads(self.pics_str)
-        except ValueError:
-            self.pics = []
 
     def save(self, *args, **kwargs):
+        super(Profile, self).save(*args, **kwargs)
+
+    @property
+    def pics(self):
+        try:
+            return json.loads(self._pics)
+        except ValueError:
+            return []
+
+    @pics.setter
+    def pics(self, li):
+        if not isinstance(li, list):
+            raise ValueError('list expected')
         # Don't store more than 10 pictures per profile.
-        if len(self.pics) > 10:
-            self.pics = self.pics[:10]
+        li = li[:settings.USER_MAX_PICS_COUNT]
         # For all pictures, make sure to use the right imgur size.
-        for pic in self.pics:
+        for pic in li:
             if '//i.imgur.com/' in pic['url']:
                 pic['src'] = get_imgur_page_from_picture_url(pic['url'])
                 # do the same for other common image hosters... who?
                 # -- TODO --
         # Serialilze pics list into JSON string.
-        self.pics_str = json.dumps(self.pics, ensure_ascii=False)
-        super(Profile, self).save(*args, **kwargs)
+        self._pics = json.dumps(li, ensure_ascii=False)
 
     @property
     def lookingfor(self):

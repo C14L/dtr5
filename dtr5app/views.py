@@ -55,7 +55,9 @@ def me_view(request, template_name="dtr5app/me.html"):
     ctx = {'sex_choices': settings.SEX,
            'lookingfor_choices': settings.LOOKINGFOR,
            'unixtime': unixtime(),
-           'timeleft': request.session['expires'] - unixtime()}
+           'timeleft': request.session['expires'] - unixtime(),
+           'USER_MAX_PICS_COUNT': settings.USER_MAX_PICS_COUNT}
+
     LK = settings.USER_MIN_LINK_KARMA
     CK = settings.USER_MIN_COMMENT_KARMA
 
@@ -294,8 +296,8 @@ def me_picture_view(request):
     pic_url = request.POST.get('pic_url', '')
     if not pic_url:
         return HttpResponse('Please add the URL for a picture.')
-    # Check for valid URL schema.
-    # ...
+
+    # TODO: check for valid URL schema.
 
     # If imgur.com picture, set to "medium" size.
     pic_url = set_imgur_url(pic_url, size='m')
@@ -320,13 +322,14 @@ def me_picture_view(request):
         return HttpResponse('The image file size ({} kiB) is too large. '
                             'Please use a smaller size (max. 500 kiB).'.
                             format(x))
-    if len(request.user.profile.pics) > 9:
-        return HttpResponse('You already have 10 pictures in your profile. Ple'
-                            'ase delete an old one, before adding another :)')
     if pic_url in [x['url'] for x in request.user.profile.pics]:
         return HttpResponse('That picture already exists in your profile.')
 
-    request.user.profile.pics.append({'url': pic_url})
+    if len(request.user.profile.pics) >= settings.USER_MAX_PICS_COUNT:
+        messages.info(request, 'oldest picture was deleted to make room for '
+                               'the picture you added.')
+    # prepend the new pic to make it the new "profile pic"
+    request.user.profile.pics = [{'url': pic_url}] + request.user.profile.pics
     request.user.profile.save()
     return redirect(reverse('me_page') + '#id_pics')
 
