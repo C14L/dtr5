@@ -120,7 +120,14 @@ LOGGING = {
 # block signups, logins, or all access.
 ALLOW_USER_SIGNUP = True  # new users can register               # unused
 ALLOW_USER_LOGIN = True  # existing users can login              # unused
-SITE_TEMPORARILY_UNAVAILABLE = False  # turn OFF entire site.    # unused
+
+# turn OFF entire site.
+if not DEBUG:
+    # in production, use a file in parent dir as a switch.
+    _fn = os.path.join(BASE_DIR, '..', '..', 'SITE_IS_ONLINE')
+    SITE_TEMPORARILY_UNAVAILABLE = os.path.exists(_fn)
+else:
+    SITE_TEMPORARILY_UNAVAILABLE = False
 
 # minimum limits for new users: must be older that X days AND have
 # either Y link or Z comment karma.
