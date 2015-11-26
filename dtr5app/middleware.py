@@ -39,8 +39,8 @@ class CheckSiteUnavailableIfSiteIsOnlineNotFound():
     """
     def process_request(self, request):
         # use a file in parent dir as a switch.
-
-        if exists(join(settings.BASE_DIR, '../../SITE_IS_ONLINE')):
+        _fn = join(settings.BASE_DIR, '../../SITE_IS_ONLINE')
+        if settings.DEBUG or exists(_fn):
             return None
         else:
             return return_site_offline_response()
