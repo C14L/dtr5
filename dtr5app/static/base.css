@@ -627,12 +627,12 @@ header .site-logo {
 header .site-logo > a.site-icon > img {
   border: 0;
   height: 3rem;
-  margin: 0; padding: 4px 8px;
+  margin: 0; padding: 4px 16px;
   vertical-align: middle;
 }
 header .site-logo > a.site-name {
   color: inherit; text-decoration: inherit;
-  font-size: 2.5rem; line-height: 3rem;
+  font-size: 1.5rem; line-height: 3rem;
   font-weight: normal;
   letter-spacing: 0.3rem;
   text-shadow: 0 0 2px rgba(0,0,0,0.3);
@@ -1354,6 +1354,11 @@ body.reports .report.card .sender {
 /* ======================================================================= */
 
 @media only screen and (max-width: 600px) {  /* < sm */
+
+  .site-announcements {  /* remove the colored annoucement bar on <sm */
+    display: none;
+  }
+
   ul.user-list-vert li span.info span.asl.short {
     display: block;
   }
