@@ -422,7 +422,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     if not view_user.is_active:
         # user was banned
         return HttpResponseNotFound('404 - user was banned')
-    if not view_user.last_login or not view_user.profile.pics:
+    if not view_user.last_login:
         # user deleted their account
         return HttpResponseNotFound('404 - user does not exist')
 
