@@ -147,7 +147,11 @@
       </div>
     {% endif %}
     <div class="account-age">
-      a redditor for {{view_user.profile.created|timesince}} and signed up here {{view_user.date_joined|timesince}} ago.
+      {% if view_user.profile.accessed %}
+        last active {{view_user.profile.accessed|timesince}} ago &middot;
+      {% endif %}
+      a redditor for {{view_user.profile.created|timesince}} &middot;
+      on redddate for {{view_user.date_joined|timesince}}
     </div>
   </div>
 
