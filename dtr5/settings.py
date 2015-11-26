@@ -56,7 +56,9 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    #'dtr5app.middleware.CheckSiteTemporarilyUnavailable',
+    'dtr5app.middleware.CheckSiteTemporarilyUnavailable',
+    'dtr5app.middleware.CheckSiteUnavailableIfSiteIsOnlineNotFound',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -65,6 +67,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+
     'dtr5app.middleware.UserProfileLastActiveMiddleware',
 )
 
@@ -121,13 +124,9 @@ LOGGING = {
 ALLOW_USER_SIGNUP = True  # new users can register               # unused
 ALLOW_USER_LOGIN = True  # existing users can login              # unused
 
-# turn OFF entire site.
-if not DEBUG:
-    # in production, use a file in parent dir as a switch.
-    _fn = os.path.join(BASE_DIR, '..', '..', 'SITE_IS_ONLINE')
-    SITE_TEMPORARILY_UNAVAILABLE = os.path.exists(_fn)
-else:
-    SITE_TEMPORARILY_UNAVAILABLE = False
+# turn OFF entire site. WARNING: there is another switch to turn off the
+# site via the dtr5app.middleware.MakeSiteUnavailable()
+SITE_TEMPORARILY_UNAVAILABLE = False
 
 # minimum limits for new users: must be older that X days AND have
 # either Y link or Z comment karma.
