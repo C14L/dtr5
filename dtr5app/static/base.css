@@ -611,7 +611,7 @@ Site header.
 
  */
 header {
-  background-color: #003B6F; /* reddit default color: #CEE3F8; */
+  background-color: #005280; /* #003B6F; reddit default color: #CEE3F8; */
   border-bottom: 1px solid #5F99CF;
   box-shadow: 0 1px 3px rgba(0,0,0,0.28);
   height: 56px;
