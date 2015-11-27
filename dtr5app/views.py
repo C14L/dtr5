@@ -20,8 +20,10 @@ from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 from simple_reddit_oauth import api
 
-from toolbox import force_int, force_float, set_imgur_url
-from .models import Subscribed, Sr, Flag, Report
+from .models import (Subscribed, Sr, Flag, Report)
+
+from toolbox import (force_int, force_float, set_imgur_url, get_age)
+
 from .utils import (add_auth_user_latlng,
                     count_matches,
                     get_matches_user_list,
@@ -29,6 +31,7 @@ from .utils import (add_auth_user_latlng,
                     get_user_and_related_or_404,
                     get_user_list_after,
                     update_list_of_subscribed_subreddits)
+
 from .utils_search import (search_results_buffer,
                            search_subreddit_users)
 
@@ -242,25 +245,30 @@ def me_manual_view(request):
             dob = dateutil.parser.parse(request.POST.get('dob', None)).date()
             request.user.profile.dob = dob
         except:
-            pass
+            dob = 0
+        if get_age(dob) < 18:
+            messages.warning(request, 'sorry, you need to be 18 or older '
+                                      'to sign up on this site.')
+            return redirect(reverse('me_page') + '#id_profile')
+
     if request.POST.get('sex', None):
         request.user.profile.sex = force_int(request.POST.get('sex'))
     if request.POST.get('about', None):
         request.user.profile.about = request.POST.get('about')
-
-    if request.POST.get('tagline', None):
-        request.user.profile.tagline = request.POST.get('tagline')
     if request.POST.getlist('lookingfor', None):
         request.user.profile.lookingfor = request.POST.getlist('lookingfor')
-    if request.POST.get('relstatus', None):
+
+    if request.POST.get('tagline', None):  # unused
+        request.user.profile.tagline = request.POST.get('tagline')
+    if request.POST.get('relstatus', None):  # unused
         request.user.profile.relstatus = request.POST.get('relstatus')
-    if request.POST.get('education', None):
+    if request.POST.get('education', None):  # unused
         request.user.profile.education = request.POST.get('education')
-    if request.POST.get('height', None):
+    if request.POST.get('height', None):  # unused
         request.user.profile.height = request.POST.get('height')
-    if request.POST.get('weight', None):
+    if request.POST.get('weight', None):  # unused
         request.user.profile.weight = request.POST.get('weight')
-    if request.POST.get('fitness', None):
+    if request.POST.get('fitness', None):  # unused
         request.user.profile.fitness = request.POST.get('fitness')
 
     request.user.profile.save()

@@ -14,7 +14,8 @@ from toolbox import (get_imgur_page_from_picture_url,
                      get_western_zodiac_symbol,
                      get_eastern_zodiac,
                      get_eastern_zodiac_symbol,
-                     distance_between_geolocations)
+                     distance_between_geolocations,
+                     get_age)
 
 logger = logging.getLogger(__name__)
 
@@ -182,8 +183,7 @@ class Profile(models.Model):
 
     def get_age(self):
         try:
-            delta = date.today() - self.dob
-            return int(delta.days / 365)
+            return get_age(self.dob)
         except:
             return ''
 

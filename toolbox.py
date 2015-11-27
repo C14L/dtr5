@@ -9,6 +9,11 @@ import pytz
 import re
 
 
+def get_age(dob):
+    delta = date.today() - dob
+    return int(float(delta.days) / 365.25)
+
+
 def to_iso8601(when=None):
     """Return a datetime as string in ISO-8601 format."""
     if not when:
