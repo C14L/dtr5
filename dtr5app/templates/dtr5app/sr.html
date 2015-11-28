@@ -20,7 +20,11 @@
       {% for v in user_list %}
         <li>
           <a href="{% url 'profile_page' v.username %}" class="pic">
-            <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
+            {% if v.profile.pics.0 %}
+              <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
+            {% else %}
+              <img src="/static/nopic.jpg" alt="{{v.username}}">
+            {% endif %}
           </a>
           <span class="info">
             <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>

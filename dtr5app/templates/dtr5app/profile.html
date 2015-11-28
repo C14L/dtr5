@@ -134,9 +134,13 @@
       {% for pic in view_user.pics_list %}
       <li>
         {% if pic.url %}
-        <a href="{{pic.src}}" class="pic"><img src="{{pic.url}}" alt="{{view_user.username}}"></a>
+          <a href="{{pic.src}}" class="pic"><img src="{{pic.url}}" alt="{{view_user.username}}"></a>
         {% else %}
-        <span class="no-pic"></span>
+          {% if forloop.counter == 1 %}
+            <span class="pic"><img src="/static/nopic.jpg" alt="{{view_user.username}}"></span>
+          {% else %}
+            <span class="no-pic"></span>
+          {% endif %}
         {% endif %}
       </li>
       {% endfor %}
