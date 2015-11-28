@@ -118,13 +118,16 @@ class Profile(models.Model):
         index_together = [["lat", "lng"], ]
 
     def __str__(self):
-        return self.name
+        return self.user.username
 
     def __init__(self, *args, **kwargs):
         super(Profile, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)
+
+    def _user_id(self):
+        return self.user.id
 
     @property
     def pics(self):
