@@ -359,7 +359,15 @@
   <div class="prevnext-user-list">
     <ul>
       {% for v in user_list %}
-        <li class="{% if v.username == view_user.username %}curr{% else %}not-curr{% endif %}"><a href="{% url 'profile_page' v.username %}"><img src="{{v.profile.pics.0.url}}" alt="{{v.username}}"></a></li>
+        <li class="{% if v.username == view_user.username %}curr{% else %}not-curr{% endif %}">
+          <a href="{% url 'profile_page' v.username %}">
+            {% if v.profile.pics.0 %}
+              <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
+            {% else %}
+              <img src="/static/nopic.jpg" alt="{{v.username}}">
+            {% endif %}
+          </a>
+        </li>
       {% endfor %}
     </ul>
   </div>
