@@ -136,16 +136,17 @@ def search_users(request, usernames_only=True):
             INNER JOIN dtr5app_profile p ON u.id = p.user_id
             WHERE 1=1 '''
 
-    # part 2: sex
+    # part 2: sex --> TODO: search by gender!
+    # li = li.filter(profile__sex=request.user.profile.f_sex)
     if request.user.profile.f_sex > 0:
-        # li = li.filter(profile__sex=request.user.profile.f_sex)
-        pass
+        query_params += [request.user.profile.f_sex]
+        query_string += ''' AND p.sex = %s '''
 
     # part 3: date of birth
     dob_earliest, dob_latest = get_dob_range(request.user.profile.f_minage,
                                              request.user.profile.f_maxage)
     query_params += [dob_earliest, dob_latest]
-    query_string += ''' AND p.dob > %s AND p.dob < %s '''
+    query_string += ''' AND p.dob >= %s AND p.dob <= %s '''
 
     # part 4: lat/lng
     # li = li.filter(profile__lat__gte=lat_min, profile__lat__lte=lat_max,
@@ -177,8 +178,9 @@ def search_users(request, usernames_only=True):
 
     # part 8: have at least one picture URL in the JSON string
     # li = li.exclude(profile___pics='[]')
+    # TODO: for now, allow no-picture profiles, to make testing easier
     # query_params += []
-    query_string += ''' AND NOT (p._pics = '[]') '''
+    # query_string += ''' AND NOT (p._pics = '[]') '''
 
     # finish up
     query_params += [BUFFER_LEN]
@@ -209,10 +211,16 @@ def search_results_buffer(request, force=False):
     """
     bt = request.session.get('search_results_buffer_time', None)
     if (not bt or from_iso8601(bt) + timedelta(minutes=1) < from_iso8601()):
+        if settings.DEBUG:
+            print('search_results_buffer() --> Cache timeout, new search!')
         force = True  # if buffer is old, force refresh
     if request.session.get('search_results_buffer', None) is None:
+        if settings.DEBUG:
+            print('search_results_buffer() --> No buffer, fill first time!')
         force = True  # no buffer ever set, then do a search
     if force:
+        if settings.DEBUG:
+            print('search_results_buffer() --> "force" is true, do search!')
         request.session['search_results_buffer'] = search_users(request)
         request.session['search_results_buffer_time'] = to_iso8601()
         request.session.modified = True
