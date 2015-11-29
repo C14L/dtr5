@@ -4,7 +4,7 @@ from .models import Profile, Flag, Sr, Subscribed, Report
 
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('_user_id', '__str__', 'name', 'created', 'accessed',
-                    'link_karma', 'comment_karma', )
+                    'link_karma', 'comment_karma', 'sex', 'over_18', )
 
 
 class SrAdmin(admin.ModelAdmin):
