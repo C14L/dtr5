@@ -345,7 +345,7 @@ class Sr(models.Model):
     lang = models.CharField(default="", max_length=10)
     title = models.CharField(default="", max_length=100)
     header_title = models.CharField(default="", max_length=100)
-    display_name = models.CharField(default="", max_length=100)
+    display_name = models.CharField(default="", max_length=100)  # TODO: index
     # public, restricted, or private
     subreddit_type = models.CharField(default="", max_length=50)
     # Subreddit subscribers

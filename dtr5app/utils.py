@@ -5,9 +5,33 @@ import pytz
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage  #, PageNotAnInteger
 from django.http import HttpResponseNotFound, Http404
 from .models import (Sr, Subscribed, Flag)
 from .utils_search import search_results_buffer
+
+
+def get_paginated_user_list(user_list, page, user):
+    """
+    Return one page of a list of users to be handed to the template.
+
+    :user_list: User queryset to be paginated.
+    :page: the number of the page to return.
+    :user: a User instance, usually request.user, from whose geolocation the
+           distances to all users the the returned page are calculated.
+    """
+    PER_PAGE = getattr(settings, 'USERS_PER_PAGE', 20)
+    ORPHANS = getattr(settings, 'USERS_ORPHANS', 0)
+    paginated = Paginator(user_list, per_page=PER_PAGE,  orphans=ORPHANS)
+    try:
+        user_page = paginated.page(page)
+    except EmptyPage:  # out of range
+        raise Http404
+    except ValueError:  # not a number
+        raise Http404
+    user_list = add_auth_user_latlng(user, user_page.object_list)
+    user_page.object_list = user_list
+    return user_page
 
 
 def update_list_of_subscribed_subreddits(user, subscribed):

@@ -14,7 +14,8 @@ from django.core.urlresolvers import reverse
 from django.http import (HttpResponse,
                          HttpResponseNotFound,
                          HttpResponseBadRequest,
-                         HttpResponseForbidden)
+                         HttpResponseForbidden,
+                         Http404)
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
@@ -30,7 +31,8 @@ from .utils import (add_auth_user_latlng,
                     get_prevnext_user,
                     get_user_and_related_or_404,
                     get_user_list_after,
-                    update_list_of_subscribed_subreddits)
+                    update_list_of_subscribed_subreddits,
+                    get_paginated_user_list)
 
 from .utils_search import (search_results_buffer,
                            search_subreddit_users)
@@ -395,26 +397,13 @@ def me_search_view(request):
 @login_required
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """Display a list of users who are subscribed to a subreddit."""
-    PER_PAGE = getattr(settings, 'SR_USERS_PER_PAGE', 20)
+    pg = int(request.GET.get('page', 1))
     view_sr = get_object_or_404(Sr, display_name=sr)
-    user_subs_all = request.user.subs.all().prefetch_related('sr')
-    # fetch sr users, then paginate and display some 15 or so per page.
-    user_list = search_subreddit_users(request, view_sr)
-    user_list = user_list.prefetch_related('profile', 'subs')
-    paginated = Paginator(user_list, per_page=PER_PAGE,  orphans=2)
-    try:
-        user_page = paginated.page(int(request.GET.get('page', 1)))
-    except EmptyPage:  # out of range
-        return HttpResponseNotFound()
-    except ValueError:  # not a number
-        return HttpResponseNotFound()
-    user_list = add_auth_user_latlng(request.user, user_page.object_list)
-    user_page.object_list = user_list
-
+    ul = search_subreddit_users(request, view_sr)\
+         .prefetch_related('profile', 'subs')
     ctx = {'view_sr': view_sr,
-           'user_list': user_page,
-           'user_count': paginated.count,
-           'user_subs_all': user_subs_all}
+           'user_list': get_paginated_user_list(ul, pg, request.user),
+           'user_subs_all': request.user.subs.all().prefetch_related('sr')}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
@@ -567,38 +556,44 @@ def me_flag_view(request, action, flag, username):
 
 @login_required
 @require_http_methods(["GET", "HEAD"])
-def me_nope_view(request, template_name='dtr5app/nopes.html'):
-    user_list = User.objects.filter(flags_received__sender=request.user,
-                                    flags_received__flag=Flag.NOPE_FLAG)
-    user_list = user_list.prefetch_related('profile')
-    user_list = add_auth_user_latlng(request.user, user_list)
-    ctx = {'user_list': user_list}
+def me_nope_view(request):
+    template_name='dtr5app/nopes.html'
+    pg = int(request.GET.get('page', 1))
+    ul = User.objects.filter(flags_received__sender=request.user,
+                             flags_received__flag=Flag.NOPE_FLAG
+                             ).prefetch_related('profile')
+    ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
 
 @login_required
 @require_http_methods(["GET", "HEAD"])
-def me_like_view(request, template_name='dtr5app/likes.html'):
-    user_list = User.objects.filter(flags_received__sender=request.user,
-                                    flags_received__flag=Flag.LIKE_FLAG)
-    user_list = user_list.prefetch_related('profile')
-    user_list = add_auth_user_latlng(request.user, user_list)
-    ctx = {'user_list': user_list}
+def me_like_view(request):
+    template_name='dtr5app/likes.html'
+    pg = int(request.GET.get('page', 1))
+    ul = User.objects.filter(flags_received__sender=request.user,
+                             flags_received__flag=Flag.LIKE_FLAG
+                             ).prefetch_related('profile')
+    ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
 
 @login_required
 @require_http_methods(["GET", "HEAD"])
-def matches_view(request, template_name='dtr5app/matches.html'):
+def matches_view(request):
     """
     Show a page with all matches (i.e. mututal 'like' flags) of auth
     user and all other users.
     """
     # Get a list user_list ordered by match time, most recent first,
     # including the additional property 'matched' with match timestamp.
+    template_name='dtr5app/matches.html'
+    # pg = int(request.GET.get('page', 1))
+
     user_list = get_matches_user_list(request.user)
+
     user_list = add_auth_user_latlng(request.user, user_list)
     request.user.profile.matches_count = count_matches(request.user)
     request.user.profile.save()

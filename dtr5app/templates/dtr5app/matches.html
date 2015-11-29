@@ -8,8 +8,17 @@
 
 <article>
   <div class="card">
-    <h2>Matches</h2>
+    <h2>{{user_list.paginator.count}} matches</h2>
     {% include 'dtr5app/user_list.html' %}
+  </div>
+
+  <div class="pagination">
+    {% if user_list.has_previous %}
+      <a class="prev" href="?page={{user_list.previous_page_number}}"><span class="fa fa-arrow-left"></span></a>
+    {% endif %}
+    {% if user_list.has_next %}
+      <a class="next" href="?page={{user_list.next_page_number}}"><span class="fa fa-arrow-right"></span></a>
+    {% endif %}
   </div>
 </article>
 

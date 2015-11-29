@@ -70,13 +70,14 @@ Zodiac symbol boxes.
 for lists, arrows left and right for previous and next page.
 
 */
-.pagination { display: block; font-size: 3.5rem; line-height: 5rem; color: white; overflow: hidden; margin: 0; padding: 16px; }
+.pagination { display: block; font-size: 3.5rem; line-height: 5rem; color: white; overflow: hidden; margin: 24px 0; padding: 16px; }
 .pagination > a { color: inherit; display: block; width: 5rem; height: 5rem; background-color: red; border-radius: 50%; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); box-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
 .pagination > a.prev { float: left; }
 .pagination > a.next { float: right; }
 .pagination > a > span {}
 .pagination > a.prev > span {}
 .pagination > a.next > span {}
+.pagination > span { display: block; margin: 0 6rem; padding: 0; color: black; text-align: center; font-size: 2rem; line-height: 5rem;  }
 
 
 /*
@@ -365,11 +366,38 @@ User list horizontal (inline-block).
 --> used on body.sr subreddit spcific pages.
 
  */
+
+body.sr .subheader {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
+  margin: 0; padding: 22px 16px 24px 16px;
+  text-align: left;
+}
+body.sr .subheader > .reddit-link {
+  display: inline-block;
+  font-size: 1.5rem; line-height: 1.5rem;
+  font-weight: normal;
+  margin: 0; padding: 0 16px;
+  vertical-align: middle;
+}
+body.sr .subheader > .reddit-link > .fa {
+  font-size: 1.5rem;
+  margin-right: 4px;
+  opacity: 0.2;
+}
+body.sr .subheader > .info {
+  font-size: 1rem; line-height: 1.5rem;
+  vertical-align: middle;
+}
+body.sr article {
+  text-align: center;
+}
+
 ul.user-list {
   display: block;
   font-size: 0;
   list-style: none;
-  margin: 0; padding: 0;
+  margin: 16px; padding: 0;
 }
 ul.user-list li {
   display: inline-block;
@@ -399,7 +427,7 @@ ul.user-list li a.pic img {
   border: 8px solid #FFFFFF;
   box-shadow: 2px 2px 3px rgba(0,0,0,0.6);
   display: block;
-  height: 200px;
+  height: 250px;
   margin: 0; padding: 0;
 }
 ul.user-list li span.info {
