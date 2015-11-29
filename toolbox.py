@@ -46,7 +46,7 @@ def force_int(x, min=None, max=None):
     respectively.
     """
     try:
-        i = int(x)
+        i = int(x.replace(',', ''))
     except:
         return 0
     if min and i < min:

@@ -203,6 +203,7 @@ def search_users(request, usernames_only=True):
     else:
         return users
 
+
 def search_results_buffer(request, force=False):
     """
     Check if there are search results in session cache. If there are

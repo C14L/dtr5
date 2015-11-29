@@ -87,6 +87,14 @@ class Profile(models.Model):
     # find only users that have a verified email on reddit?
     f_has_verified_email = models.BooleanField(default=False)       # unused
 
+    # space separated list of subreddit names to ignore in search
+    f_ignore_sr_li = models.CharField(default='', max_length=250)
+    # subreddits with more members than this are ignored in search
+    f_ignore_sr_max = models.PositiveIntegerField(default=10000000)
+    # space separated list of subreddits whose subscribers will be
+    # REMOVED from user's search results.
+    f_exclude_sr_li = models.CharField(default='', max_length=250)
+
     # x_ --> only show my profile listed in another redditor's
     # search results, if the other redditor...
 
@@ -345,7 +353,7 @@ class Sr(models.Model):
     lang = models.CharField(default="", max_length=10)
     title = models.CharField(default="", max_length=100)
     header_title = models.CharField(default="", max_length=100)
-    display_name = models.CharField(default="", max_length=100)  # TODO: index
+    display_name = models.CharField(default="", max_length=100, db_index=True)
     # public, restricted, or private
     subreddit_type = models.CharField(default="", max_length=50)
     # Subreddit subscribers

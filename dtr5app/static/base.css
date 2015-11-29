@@ -167,6 +167,44 @@ nav.dotmenu > .opts > li.secondary {
 
 /*
 
+a section that can be "opened and closed" by clicking
+on the <h2/> title of the section. similar to .dotmenu
+
+ */
+.toggle-section {
+  cursor: pointer;
+  display: block;
+  padding: 0; margin: 0 -16px -16px -16px;
+  border-top: 1px solid rgba(0,0,0,0.12);
+}
+.toggle-section > label > h3 {
+  display: block;
+  margin: 0; padding: 16px;
+  font-size: 1rem; line-height: 1rem;
+  font-weight: normal;
+  color: blue;
+}
+.toggle-section > label > h3:after {
+  content: '⯆';
+  padding-left: 4px;
+}
+.toggle-section > input[type="checkbox"] {
+  display: none; cursor: pointer;
+}
+.toggle-section > .opts {
+  display: none;
+  overflow: hidden;
+  padding: 0 16px;
+}
+.toggle-section > input[type="checkbox"]:checked + .opts {
+  display: block;
+}
+
+
+
+
+/*
+
 list of "lookingfor" options in profile and settings,
 with and without "checkbox" selectors.
 

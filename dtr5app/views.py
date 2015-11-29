@@ -32,7 +32,8 @@ from .utils import (add_auth_user_latlng,
                     get_user_and_related_or_404,
                     get_user_list_after,
                     update_list_of_subscribed_subreddits,
-                    get_paginated_user_list)
+                    get_paginated_user_list,
+                    split_sr_names)
 
 from .utils_search import (search_results_buffer,
                            search_subreddit_users)
@@ -364,6 +365,7 @@ def me_search_view(request):
 
     p = request.user.profile
     p.f_sex = force_int(request.POST.get('f_sex', ''))
+
     if request.POST.get('f_distance', None):
         p.f_distance = force_int(request.POST.get('f_distance'), max=20000)
     if request.POST.get('f_minage', None):
@@ -374,6 +376,18 @@ def me_search_view(request):
         p.f_over_18 = bool(request.POST.get('f_over_18'))
     if request.POST.get('f_has_verified_email', None):
         p.f_has_verified_email = bool(request.POST.get('f_has_verified_email'))
+
+    f_ignore_sr_li = split_sr_names(request.POST.get('f_ignore_sr_li', ''))
+    f_ignore_sr_max = force_int(request.POST.get('f_ignore_sr_max', 0))
+    f_exclude_sr_li = split_sr_names(request.POST.get('f_exclude_sr_li', ''))
+
+    if f_ignore_sr_li:
+        p.f_ignore_sr_li = ' '.join(f_ignore_sr_li)
+    if f_ignore_sr_max:
+        p.f_ignore_sr_max = f_ignore_sr_max
+    if f_exclude_sr_li:
+        p.f_exclude_sr_li = ' '.join(f_exclude_sr_li)
+
     request.user.profile = p
     #
     # TODO: check if model is dirty and only force a search results
