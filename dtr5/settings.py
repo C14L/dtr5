@@ -72,6 +72,7 @@ MIDDLEWARE_CLASSES = (
     'dtr5app.middleware.CheckSiteTemporarilyUnavailable',
     'dtr5app.middleware.CheckSiteUnavailableIfSiteIsOnlineNotFound',
 
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
