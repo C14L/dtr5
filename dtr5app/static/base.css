@@ -973,11 +973,14 @@ body.profile.is-none .like-nope-duno > .opt:active {
 }
 body.profile.is-none .like-nope-duno > .opt.like {
   background-color: red;
+  margin-left: 40px;
 }
 body.profile.is-none .like-nope-duno > .opt.nope {
   background-color: #111;
+  margin-right: 40px;
 }
 body.profile.is-none .like-nope-duno > .opt.duno {
+  display: none;
   background-color: gray;
   margin-top: 64px;
   width: 48px; height: 48px;
