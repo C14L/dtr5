@@ -96,8 +96,11 @@
         Sorry, distances are in kilometer for now :) 1 km ~~ 0.62 miles
       </p>
 
-      {% if DEBUG %}
-        <hr><p>authuser: {{user.id}} -
+      {% if DEBUG or user.is_superuser %}
+        <hr>
+        <p>[SUPERUSER] --
+        CANONICAL_HOST=={{CANONICAL_HOST}} --
+        authuser: {{user.id}} -
         refresh_token: {{request.session.refresh_token}} -
         access_token: {{request.session.access_token}} -
         expires: {{request.session.expires}} -

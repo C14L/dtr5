@@ -32,10 +32,10 @@ if DEBUG:
     ALLOWED_HOSTS = ['localhost']
     CANONICAL_HOST = 'http://localhost:8000'
 else:
-    ALLOWED_HOSTS = ['redddate.com']
+    ALLOWED_HOSTS = ['redddate.com', 'reddmeet.com']
     CANONICAL_HOST = 'http://redddate.com'
 
-LOGIN_URL = CANONICAL_HOST + '/'
+LOGIN_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     # 'django.contrib.auth.backends.ModelBackend',  # default

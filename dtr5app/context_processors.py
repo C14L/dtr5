@@ -17,4 +17,5 @@ def selected_settings(request):
             settings.USER_MIN_DAYS_REDDIT_ACCOUNT_AGE,
         'USER_MIN_LINK_KARMA': settings.USER_MIN_LINK_KARMA,
         'USER_MIN_COMMENT_KARMA': settings.USER_MIN_COMMENT_KARMA,
+        'CANONICAL_HOST': settings.CANONICAL_HOST,
     }
