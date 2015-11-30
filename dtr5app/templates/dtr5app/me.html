@@ -23,7 +23,7 @@
               {% endif %}
             {% endfor %}
           </select>
-        </label>&nbsp;
+        </label>&nbsp; <!-- {{user.profile.f_distance}} -->
         <label>
           <select name="f_distance" size="1"><!-- in km -->
             <option{% if user.profile.f_distance == 20040 %} selected{% endif %}  value="20040">worldwide</option>

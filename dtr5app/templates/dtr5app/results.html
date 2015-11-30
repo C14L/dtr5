@@ -7,43 +7,47 @@
 {% block main %}
 
 <section class="subheader">
-  <span class="info"><strong>found {% if user_list.paginator.count >= RESULTS_BUFFER_LEN %}{{RESULTS_BUFFER_LEN}}+{% else %}{{user_list.paginator.count}}{% endif %} new redditors</strong> - <a href="{% url 'me_page' %}">change search options</a> - <a href="{% url 'profile_page' user_list.0.username %}">browse profiles one by one</a></span>
+  <span class="info"><strong>found {% if user_list.paginator.count >= RESULTS_BUFFER_LEN %}{{RESULTS_BUFFER_LEN}}+{% else %}{{user_list.paginator.count}}{% endif %} new redditors</strong> - <a href="{% url 'me_page' %}">change search options</a>{% if user_list.0 %} - <a href="{% url 'profile_page' user_list.0.username %}">browse profiles one by one</a>{% endif %}</span>
 </section>
 
-<article>
-  <ul class="user-list">
-    {% for v in user_list %}
-      <li>
-        <a href="{% url 'profile_page' v.username %}" class="pic">
-          {% if v.profile.pics.0 %}
-            <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
-          {% else %}
-            <img src="/static/nopic.jpg" alt="{{v.username}}">
-          {% endif %}
-        </a>
-        <span class="info">
-          <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
-          <span class="asl">
-            {{v.profile.get_age}}
-            {{v.profile.get_sex_symbol}}
-            {{v.profile.get_distance_in_km|floatformat:"1"}} km away
+{% if user_list %}
+  <article>
+    <ul class="user-list">
+      {% for v in user_list %}
+        <li>
+          <a href="{% url 'profile_page' v.username %}" class="pic">
+            {% if v.profile.pics.0 %}
+              <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
+            {% else %}
+              <img src="/static/nopic.jpg" alt="{{v.username}}">
+            {% endif %}
+          </a>
+          <span class="info">
+            <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
+            <span class="asl">
+              {{v.profile.get_age}}
+              {{v.profile.get_sex_symbol}}
+              {{v.profile.get_distance_in_km|floatformat:"1"}} km away
+            </span>
           </span>
-        </span>
-      </li>
-    {% endfor %}
-  </ul>
+        </li>
+      {% endfor %}
+    </ul>
 
-  <div class="pagination">
-    {% if user_list.has_previous %}
-      <a class="prev" href="?page={{user_list.previous_page_number}}"><span class="fa fa-arrow-left"></span></a>
-    {% endif %}
-    {% if user_list.has_next %}
-      <a class="next" href="?page={{user_list.next_page_number}}"><span class="fa fa-arrow-right"></span></a>
-    {% endif %}
-    <span>
-      {{user_list.number}} / {{user_list.paginator.num_pages}}
-    </span>
-  </div>
-</article>
+    <div class="pagination">
+      {% if user_list.has_previous %}
+        <a class="prev" href="?page={{user_list.previous_page_number}}"><span class="fa fa-arrow-left"></span></a>
+      {% endif %}
+      {% if user_list.has_next %}
+        <a class="next" href="?page={{user_list.next_page_number}}"><span class="fa fa-arrow-right"></span></a>
+      {% endif %}
+      <span>
+        {{user_list.number}} / {{user_list.paginator.num_pages}}
+      </span>
+    </div>
+  </article>
+{% else %}
+  <div>there is nobody</div>
+{% endif %}
 
 {% endblock %}
