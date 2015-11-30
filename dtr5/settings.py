@@ -43,6 +43,18 @@ AUTHENTICATION_BACKENDS = (
     'simple_reddit_oauth.backends.RedditBackend',
 )
 
+
+# Use memcached for sessions. Careful: cache size has to be large enough! Once
+# the cache fills up, random items will be evicted, i.e. sessions dumped.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
