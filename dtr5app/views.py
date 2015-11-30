@@ -427,6 +427,14 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
 
 
 @login_required
+def profile_list_view(request):
+    template_name='dtr5app/profile_list.html'
+    ctx = {}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+@login_required
 def profile_view(request, username, template_name='dtr5app/profile.html'):
     """
     Display the complete profile of one user, together with "like" and "nope"
