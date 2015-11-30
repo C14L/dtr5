@@ -18,4 +18,8 @@ def selected_settings(request):
         'USER_MIN_LINK_KARMA': settings.USER_MIN_LINK_KARMA,
         'USER_MIN_COMMENT_KARMA': settings.USER_MIN_COMMENT_KARMA,
         'CANONICAL_HOST': settings.CANONICAL_HOST,
+        'SEX': settings.SEX,
+        'LOOKINGFOR': settings.LOOKINGFOR,
+        'RESULTS_BUFFER_LEN': settings.RESULTS_BUFFER_LEN,
+
     }

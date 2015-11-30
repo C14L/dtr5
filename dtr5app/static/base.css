@@ -405,32 +405,41 @@ User list horizontal (inline-block).
 
  */
 
-body.sr .subheader {
+body .subheader {
   background-color: white;
   box-shadow: 0 1px 3px rgba(0,0,0,0.28);
   margin: 0; padding: 22px 16px 24px 16px;
   text-align: left;
 }
-body.sr .subheader > .reddit-link {
+body .subheader > .reddit-link {
   display: inline-block;
   font-size: 1.5rem; line-height: 1.5rem;
   font-weight: normal;
   margin: 0; padding: 0 16px;
   vertical-align: middle;
 }
-body.sr .subheader > .reddit-link > .fa {
+body .subheader > .reddit-link > .fa {
   font-size: 1.5rem;
   margin-right: 4px;
   opacity: 0.2;
 }
-body.sr .subheader > .info {
+body .subheader > .info {
   font-size: 1rem; line-height: 1.5rem;
   vertical-align: middle;
 }
-body.sr article {
+
+body.sr article,
+body.results article {
   text-align: center;
 }
 
+/*
+
+list of user profiles by profile picture, with some basic info onmouseover.
+also, two selection buttons are shown onmouseover, to "connect" with the user
+or to "hide" them.
+
+ */
 ul.user-list {
   display: block;
   font-size: 0;

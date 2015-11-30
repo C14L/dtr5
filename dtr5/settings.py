@@ -151,7 +151,7 @@ USER_MIN_COMMENT_KARMA = 0           # OR xy comment karma.
 # Number of user IDs to load into session cache.
 SEARCH_RESULTS_BUFFER_SIZE = 100
 LINKS_IN_PROFILE_HEADER = 5
-RESULTS_BUFFER_LEN = 20 if DEBUG else 500
+RESULTS_BUFFER_LEN = 500
 USER_MAX_PICS_COUNT = 10  # max number of linked pics in user profile
 
 # Ignore subreddits too small or too large.

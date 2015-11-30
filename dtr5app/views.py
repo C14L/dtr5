@@ -31,7 +31,8 @@ from toolbox import (force_int, force_float, set_imgur_url, get_age,
 from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
                     get_prevnext_user, get_user_and_related_or_404,
                     get_user_list_after, update_list_of_subscribed_subreddits,
-                    get_paginated_user_list)
+                    get_paginated_user_list, prepare_paginated_user_list,
+                    get_user_list_from_username_list)
 
 from .utils_search import (search_results_buffer, search_subreddit_users)
 
@@ -41,7 +42,7 @@ logger = logging.getLogger(__name__)
 @require_http_methods(["GET", "HEAD"])
 def home_view(request):
     if request.user.is_authenticated():
-        return redirect(reverse('me_search_page'))
+        return redirect(reverse('me_results_page'))
 
     template_name = 'dtr5app/home_anon.html'
     ctx = {'auth_url': api.make_authorization_url(request)}
@@ -76,7 +77,7 @@ def me_view(request, template_name="dtr5app/me.html"):
         template_name = 'dtr5app/step_2.html'
         request.session['view_post_signup'] = True
     elif not (request.user.profile.link_karma >= LK or
-            request.user.profile.comment_karma >= CK):
+              request.user.profile.comment_karma >= CK):
         # if they don't have sufficient karma, they can't sign up
         template_name = 'dtr5app/step_3_err_karma.html'
         # request.user.is_active = False
@@ -408,28 +409,24 @@ def me_search_view(request):
     if (request.session.get('view_post_signup', False)):
         return redirect(request.POST.get('next', reverse('me_page')))
     else:
-        x = {'username': request.session['search_results_buffer'][0]}
-        return redirect(reverse('profile_page', kwargs=x))
+        # x = {'username': request.session['search_results_buffer'][0]}
+        # return redirect(reverse('profile_page', kwargs=x))
+        return redirect(reverse('me_results_page'))
 
 
 @login_required
-def sr_view(request, sr, template_name='dtr5app/sr.html'):
-    """Display a list of users who are subscribed to a subreddit."""
+def me_results_view(request, template_name='dtr5app/results.html'):
+    """
+    Show a page of search results from auth user's search buffer.
+
+    """
     pg = int(request.GET.get('page', 1))
-    view_sr = get_object_or_404(Sr, display_name=sr)
-    ul = search_subreddit_users(request, view_sr)\
-         .prefetch_related('profile', 'subs')
-    ctx = {'view_sr': view_sr,
-           'user_list': get_paginated_user_list(ul, pg, request.user),
-           'user_subs_all': request.user.subs.all().prefetch_related('sr')}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
-
-
-@login_required
-def profile_list_view(request):
-    template_name='dtr5app/profile_list.html'
-    ctx = {}
+    search_results_buffer(request)
+    li = request.session['search_results_buffer']
+    li = prepare_paginated_user_list(li, pg)
+    li.object_list = get_user_list_from_username_list(li.object_list)
+    li.object_list = add_auth_user_latlng(request.user, li.object_list)
+    ctx = {'user_list': li}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
@@ -483,6 +480,20 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
            'user_list': user_list,
            'prev_user': prev_user,
            'next_user': next_user}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+@login_required
+def sr_view(request, sr, template_name='dtr5app/sr.html'):
+    """Display a list of users who are subscribed to a subreddit."""
+    pg = int(request.GET.get('page', 1))
+    view_sr = get_object_or_404(Sr, display_name=sr)
+    ul = search_subreddit_users(request, view_sr).prefetch_related('profile',
+                                                                   'subs')
+    ctx = {'view_sr': view_sr,
+           'user_list': get_paginated_user_list(ul, pg, request.user),
+           'user_subs_all': request.user.subs.all().prefetch_related('sr')}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 

@@ -39,14 +39,22 @@ urlpatterns = [
     url(r'^me/account/delete$', views.me_account_del_view,
         name="me_account_del_page"),
 
+    # Refill search results buffer if necessary are redirect.
     url(r'^search/$', views.me_search_view, name="me_search_page"),
+
+    # Search results as paginated list view of user profiles
+    url(r'^results/$', views.me_results_view, name="me_results_page"),
+
     # Show a list of matches (auth user and view user mutual likes).
     url(r'^matches/$', views.matches_view, name="matches_page"),
+
     # Show all users that subscribe to a specific subreddit.
     # --> TODO: Maybe not really needed?
     url(r'^r/(?P<sr>[a-zA-Z0-9_-]{2,30})/$', views.sr_view, name="sr_page"),
+
     # Show "view user"'s profile page.
     url(r'^u/' + R_USERNAME + r'/$', views.profile_view, name="profile_page"),
+
     # Let auth user set a flag on view user (like, nope, block, etc).
     url(r'^flag/(?P<action>set|delete)/(?P<flag>[a-zA-Z0-9_-]{2,30})/' +
         R_USERNAME + r'/$', views.me_flag_view, name="me_flag_page"),
