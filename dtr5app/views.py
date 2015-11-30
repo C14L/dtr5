@@ -75,18 +75,18 @@ def me_view(request, template_name="dtr5app/me.html"):
         # template_name = 'dtr5app/step_3_something.html'
         template_name = 'dtr5app/step_2.html'
         request.session['view_post_signup'] = True
-    elif not (request.user.profile.link_karma > LK or
-            request.user.profile.comment_karma > CK):
+    elif not (request.user.profile.link_karma >= LK or
+            request.user.profile.comment_karma >= CK):
         # if they don't have sufficient karma, they can't sign up
         template_name = 'dtr5app/step_3_err_karma.html'
-        request.user.is_active = False
-        request.user.save()
+        # request.user.is_active = False
+        # request.user.save()
     elif ((datetime.now().date() - request.user.profile.created) <
             timedelta(settings.USER_MIN_DAYS_REDDIT_ACCOUNT_AGE)):
         # if the account isn't old enough, they can's sign up
         template_name = 'dtr5app/step_3_err_account_age.html'
-        request.user.is_active = False
-        request.user.save()
+        # request.user.is_active = False
+        # request.user.save()
     elif not (request.user.profile.lat and request.user.profile.lng):
         # geolocation missing, offer to auto-set it
         template_name = 'dtr5app/step_3.html'
@@ -171,20 +171,25 @@ def me_update_view(request):
 
     # Reload user profile data from Reddit.
     reddit_user = api.get_user(request)
+    print('--> reddit_user: ', reddit_user)
+
+    # make sure the types are correct!
     if reddit_user:
         # Update user profile data
-        t = int(reddit_user['created_utc'])
+        t = force_int(reddit_user['created_utc'])
+
         p = request.user.profile
         p.name = reddit_user['name']
         p.created = datetime.utcfromtimestamp(t).replace(tzinfo=pytz.utc)
         p.updated = datetime.now().replace(tzinfo=pytz.utc)
-        p.link_karma = reddit_user['link_karma']
-        p.comment_karma = reddit_user['comment_karma']
-        p.over_18 = reddit_user['over_18']
-        p.hide_from_robots = reddit_user['hide_from_robots']
-        p.has_verified_email = reddit_user['has_verified_email']
-        p.gold_creddits = reddit_user['gold_creddits']
+        p.link_karma = force_int(reddit_user['link_karma'])
+        p.comment_karma = force_int(reddit_user['comment_karma'])
+        p.over_18 = bool(reddit_user['over_18'])
+        p.hide_from_robots = bool(reddit_user['hide_from_robots'])
+        p.has_verified_email = bool(reddit_user['has_verified_email'])
+        p.gold_creddits = bool(reddit_user['gold_creddits'])
         p.save()
+
         messages.success(request, 'Profile data updated.')
     else:
         messages.warning(request, 'Could not find any user profile data.')

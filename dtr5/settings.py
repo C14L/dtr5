@@ -155,8 +155,8 @@ RESULTS_BUFFER_LEN = 20 if DEBUG else 500
 USER_MAX_PICS_COUNT = 10  # max number of linked pics in user profile
 
 # Ignore subreddits too small or too large.
-SR_MIN_SUBS = 10
-SR_MAX_SUBS = 5000000
+SR_MIN_SUBS = 10        # unused
+SR_MAX_SUBS = 5000000   # unused
 
 # How many subreddits to use at a time to find matches.
 SR_LIMIT = 50
