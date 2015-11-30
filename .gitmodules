@@ -1,0 +1,3 @@
+[submodule "simple_reddit_oauth"]
+	path = simple_reddit_oauth
+	url = https://github.com/C14L/simple_reddit_oauth.git
