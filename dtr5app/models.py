@@ -9,13 +9,15 @@ from django.db.models.fields import NOT_PROVIDED
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.timezone import now
+
 from toolbox import (get_imgur_page_from_picture_url,
                      get_western_zodiac,
                      get_western_zodiac_symbol,
                      get_eastern_zodiac,
                      get_eastern_zodiac_symbol,
                      distance_between_geolocations,
-                     get_age)
+                     get_age,
+                     sr_str_to_list)
 
 logger = logging.getLogger(__name__)
 
@@ -88,12 +90,12 @@ class Profile(models.Model):
     f_has_verified_email = models.BooleanField(default=False)       # unused
 
     # space separated list of subreddit names to ignore in search
-    f_ignore_sr_li = models.CharField(default='', max_length=250)
+    _f_ignore_sr_li = models.CharField(default='', max_length=250)
     # subreddits with more members than this are ignored in search
-    f_ignore_sr_max = models.PositiveIntegerField(default=10000000)
+    f_ignore_sr_max = models.PositiveIntegerField(default=100000000)
     # space separated list of subreddits whose subscribers will be
     # REMOVED from user's search results.
-    f_exclude_sr_li = models.CharField(default='', max_length=250)
+    _f_exclude_sr_li = models.CharField(default='', max_length=250)
 
     # x_ --> only show my profile listed in another redditor's
     # search results, if the other redditor...
@@ -136,6 +138,26 @@ class Profile(models.Model):
 
     def _user_id(self):
         return self.user.id
+
+    @property
+    def f_ignore_sr_li(self):
+        return sr_str_to_list(self._f_ignore_sr_li)
+
+    @f_ignore_sr_li.setter
+    def f_ignore_sr_li(self, li):
+        if isinstance(li, str):
+            li = sr_str_to_list(li)  # if it a string of subreddits, clean it.
+        self._f_ignore_sr_li = ' '.join(li)
+
+    @property
+    def f_exclude_sr_li(self):
+        return sr_str_to_list(self._f_exclude_sr_li)
+
+    @f_exclude_sr_li.setter
+    def f_exclude_sr_li(self, li):
+        if isinstance(li, str):
+            li = sr_str_to_list(li)  # if it a string of subreddits, clean it.
+        self._f_exclude_sr_li = ' '.join(li)
 
     @property
     def pics(self):
@@ -199,26 +221,54 @@ class Profile(models.Model):
             return ''
 
     def set_subscribed_subs(self):
+        """make sure to fetch and cache all subs the user is subscribed to"""
         if not hasattr(self, 'subscribed_subs'):
             qs = self.user.subs.all().prefetch_related('sr')
             self.subscribed_subs = list(qs)
 
-    def set_common_subs(self, subs_list):
+    def set_common_subs(self, subs_list, f_ignore_sr_li, f_ignore_sr_max):
         """
         sets the common_subs and not_common_subs properties on the instance.
         lists of all subs the instance user is (not) subscribed to and that
         also appear in the subs_list list. the subs_list list is usually a
         QuerySet of auth user's subs.
+
+        update: respect authuser's "f_ignore_sr_li" and "f_ignore_sr_max"
+        search values: subs that don't match these search settings must
+        be excluded from the common subs.
+
+        :subs_list: list of auth user's subscribed subreddits.
+        :f_ignore_sr_max: auth user set this limit to exclude larger subs.
+        :f_ignore_sr_li: auth user's list of subreddit names to ignore.
         """
-        self.common_subs = []
-        self.not_common_subs = []
+        self.common_subs = []  # collect here the common subs
+        self.not_common_subs = []   # and here all the other
+
+        # make sure "self.subscribed_subs" contains all subs of view_user.
         self.set_subscribed_subs()
-        subs_list_pks = [x.sr.pk for x in subs_list]
-        for x in self.subscribed_subs:
-            if x.sr.pk in subs_list_pks:
-                self.common_subs.append(x)
+
+        # prefetch all related subreddits, for the below loop
+        subs_list = subs_list.prefetch_related('sr')
+
+        # fill the list with only the primary keys of all subs.
+        subs_list_pks = []
+        for sub in subs_list:
+            # either max val.must not be set, or it must be lower than subs-nr.
+            c1 = (not f_ignore_sr_max or sub.sr.subscribers < f_ignore_sr_max)
+            # the sub name should not be in the ignore list.
+            c2 = (sub.sr.display_name not in f_ignore_sr_li)
+
+            if c1 and c2:
+                # if there is a max value, the sub must have LESS subscribers.
+                subs_list_pks.append(sub.sr.pk)
+
+        # now look at all of view_user's subs and spit them between those that
+        # exist in auth user's "subs_list_pks" and those that don't.
+        for sub in self.subscribed_subs:
+            if sub.sr.pk in subs_list_pks:
+                self.common_subs.append(sub)
             else:
-                self.not_common_subs.append(x)
+                self.not_common_subs.append(sub)
 
     def set_viewer_latlng(self, vlat, vlng):
         """Retuired to set view_user lat/lng before calling get_distance()."""

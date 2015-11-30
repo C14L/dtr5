@@ -1,4 +1,5 @@
 {% extends 'dtr5app/base.html' %}
+{% load humanize %}
 
 {% block title %}{{view_user.username}} - {{view_user.profile.get_age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.distance}} km{% endblock %}
 
@@ -177,11 +178,14 @@
             {% if row.user_is_moderator %}
               <span class="mod-tag">moderator of</span>
             {% endif %}
-            <a href="{% url 'sr_page' row.sr.display_name %}">r/{{row.sr.display_name}}</a>
+
+            <a href="{% url 'sr_page' row.sr.display_name %}" title="{{row.sr.subscribers_here|intcomma}} subscribers here">r/{{row.sr.display_name}}</a>
+
             {% if row.sr.over_18 %}
               <span class="nsfw-tag">NSFW</span>
             {% endif %}
-            <a href="https://www.reddit.com/r/{{row.sr.display_name}}"><span class="fa fa-reddit"></span></a>
+
+            <a href="https://www.reddit.com/r/{{row.sr.display_name}}" title="{{row.sr.subscribers|intcomma}} subscribers on reddit"><span class="fa fa-reddit"></span></a>
           </li>
         {% endfor %}
       </ul>
@@ -346,11 +350,14 @@
           {% if row.user_is_moderator %}
             <span class="mod-tag">moderator for</span>
           {% endif %}
-          <a href="{% url 'sr_page' row.sr.display_name %}">r/{{row.sr.display_name}}</a>
+
+          <a href="{% url 'sr_page' row.sr.display_name %}" title="{{row.sr.subscribers_here|intcomma}} subscribers here">r/{{row.sr.display_name}}</a>
+
           {% if row.sr.over_18 %}
             <span class="nsfw-tag">NSFW</span>
           {% endif %}
-          <a href="https://www.reddit.com/r/{{row.sr.display_name}}"><span class="fa fa-reddit"></span></a>
+
+          <a href="https://www.reddit.com/r/{{row.sr.display_name}}" title="{{row.sr.subscribers|intcomma}} subscribers on reddit"><span class="fa fa-reddit"></span></a>
         </li>
       {% endfor %}
     </ul>

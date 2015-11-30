@@ -113,28 +113,59 @@ def search_users(request, usernames_only=True):
     # SR_MIN_SUBS = getattr(settings, 'SR_MIN_SUBS', 100)
     # SR_MAX_SUBS = getattr(settings, 'SR_MAX_SUBS', 5000000)
 
+    # f_ignore_sr_li
+    # f_ignore_sr_max
+    # f_exclude_sr_li
+
     # fetch users and number of same subscribed subreddits for all users
     # that are subscribed to the same subreddits than auth user; fetch a max
     # of BUFFER_LEN items. This query only touches the dtr5app_subscribed
     # table and does not requore any join with other tables.
-    query_string = ""
     query_params = []
+    query_string = ''
 
     # part 1
-    query_params += [request.user.id]
+    query_params += []
     query_string += '''
         SELECT au.id, au.username, COUNT(r1.user_id) AS sr_count
         FROM dtr5app_subscribed r1
+
         INNER JOIN dtr5app_subscribed r2
             ON r1.sr_id = r2.sr_id AND r1.user_id <> r2.user_id
+
         INNER JOIN auth_user au
             ON r2.user_id = au.id
-        WHERE au.is_active IS TRUE
-        AND last_login IS NOT NULL
-        AND r1.user_id = %s AND au.id IN (
-            SELECT id FROM auth_user u
-            INNER JOIN dtr5app_profile p ON u.id = p.user_id
-            WHERE 1=1 '''
+
+        INNER JOIN dtr5app_sr sr
+            ON r1.sr_id = sr.id
+
+        WHERE au.is_active IS TRUE AND last_login IS NOT NULL '''
+
+    # part 1.1
+    # if the user has set a maximum size for subreddits to be considered
+    # in search. this can be used to filter all the huge default subs that
+    # most redditors belong to.
+    if request.user.profile.f_ignore_sr_max:
+        query_params += [request.user.profile.f_ignore_sr_max]
+        query_string += ''' AND sr.subscribers < %s '''
+
+    # part 1.2
+    # a list of Sr.display_name values. these subreddits should NOT be
+    # considered when producing matches.
+    if request.user.profile.f_ignore_sr_li:
+        query_params += request.user.profile.f_ignore_sr_li
+        x = ', '.join(['%s'] * len(request.user.profile.f_ignore_sr_li))
+        query_string += ''' AND sr.id NOT IN (
+                                SELECT id FROM dtr5app_sr sr2
+                                WHERE sr2.display_name IN (''' + x + ' )) '
+
+    # part 1.9
+    query_params += [request.user.id]
+    query_string += ''' AND r1.user_id = %s AND au.id IN (
+                            SELECT id FROM auth_user u
+                            INNER JOIN dtr5app_profile p
+                                ON u.id = p.user_id
+                            WHERE 1=1 '''
 
     # part 2: sex --> TODO: search by gender!
     # li = li.filter(profile__sex=request.user.profile.f_sex)

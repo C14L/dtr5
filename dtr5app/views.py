@@ -19,24 +19,21 @@ from django.http import (HttpResponse,
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
+from django.utils.datastructures import MultiValueDictKeyError
+
 from simple_reddit_oauth import api
 
 from .models import (Subscribed, Sr, Flag, Report)
 
-from toolbox import (force_int, force_float, set_imgur_url, get_age)
+from toolbox import (force_int, force_float, set_imgur_url, get_age,
+                     sr_str_to_list)
 
-from .utils import (add_auth_user_latlng,
-                    count_matches,
-                    get_matches_user_list,
-                    get_prevnext_user,
-                    get_user_and_related_or_404,
-                    get_user_list_after,
-                    update_list_of_subscribed_subreddits,
-                    get_paginated_user_list,
-                    split_sr_names)
+from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
+                    get_prevnext_user, get_user_and_related_or_404,
+                    get_user_list_after, update_list_of_subscribed_subreddits,
+                    get_paginated_user_list)
 
-from .utils_search import (search_results_buffer,
-                           search_subreddit_users)
+from .utils_search import (search_results_buffer, search_subreddit_users)
 
 logger = logging.getLogger(__name__)
 
@@ -377,16 +374,18 @@ def me_search_view(request):
     if request.POST.get('f_has_verified_email', None):
         p.f_has_verified_email = bool(request.POST.get('f_has_verified_email'))
 
-    f_ignore_sr_li = split_sr_names(request.POST.get('f_ignore_sr_li', ''))
-    f_ignore_sr_max = force_int(request.POST.get('f_ignore_sr_max', 0))
-    f_exclude_sr_li = split_sr_names(request.POST.get('f_exclude_sr_li', ''))
-
-    if f_ignore_sr_li:
-        p.f_ignore_sr_li = ' '.join(f_ignore_sr_li)
-    if f_ignore_sr_max:
-        p.f_ignore_sr_max = f_ignore_sr_max
-    if f_exclude_sr_li:
-        p.f_exclude_sr_li = ' '.join(f_exclude_sr_li)
+    try:
+        p.f_ignore_sr_li = sr_str_to_list(request.POST['f_ignore_sr_li'])
+    except MultiValueDictKeyError:
+        pass  # don't change the search vaue if not POSTed.
+    try:
+        p.f_ignore_sr_max = force_int(request.POST['f_ignore_sr_max'])
+    except MultiValueDictKeyError:
+        pass  # don't change the search vaue if not POSTed.
+    try:
+        p.f_exclude_sr_li = sr_str_to_list(request.POST['f_exclude_sr_li'])
+    except MultiValueDictKeyError:
+        pass  # don't change the search vaue if not POSTed.
 
     request.user.profile = p
     #
@@ -440,15 +439,24 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     # Add auth user's latlng, so we can query their distance.
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
                                         request.user.profile.lng)
+
     # Make sure there is a list of 10 pic objects, empty or not.
     setattr(view_user, 'pics_list', view_user.profile.pics[:10])
     view_user.pics_list += [None] * (10 - len(view_user.pics_list))
-    # Find the subs that auth user and view user have in common.
-    view_user.profile.set_common_subs(request.user.subs.all())
+
+    # Find the SRs that auth user and view user have in common, EXCLUDING all
+    # SRs that are filtered by auth users "ignore_sr_li" and "ignore_sr_max"
+    # search settings.
+    view_user.profile.set_common_subs(request.user.subs.all(),
+                                      request.user.profile.f_ignore_sr_li,
+                                      request.user.profile.f_ignore_sr_max)
+
     # Get the next five users to be displayed at the end of the profile page.
     user_list = get_user_list_after(request, view_user, 5)
+
     # Find previous and next user on the list, relative to view user.
     prev_user, next_user = get_prevnext_user(request, view_user)
+
     # Count the profile view, unless auth user is viewing their own profile.
     if request.user.pk != view_user.pk:
         view_user.profile.views_count += 1

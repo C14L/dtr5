@@ -9,6 +9,19 @@ import pytz
 import re
 
 
+def sr_str_to_list(s):
+    """
+    Receive a string that contains a list of subreddit names, separated
+    by comma or spaces or similar characters. Split the string into a list
+    of clean subreddit names and return the list.
+    """
+    if not s:
+        return []
+    li = re.split('[^A-Za-z0-9_-]+', s)
+    li = [x for x in li]  # TODO: clean up, especially any leading "_".
+    return li
+
+
 def get_age(dob):
     delta = date.today() - dob
     return int(float(delta.days) / 365.25)

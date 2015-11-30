@@ -12,19 +12,6 @@ from .models import (Sr, Subscribed, Flag)
 from .utils_search import search_results_buffer
 
 
-def split_sr_names(s):
-    """
-    Receive a string that contains a list of subreddit names, separated
-    by comma or spaces or similar characters. Split the string into a list
-    of clean subreddit names and return the list.
-    """
-    if not s:
-        return []
-    li = re.split('[^A-Za-z0-9_-]+', s)
-    li = [x for x in li]  # TODO: clean up, especially any leading "_".
-    return li
-
-
 def get_paginated_user_list(user_list, page, user):
     """
     Return one page of a list of users to be handed to the template.

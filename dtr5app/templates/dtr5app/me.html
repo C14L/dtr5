@@ -48,7 +48,7 @@
           <p>
             <label>
               <span><b>ignore</b> these subreddits:</span>
-              <input type="text" name="f_ignore_sr_li" value="{{user.profile.f_ignore_sr_li}}" maxlength="250" size="50" placeholder="AskReddit, news, Pics, Funny">
+              <input type="text" name="f_ignore_sr_li" value="{{user.profile.f_ignore_sr_li|join:', '}}" maxlength="250" size="50" placeholder="AskReddit, news, Pics, Funny">
             </label>
             <p class="help">these subreddits will be treated as if you were <b>not</b> subscribed to them.</p>
           </p>
@@ -61,14 +61,15 @@
             </label>
             <p class="help">all subreddits larger than this will be treated as if you were <b>not</b> subscribed to them.</p>
           </p>
-
+<!--
           <p>
             <label>
-              <span><b>exclude</b> people subscribed to these subreddits:</span>
-              <input type="text" name="f_exclude_sr_li" value="{{user.profile.f_exclude_sr_li}}" maxlength="250" size="50" placeholder="shitredditsays, dragonsfuckingcars, sexyabortions, coontown">
+              <span><b>exclude</b> everybody subscribed to any of these subreddits:</span>
+              <input type="text" name="f_exclude_sr_li" value="{{user.profile.f_exclude_sr_li|join:', '}}" maxlength="250" size="50" placeholder="shitredditsays, dragonsfuckingcars, sexyabortions, coontown">
             </label>
             <p class="help"><strong>use carefully!</strong> anybody subscribed to any of these subreddits will be <strong>removed</strong> from your search results!</p>
           </p>
+-->
         </div>
       </section>
     </form>
