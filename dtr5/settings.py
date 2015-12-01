@@ -170,7 +170,17 @@ USERS_PER_PAGE = 10
 USERS_ORPHANS = 0
 
 # Strings for common regular expressions: username, subreddit, etc.
-RSTR_SR_NAME = r'[a-zA-Z0-9\._-]{2,30}'
+#
+# https://github.com/reddit/reddit/blob/master/r2/r2/models/subreddit.py#L111
+#
+# -> subreddit_rx = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9_]{2,20}\Z")
+# -> language_subreddit_rx = re.compile(r"\A[a-z]{2}\Z")
+# -> time_subreddit_rx = re.compile(r"\At:[A-Za-z0-9][A-Za-z0-9_]{2,22}\Z")
+#
+# Careful, there is also "r/reddit.com" as a subreddit, that contains a "."
+# even though there is no "." in any of the above regexes. Surprise!
+#
+RSTR_SR_NAME = r'[a-zA-Z0-9:._-]{2,30}'
 RSTR_USERNAME = r'[a-zA-Z0-9_-]{2,30}'
 
 # Public settings for Reddit oAuth access.
