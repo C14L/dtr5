@@ -116,6 +116,10 @@ class Profile(models.Model):
     # ...has at least so much link karma.
     x_min_link_karma = models.PositiveIntegerField(default=0)       # unused
 
+    # let the user chose if they want to see distances in km or miles.
+    _pref_distance_unit = models.CharField(null=True, default=None,
+                                           max_length=2)
+
     # Can be set for distance calculation.
     viewer_lat = None
     viewer_lng = None
@@ -194,6 +198,17 @@ class Profile(models.Model):
             self._lookingfor = ','.join([str(x) for x in li])
         else:
             raise ValueError('list expected')
+
+    @property
+    def pref_distance_unit(self):
+        return self._pref_distance_unit
+
+    @pref_distance_unit.setter
+    def pref_distance_unit(self, val):
+        if val in ['km', 'mi']:
+            self._pref_distance_unit = val
+        else:
+            raise ValueError('pref_distance_unit must be "km" or "mi".')
 
     def get_sex_symbol(self):
         """Returns the symbol for the user's sex."""

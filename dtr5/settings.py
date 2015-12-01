@@ -82,6 +82,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 
+    'dtr5app.middleware.UserSetDefaultLocalizationValues',
     'dtr5app.middleware.UserProfileLastActiveMiddleware',
 )
 
@@ -125,7 +126,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
         },
     },
 }
@@ -182,6 +183,9 @@ USERS_ORPHANS = 0
 #
 RSTR_SR_NAME = r'[a-zA-Z0-9:._-]{2,30}'
 RSTR_USERNAME = r'[a-zA-Z0-9_-]{2,30}'
+
+# first try user pref, then try user browser ll setting, then this.
+DEFAULT_DISTANCE_UNIT = 'mi'
 
 # Public settings for Reddit oAuth access.
 OAUTH_REDDIT_REDIRECT_URI = CANONICAL_HOST + "/account/redditcallback/"

@@ -34,9 +34,10 @@
           <span></span>
           <select name="f_distance" size="1"><!-- in km -->
             <option{% if user.profile.f_distance == 20040 %} selected{% endif %}  value="20040">worldwide</option>
-            <option{% if user.profile.f_distance == 300 %} selected{% endif %}  value="300">not too far</option>
-            <option{% if user.profile.f_distance == 50 %} selected{% endif %}  value="50">in my area</option>
-            <option{% if user.profile.f_distance == 15 %} selected{% endif %} value="15">near by</option>
+            <option{% if user.profile.f_distance == 300 %} selected{% endif %}  value="3000">flyable</option>
+            <option{% if user.profile.f_distance == 300 %} selected{% endif %}  value="300">driveable</option>
+            <option{% if user.profile.f_distance == 50 %} selected{% endif %}  value="100">not too far</option>
+            <option{% if user.profile.f_distance == 15 %} selected{% endif %} value="25">close by</option>
           </select>
         </label>
       </div>

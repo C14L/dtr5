@@ -1,7 +1,9 @@
 {% extends 'dtr5app/base.html' %}
+{% load static %}
 {% load humanize %}
+{% load dtr5tags %}
 
-{% block title %}{{view_user.username}} - {{view_user.profile.get_age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.distance}} km{% endblock %}
+{% block title %}{{view_user.username}} - {{view_user.profile.get_age}} / {{view_user.profile.get_sex_display}} / {{view_user.profile.get_distance|prefdist:user}}{% endblock %}
 
 {% block body_classes %}profile{% if is_match %} is-match{% elif is_like %} is-like{% elif is_nope %} is-nope{% else %} is-none{% endif %}{% endblock %}
 
@@ -130,7 +132,7 @@
       <p class="asl">
         a <span>{{view_user.profile.get_age}}</span> years old
         <span title="{{view_user.profile.get_sex_symbol}}">{{view_user.profile.get_sex_display}}</span> -
-        <span><a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="Does NOT show the exact position. The location is intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance_in_km|floatformat:"1"}} km away</a></span>
+        <span><a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}} away</a></span>
       </p>
     </div>
     <ul class="pics">
@@ -140,7 +142,7 @@
           <a href="{{pic.src}}" class="pic"><img src="{{pic.url}}" alt="{{view_user.username}}"></a>
         {% else %}
           {% if forloop.counter == 1 %}
-            <span class="pic"><img src="/static/nopic.jpg" alt="{{view_user.username}}"></span>
+            <span class="pic"><img src="{% static 'nopic.jpg' %}" alt="{{view_user.username}}"></span>
           {% else %}
             <span class="no-pic"></span>
           {% endif %}
@@ -241,7 +243,7 @@
             </tr>
             <tr>
               <td>distance:</td>
-              <td>{{view_user.profile.get_distance_in_km|floatformat:"1"}} km from you</td>
+              <td>{{view_user.profile.get_distance|prefdist:user}} from you</td>
             </tr>
             <!-- <tr>
               <td></td>
@@ -373,7 +375,7 @@
             {% if v.profile.pics.0 %}
               <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
             {% else %}
-              <img src="/static/nopic.jpg" alt="{{v.username}}">
+              <img src="{% static 'nopic.jpg' %}" alt="{{v.username}}">
             {% endif %}
           </a>
         </li>

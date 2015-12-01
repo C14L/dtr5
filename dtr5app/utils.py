@@ -215,6 +215,7 @@ def get_user_and_related_or_404(username, *args):
     except User.DoesNotExist:
         raise Http404
 
+
 def normalize_sr_names(li):
     """
     Receive a set of randomly cased subreddit names, and return a set of

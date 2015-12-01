@@ -9,6 +9,16 @@ import pytz
 import re
 
 
+def meters_in_km(m):
+    """Return the given meters in km."""
+    return float(m / 1000)
+
+
+def meters_in_miles(m):
+    """Return the given meters in miles."""
+    return float(meters_in_km(m) * 0.621371)
+
+
 def sr_str_to_list(s):
     """
     Receive a string that contains a list of subreddit names, separated

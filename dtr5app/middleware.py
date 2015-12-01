@@ -1,3 +1,4 @@
+import re
 from os.path import join, exists
 from datetime import datetime
 from pytz import utc
@@ -18,14 +19,8 @@ def return_site_offline_response():
             '<li>too many people, our server is too busy.</li>'
             '<li>too few people, our server fell asleep.</li>'
             '<li>we fixed the app and are updating the server.</li>'
-            '<li>we did not fix the app when we should have.</li>'
-            '<li>a racoon ate the server\'s power cable.</li>'
-            '<li>...</li>'
-            '</ul>'
-            '<p>anyways, this is not a pic of our server:</p>'
-            '<p><a href="https://imgur.com/GaE4R3fm">'
-            '<img src="https://i.imgur.com/GaE4R3fm.jpg" alt="">'
-            '</a></p>')
+            '<li>we did not fix the app ...but probably should have.</li>'
+            '</ul>')
         return HttpResponse(content=html,
                             content_type='text/html',
                             status=HTTP_SERVICE_UNAVAILABLE,
@@ -63,5 +58,32 @@ class UserProfileLastActiveMiddleware():
         if request.user.is_authenticated():
             request.user.profile.accessed = datetime.now().replace(tzinfo=utc)
             request.user.profile.save(update_fields=['accessed'])
+
+        return None
+
+
+class UserSetDefaultLocalizationValues():
+    """Set some default vals on the request, based on user's HTTP headers"""
+    mi_vals = ['enus',
+               'engb',  # UK
+               'enuk',  # not used, just in case
+               'cygb',  # Welsh (UK)
+               'kwgb',  # Cornish (UK)
+               'enlr',  # Liberia
+               'mymm',  # Myanmar/Burma
+               ]
+
+    def process_request(self, request):
+        if not request.user.profile.pref_distance_unit:
+            # if no distance unit set by user, try to find one based on user's
+            # browser settings.
+            lc = request.META['HTTP_ACCEPT_LANGUAGE']
+            lc = lc.split(';', 1)[0].split(',', 1)[0]
+            lc = re.sub(r'[^a-z]', '', lc.lower())
+
+            if lc in self.mi_vals:
+                request.user.profile.pref_distance_unit = 'mi'
+            else:
+                request.user.profile.pref_distance_unit = 'km'
 
         return None

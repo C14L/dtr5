@@ -10,12 +10,12 @@
 
     <link rel="stylesheet" href="{% static 'base.css' %}">
     <!-- Favicons -->
-    <link rel="icon" sizes="32x32" href="/static/icon32.png">
-    <link rel="icon" sizes="64x64" href="/static/icon64.png">
-    <link rel="icon" sizes="128x128" href="/static/icon128.png">
-    <link rel="icon" sizes="192x192" href="/static/icon192.png">
-    <link rel="icon" sizes="256x256" href="/static/icon256.png">
-    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="icon" sizes="32x32" href="{% static 'icon32.png' %}">
+    <link rel="icon" sizes="64x64" href="{% static 'icon64.png' %}">
+    <link rel="icon" sizes="128x128" href="{% static 'icon128.png' %}">
+    <link rel="icon" sizes="192x192" href="{% static 'icon192.png' %}">
+    <link rel="icon" sizes="256x256" href="{% static 'icon256.png' %}">
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
 
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto'>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css'>
@@ -41,7 +41,7 @@
 
     <header>
       <div class="site-logo">
-        <a class="site-icon" href="/"><img src="/static/logo100.gif" alt=""></a>
+        <a class="site-icon" href="/"><img src="{% static 'logo100.gif' %}" alt=""></a>
         <a class="site-name" href="/">redddate</a>
       </div>
       <div class="site-links">
@@ -123,9 +123,6 @@
       <p>
         &copy; 2015 redddate.com -- discuss on <a href="https://www.reddit.com/r/redddate">r/redddate</a> -- view source on <a href="https://github.com/C14L/dtr5">Github</a> -- use of this site constitutes acceptance of our <a href="{% static 'useragreement.html' %}">User Agreement</a> and <a href="{% static 'privacy.html' %}">Privacy Policy</a>.
       <p>
-      <p>
-        Sorry, distances are in kilometer for now :) 1 km ~~ 0.62 miles
-      </p>
 
       {% if DEBUG or user.is_superuser %}
         <hr>

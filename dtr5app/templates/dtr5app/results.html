@@ -1,4 +1,6 @@
 {% extends 'dtr5app/base.html' %}
+{% load static %}
+{% load dtr5tags %}
 
 {% block title %}all the redditors{% endblock %}
 
@@ -25,7 +27,7 @@
             {% if v.profile.pics.0 %}
               <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
             {% else %}
-              <img src="/static/nopic.jpg" alt="{{v.username}}">
+              <img src="{% static 'nopic.jpg' %}" alt="{{v.username}}">
             {% endif %}
           </a>
 
@@ -34,7 +36,7 @@
             <span class="asl">
               {{v.profile.get_age}}
               {{v.profile.get_sex_symbol}}
-              {{v.profile.get_distance_in_km|floatformat:"1"}} km away
+              {{v.profile.get_distance|prefdist:user}} away
             </span>
           </a>
 
