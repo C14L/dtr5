@@ -148,9 +148,25 @@
         secs.left: {{timeleft}}</p>
       {% endif %}
     </footer>
+
     {% if user.is_staff %}
-    <div style="position:fixed; right:0; bottom:0; background:green; color:white; margin:0; padding:4px 8px;">STAFF: <a href="{% url 'mod_report_page' %}" style="color:inherit;">reports</a></div>
+
+      <div style="position:fixed; right:0; bottom:0; background:green; color:white; margin:0; padding:4px 8px;">
+        STAFF:&nbsp;
+        <a href="{% url 'mod_report_page' %}" style="color:inherit;">reports</a>
+        &nbsp;|&nbsp;
+        <a href="/admin/" style="color:inherit;">admin</a>
+        {% if view_user %}
+          &nbsp;|&nbsp;
+          VIEWING:&nbsp;
+          <span>ID: {{view_user.pk}}</span>
+          &nbsp;|&nbsp;
+          <span>USERNAME: {{view_user.username}}</span>
+        {% endif %}
+      </div>
+
     {% endif %}
+
   </body>
   <script src="{% static 'base.js' %}"></script>
 </html>
