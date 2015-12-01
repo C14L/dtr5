@@ -45,7 +45,7 @@
               <!-- <span class="fa fa-meh-o"></span> -->
               <input type="submit" value="">
             </form>
-            <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' v.username %}" title="connect">
+            <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' v.username %}" title="upvote">
               {% csrf_token %}
               <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
               <!-- <span class="fa fa-smile-o"></span> -->
