@@ -13,12 +13,12 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from simple_reddit_oauth import urls as simple_reddit_oauth_urls
 from dtr5app import views
 
-R_USERNAME = r'(?P<username>[a-zA-Z0-9_-]{2,30})'
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -54,14 +54,18 @@ urlpatterns = [
 
     # Show all users that subscribe to a specific subreddit.
     # --> TODO: Maybe not really needed?
-    url(r'^r/(?P<sr>[a-zA-Z0-9_-]{2,30})/$', views.sr_view, name="sr_page"),
+    url(r'^r/(?P<sr>' + settings.RSTR_SR_NAME + ')/$',
+        views.sr_view, name="sr_page"),
 
     # Show "view user"'s profile page.
-    url(r'^u/' + R_USERNAME + r'/$', views.profile_view, name="profile_page"),
+    url(r'^u/(?P<username>' + settings.RSTR_USERNAME + r')/$',
+        views.profile_view, name="profile_page"),
 
     # Let auth user set a flag on view user (like, nope, block, etc).
-    url(r'^flag/(?P<action>set|delete)/(?P<flag>[a-zA-Z0-9_-]{2,30})/' +
-        R_USERNAME + r'/$', views.me_flag_view, name="me_flag_page"),
+    url(r'^flag/(?P<action>set|delete)/'
+        r'(?P<flag>[a-zA-Z0-9_-]{2,30})/'
+        r'(?P<username>' + settings.RSTR_USERNAME + r')/$',
+        views.me_flag_view, name="me_flag_page"),
 
     url(r'^mod/deluser/(?P<pk>\d*)/$', views.mod_deluser_view,
         name="mod_deluser_page"),

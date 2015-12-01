@@ -169,6 +169,10 @@ SR_FAVS_COUNT_MAX = 10
 USERS_PER_PAGE = 10
 USERS_ORPHANS = 0
 
+# Strings for common regular expressions: username, subreddit, etc.
+RSTR_SR_NAME = r'[a-zA-Z0-9\._-]{2,30}'
+RSTR_USERNAME = r'[a-zA-Z0-9_-]{2,30}'
+
 # Public settings for Reddit oAuth access.
 OAUTH_REDDIT_REDIRECT_URI = CANONICAL_HOST + "/account/redditcallback/"
 OAUTH_REDDIT_REDIRECT_AUTH_SUCCESS = CANONICAL_HOST + "/me/"
