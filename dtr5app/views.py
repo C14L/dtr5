@@ -539,7 +539,7 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
 @require_http_methods(["POST", "GET", "HEAD"])
 def me_flag_del_view(request):
     """
-    Delete all listed flags authuser set on other users.
+    Delete ALL listed flags authuser set on other users.
     """
     if request.method in ['GET', 'HEAD']:
         # Return a "are you sure" page.
@@ -589,16 +589,18 @@ def me_flag_view(request, action, flag, username):
         raise Http404
 
     elif request.method in ['POST']:
+
         if action == 'set' and flag in flags.keys():
             Flag.set_flag(request.user, view_user, flag)
 
             if flag == 'like':
-                # if "like", then check for both users their match count
+                # if "like", then check for both users their match counts
                 request.user.profile.matches_count = \
                     count_matches(request.user)
                 request.user.profile.save()
                 view_user.profile.matches_count = count_matches(view_user)
                 view_user.profile.save()
+
             if flag == 'report':
                 # also create an entry in Report for the moderator
                 reason = request.POST.get('reason', None)
@@ -612,6 +614,18 @@ def me_flag_view(request, action, flag, username):
                               .format(view_user.username))
 
         elif action == 'delete' and flag in flags.keys():
+
+            if flag == 'like':
+                # if a like flag is removed, check if they were a match, and
+                # discount the destroyed match from their match counts.
+                if request.user.profile.match_with(view_user):
+                    if request.user.profile.matches_count > 0:
+                        request.user.profile.matches_count -= 1
+                        request.user.profile.save()
+                    if view_user.profile.matches_count > 0:
+                        view_user.profile.matches_count -= 1
+                        view_user.profile.save()
+
             Flag.delete_flag(request.user, view_user)
             # if this was a "remove like" or "remove nope" then display the
             # same profile again, because most likely the auth user wants to
