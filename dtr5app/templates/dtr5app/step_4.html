@@ -19,7 +19,7 @@
 
       <div>
         <label class="sex">
-          <span>Sex:</span>
+          <span>Sex:</span>&nbsp;
           <select name="sex" size="1">
             {% for sex in sex_choices %}
             <option{% if user.profile.sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
@@ -30,8 +30,8 @@
 
       <div>
         <label class="dob">
-          <span>Birthday:</span>
-          <input type="date" name="dob" placeholder="YYYY-MM-DD" maxlength="10" value="{{user.profile.dob|date:'c'}}">
+          <span>Birthday:</span>&nbsp;
+          <input type="date" min="{{dob_min}}" max="{{dob_max}}" name="dob" placeholder="YYYY-MM-DD" maxlength="10" value="{{user.profile.dob|date:'c'}}">
         </label>
       </div>
 

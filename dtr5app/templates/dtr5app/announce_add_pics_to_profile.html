@@ -1,0 +1,63 @@
+{% load static %}
+
+<style>
+
+.site-announcements { background: #58D464; height: 96px; margin:0; padding:0; color: white; overflow:hidden; }
+.site-announcements .wrapper { max-width: 1280px; min-width: 300px; margin: 0 auto; padding: 0; position: relative; }
+.site-announcements .picbg { position:absolute; top:0; right:0; bottom:0; left:0; }
+.site-announcements .picbg img { border: 5px solid white; height: 80px; box-shadow: 1px 1px 8px black; margin: 4px; opacity: 0.3; transition: 0.3s ease-out; }
+
+.site-announcements .picbg img:nth-child(1) { transform: rotate(10deg); }
+.site-announcements .picbg img:nth-child(2) { transform: rotate(-5deg); }
+.site-announcements .picbg img:nth-child(3) { transform: rotate(2deg); }
+.site-announcements .picbg img:nth-child(4) { transform: rotate(-9deg); }
+.site-announcements .picbg img:nth-child(5) { transform: rotate(5deg); }
+.site-announcements .picbg img:nth-child(6) { transform: rotate(-2deg); }
+.site-announcements .picbg img:nth-child(7) { transform: rotate(13deg); }
+.site-announcements .picbg img:nth-child(8) { transform: rotate(-1deg); }
+.site-announcements .picbg img:nth-child(9) { transform: rotate(5deg); }
+.site-announcements .picbg img:nth-child(10) { transform: rotate(-6deg); }
+.site-announcements .picbg img:nth-child(11) { transform: rotate(3deg); }
+.site-announcements .picbg img:nth-child(12) { transform: rotate(-2deg); }
+.site-announcements .picbg img:nth-child(13) { transform: rotate(8deg); }
+.site-announcements .picbg img:nth-child(14) { transform: rotate(-4deg); }
+.site-announcements .picbg img:nth-child(15) { transform: rotate(4deg); }
+.site-announcements .picbg img:nth-child(16) { transform: rotate(-5deg); }
+
+.site-announcements .picbg img:hover { opacity: 1; transition: 0.3s ease-out; }
+
+</style>
+
+<div class="site-announcements">
+  <div class="wrapper">
+    <div class="picbg">
+      <img src="{% static 'announce-small-pic-beanywherebuthere.jpg' %}" alt="beanywherebuthere">
+      <img src="{% static 'announce-small-pic-geek_at.jpg' %}" alt="geek_at">
+      <img src="{% static 'announce-small-pic-erkmcc.jpg' %}" alt="erkmcc">
+      <img src="{% static 'announce-small-pic-hirash.jpg' %}" alt="hirash">
+      <img src="{% static 'announce-small-pic-ollietheotter.jpg' %}" alt="ollietheotter">
+      <img src="{% static 'announce-small-pic-your_mak_guy.jpg' %}" alt="your_mak_guy">
+      <img src="{% static 'announce-small-pic-totallyknowyou.jpg' %}" alt="totallyknowyou">
+      <img src="{% static 'announce-small-pic-held818.jpg' %}" alt="held818">
+      <img src="{% static 'announce-small-pic-Kourkis.jpg' %}" alt="Kourkis">
+      <img src="{% static 'announce-small-pic-phinnaeus7308.jpg' %}" alt="phinnaeus7308">
+      <img src="{% static 'announce-small-pic-Shelldore.jpg' %}" alt="Shelldore">
+      <img src="{% static 'announce-small-pic-squeezyphresh.jpg' %}" alt="squeezyphresh">
+      <img src="{% static 'announce-small-pic-summer21.jpg' %}" alt="summer21">
+      <img src="{% static 'announce-small-pic-TFMI.jpg' %}" alt="TFMI">
+      <img src="{% static 'announce-small-pic-ThisIsJadeHager.jpg' %}" alt="ThisIsJadeHager">
+      <img src="{% static 'announce-small-pic-C14L.jpg' %}" alt="C14L">
+    </div>
+
+    <div style="position:absolute; top:0; left:0; font:normal bold 48px/96px 'Roboto'; text-shadow: 1px 1px 1px black; transform: rotate(-12deg);">
+      pics everywhere!
+    </div>
+
+    <div style="max-width: 380px; font:normal 20px/24px 'Roboto'; position:absolute; top:12px; right:200px;  margin:0; padding:8px 16px; color:yellow; overflow:hidden; text-align:right; text-shadow:0 0 10px black;" title="its true, I read it on the internet!">
+
+      did you know that profiles with photos
+      get like five billion times more messages!
+
+    </div>
+  </div>
+</div>

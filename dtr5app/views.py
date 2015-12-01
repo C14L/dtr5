@@ -3,7 +3,7 @@ import logging
 import pytz
 import requests  # to check image URLs for HTTO 200 responses
 from time import time as unixtime
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -98,6 +98,10 @@ def me_view(request, template_name="dtr5app/me.html"):
         # required manually input profile data is missing
         template_name = 'dtr5app/step_4.html'
         request.session['view_post_signup'] = True
+        ctx['dob_min'] = '{}-{}-{}'.format(
+            date.today().year-118, date.today().month, date.today().day)
+        ctx['dob_max'] = '{}-{}-{}'.format(
+            date.today().year-18, date.today().month, date.today().day)
     elif len(request.user.profile.pics) == 0:
         # no pics yet, ask to link one picture
         template_name = 'dtr5app/step_5.html'
