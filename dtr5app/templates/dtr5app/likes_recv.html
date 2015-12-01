@@ -1,15 +1,15 @@
 {% extends 'dtr5app/base.html' %}
 
-{% block title %}Nopes{% endblock %}
+{% block title %}Likes{% endblock %}
 
-{% block body_classes %}nopes{% endblock %}
+{% block body_classes %}likes{% endblock %}
 
 {% block main %}
 
 <article>
   <div class="card">
-    <h2>profiles ignored ({{user_list.paginator.count}})</h2>
-    <p class="subhead">these profiles you downvoted will not show up in your search results anymore</p>
+    <h2>upvotes inbox ({{user_list.paginator.count}})</h2>
+    <p class="subhead">These are people who'd like to know you! Check out their profile, upvote them, and say hi!</p>
     {% include 'dtr5app/user_list.html' %}
   </div>
 

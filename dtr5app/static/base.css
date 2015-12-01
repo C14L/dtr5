@@ -165,6 +165,22 @@ nav.dotmenu > .opts > li.secondary {
 }
 
 
+nav.dotmenu > .opts > li > .cst-arrow-up {
+  background: url(/static/up-arrows-64x56.gif) center center no-repeat;
+  background-size: contain;
+  background-color: transparent;
+  display: block;
+  float: left;
+  margin: 0.75rem 0.5rem 0.75rem 0.5rem; padding: 0;
+  text-align: center;
+  width: 28px; height: 28px;
+}
+nav.dotmenu > .opts > li > .cst-arrow-up.gray {
+  /* background-image: url(/static/up-arrows-64x56-gray.gif); */
+  opacity: 0.75;
+}
+
+
 /*
 
 a section that can be "opened and closed" by clicking
@@ -357,7 +373,13 @@ Standard content card, simplefied Material-style.
   margin: -16px -16px 16px -16px; padding: 0;
   text-align: center;
 }
-
+.card > p.subhead {
+  background-color: #F3F3F3;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  color: rgba(0,0,0,0.56);
+  margin: -16px -16px 16px -16px; padding: 16px;
+  text-align: center;
+}
 
 /*
 
@@ -433,6 +455,8 @@ body.results article {
   text-align: center;
 }
 
+
+
 /*
 
 list of user profiles by profile picture, with some basic info onmouseover.
@@ -452,20 +476,6 @@ ul.user-list li {
   position: relative;
   vertical-align: middle;
 }
-ul.user-list li form {
-  display: block;
-  margin: 0; padding: 0;
-  position: absolute; top: -30px; right: 4px;
-  opacity: 0;
-  transition: 0.3s ease-out;
-}
-ul.user-list li:hover form {
-  opacity: 1;
-  top: 4px;
-  transition: 0.3s ease-out;
-}
-ul.user-list li input[type="submit"] {
-}
 ul.user-list li a.pic {
   display: block;
   margin: 0; padding: 0;
@@ -477,7 +487,7 @@ ul.user-list li a.pic img {
   height: 250px;
   margin: 0; padding: 0;
 }
-ul.user-list li span.info {
+ul.user-list li .info {
   background-color: rgba(0,0,0,0.6);
   display: block;
   font-size: 1rem; line-height: 1.5em;
@@ -485,24 +495,115 @@ ul.user-list li span.info {
   position: absolute; top: 0; right: 0; bottom: 0; left: 0;
   transition: 0.3s ease-out;
 }
-ul.user-list li:hover span.info {
+ul.user-list li:hover .info { /* combined height: 44px */
   opacity: 1;
   transition: 0.3s ease-out;
 }
-ul.user-list li span.info a.username {
+ul.user-list li .info .username {
   display: block;
   color: white;
+  font-size: 20px; line-height: 20px;
   font-weight: bold;
   text-align: center;
-  margin-top: 32px;
+  margin-top: 111px; /* (250px pic height + 2*8px border) - (info height/2) */
 }
-ul.user-list li span.info span.asl {
+ul.user-list li .info .asl {
   color: white;
   display: block;
-  font-size: 0.8rem;
-  margin-top: 16px;
+  font-size: 16px; line-height: 16px;
+  margin-top: 8px;
   text-align: center;
 }
+
+ul.user-list li .like-nope-btns {
+  margin: 0; padding: 0;
+  opacity: 0;
+  transition: 0.3s ease-out;
+}
+ul.user-list li:hover .like-nope-btns {
+  opacity: 1;
+  transition: 0.3s ease-out;
+}
+ul.user-list li .like-nope-btns > .opt > input[type="submit"] {
+  margin: 0; padding: 0; border: 0; outline: 0;
+  position: absolute; left: calc(50% - 42px);
+  width: 84px; height: 73px;
+}
+ul.user-list li .like-nope-btns > .opt.like > input[type="submit"] {
+  background: transparent url(/static/up-arrows-2.gif) center center no-repeat;
+  top: 16px;
+}
+ul.user-list li .like-nope-btns > .opt.nope > input[type="submit"] {
+  background: transparent url(/static/down-arrows-2.gif) center center no-repeat;
+  bottom: 16px;
+}
+
+
+/*
+
+ul.user-list li .like-nope-btns > .opt {
+  background: none;
+  border: 0; outline: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 5px 10px 5px rgba(255,255,255,0.3),
+              inset 0 -5px 10px 5px rgba(0,0,0,0.1),
+              0 2px 3px rgba(0,0,0,0.3);
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 64px; line-height: 96px;
+  margin: 0; padding: 0;
+  position: absolute; bottom: 0;
+  text-align: center;
+  vertical-align: middle;
+  width: 96px; height: 96px;
+  opacity: 0;
+  transition: 0.3s ease-out;
+}
+ul.user-list li:hover .like-nope-btns > .opt {
+  transition: 0.3s ease-out;
+  opacity: 1;
+}
+ul.user-list li .like-nope-btns > .opt:active {
+  box-shadow: inset 0 -3px 5px 3px rgba(255,255,255,0.3),
+              inset 0 3px 5px 3px rgba(0,0,0,0.1),
+              0 2px 3px rgba(0,0,0,0.3);
+}
+ul.user-list li .like-nope-btns > .opt.like {
+  background-color: red;
+  bottom: -12px; right: -12px;
+}
+ul.user-list li .like-nope-btns > .opt.nope {
+  background-color: gray;
+  bottom: -12px; left: -12px;
+}
+ul.user-list li .like-nope-btns > .opt.duno {
+  display: none;
+  background-color: gray;
+  margin-top: 64px;
+  width: 48px; height: 48px;
+  font-size: 32px; line-height: 48px;
+  z-index: 99;
+}
+ul.user-list li .like-nope-btns > .opt > span {
+  display: inline-block;
+}
+ul.user-list li .like-nope-btns > .opt.like > span {
+  padding-top: 16px;
+}
+ul.user-list li .like-nope-btns > .opt > input[type="submit"] {
+  background-color: transparent;
+  margin: 0; padding: 0; border: 0; outline: 0;
+  position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+  width: 100%; height: 100%;
+}
+
+*/
+
+
+
+
+
 
 
 /*

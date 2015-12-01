@@ -14,7 +14,7 @@
       {% if is_match %}
 
         <div class="announce">
-          <span>You like each other!</span>
+          <span>You upvoted each other!</span>
         </div>
         <div class="uu">
           <div class="u1">
@@ -34,27 +34,28 @@
       {% elif is_like %}
 
         <div class="announce like">
-          <span class="fa fa-heart"></span>
-          <span class="tx">you like them!</span>
+          <span class="fa fa-arrow-up"></span>
+          <span class="tx">you upvoted them!</span>
         </div>
 
       {% elif is_nope %}
 
         <div class="announce nope">
-          <span class="fa fa-times"></span>
-          <span class="tx">you don't like them</span>
+          <span class="fa fa-arrow-down"></span>
+          <span class="tx">you downvoted them</span>
         </div>
 
       {% else %}
 
         <div class="like-nope-duno">
-          <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">{% csrf_token %}
-            <span class="fa fa-times"></span>
+          <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}" title="downvote/ignore">
+            {% csrf_token %}
+            <span class="fa fa-arrow-down"></span>
             <input type="submit" value="">
           </form>
-          <a href="{% url 'me_search_page' %}" class="opt duno" title="dunno..."><span class="fa fa-refresh"></span></a>
-          <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">{% csrf_token %}
-            <span class="fa fa-heart"></span>
+          <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}" title="upvote">
+            {% csrf_token %}
+            <span class="fa fa-arrow-up"></span>
             <input type="submit" value="">
           </form>
         </div>
@@ -76,7 +77,7 @@
               <form class="delete-like-form" method="POST" action="{% url 'me_flag_page' 'delete' 'like' view_user.username %}">
                 {% csrf_token %}
                 <span class="fa fa-ban"></span>
-                <input type="submit" class="del-like opt" value="Remove from likes">
+                <input type="submit" class="del-like opt" value="cancel upvote">
                </form>
             </li>
           {% endif %}
@@ -85,7 +86,7 @@
               <form class="delete-nope-form" method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
                 {% csrf_token %}
                 <span class="fa fa-ban"></span>
-                <input type="submit" class="del-nope opt" value="Remove from nopes">
+                <input type="submit" class="del-nope opt" value="cancel downvote">
               </form>
             </li>
           {% endif %}
@@ -93,20 +94,21 @@
             <li>
               <form class="set-like-form" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
                 {% csrf_token %}
-                <span class="fa fa-heart"></span>
-                <input type="submit" class="like opt" value="I like!">
+                <span class="fa fa-arrow-up"></span>
+                <input type="submit" class="like opt" value="upvote">
               </form>
             </li>
             <li>
               <form class="set-nope-form" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
                 {% csrf_token %}
-                <span class="fa fa-close"></span>
-                <input type="submit" class="nope opt" value="oh nope!">
+                <span class="fa fa-arrow-down"></span>
+                <input type="submit" class="nope opt" value="ignore">
               </form>
             </li>
           {% endif %}
           <li class="secondary">
-            <span class="fa fa-flag-o"></span>
+            <!-- <span class="fa fa-flag-o"></span> -->
+            <span class="fa fa-frown-o"></span>
             <a href="{% url 'me_flag_page' 'set' 'report' view_user.username %}">report this profile</a>
           </li>
           {% if user.is_staff %}

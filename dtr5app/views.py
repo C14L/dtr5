@@ -32,7 +32,8 @@ from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
                     get_prevnext_user, get_user_and_related_or_404,
                     get_user_list_after, update_list_of_subscribed_subreddits,
                     get_paginated_user_list, prepare_paginated_user_list,
-                    get_user_list_from_username_list)
+                    get_user_list_from_username_list,
+                    get_matches_user_queryset)
 
 from .utils_search import (search_results_buffer, search_subreddit_users)
 
@@ -370,7 +371,7 @@ def me_search_view(request):
     p.f_sex = force_int(request.POST.get('f_sex', ''))
 
     if request.POST.get('f_distance', None):
-        p.f_distance = force_int(request.POST.get('f_distance'), max=20000)
+        p.f_distance = force_int(request.POST.get('f_distance'), max=21000)
     if request.POST.get('f_minage', None):
         p.f_minage = force_int(request.POST.get('f_minage'), min=18)
     if request.POST.get('f_maxage', None):
@@ -526,7 +527,8 @@ def me_flag_del_view(request):
 def me_flag_view(request, action, flag, username):
     """
     Let auth user set a flag for their relation to view user. Then
-    redirect to the next user in session[search_results_buffer] list.
+    redirect to GET[next] value, if exists, or to the next user in
+    session[search_results_buffer] list.
 
     Valid action values: 'set', 'delete'.
     Valid flag values: 'like', 'nope', 'report'.
@@ -603,7 +605,7 @@ def me_flag_view(request, action, flag, username):
 @login_required
 @require_http_methods(["GET", "HEAD"])
 def me_nope_view(request):
-    template_name='dtr5app/nopes.html'
+    template_name = 'dtr5app/nopes.html'
     pg = int(request.GET.get('page', 1))
     ul = User.objects.filter(flags_received__sender=request.user,
                              flags_received__flag=Flag.NOPE_FLAG
@@ -616,11 +618,46 @@ def me_nope_view(request):
 @login_required
 @require_http_methods(["GET", "HEAD"])
 def me_like_view(request):
-    template_name='dtr5app/likes.html'
+    """
+    A list of connect requests sent by auth user to other users, and
+    not /confirmed/ by them.
+    """
+    template_name = 'dtr5app/likes_sent.html'
     pg = int(request.GET.get('page', 1))
+    # this will hide all profiles that are "upvote matches" already
+    matches_qs = get_matches_user_queryset(request.user)
+    # these are sent upvotes, so we only filter out those that are already
+    # mutual upvote matches. if the other party clicked "ignore", it will
+    # not appear here and authuser will never know... *sniff*
     ul = User.objects.filter(flags_received__sender=request.user,
-                             flags_received__flag=Flag.LIKE_FLAG
-                             ).prefetch_related('profile')
+                             flags_received__flag=Flag.LIKE_FLAG)\
+                     .exclude(pk__in=matches_qs)\
+                     .prefetch_related('profile')
+
+    ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
+def me_recv_like_view(request):
+    """Show connect requests by other users in auth user's "inbox"."""
+    template_name = 'dtr5app/likes_recv.html'
+    pg = int(request.GET.get('page', 1))
+    # this will hide all profiles that are "upvote matches" already
+    matches_qs = get_matches_user_queryset(request.user)
+    # get a queryset with all profiles that are "ignored" by authuser
+    nopes_qs = User.objects.filter(flags_received__sender=request.user,
+                                   flags_received__flag=Flag.NOPE_FLAG)
+    # fetch all users that sent an upvote to authuser and did not yet receive
+    # a reaction from authuser, either upvote or downvote.
+    ul = User.objects.filter(flags_sent__receiver=request.user,
+                             flags_sent__flag=Flag.LIKE_FLAG)\
+                     .exclude(pk__in=matches_qs)\
+                     .exclude(pk__in=nopes_qs)\
+                     .prefetch_related('profile')
+
     ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
@@ -635,12 +672,13 @@ def matches_view(request):
     """
     # Get a list user_list ordered by match time, most recent first,
     # including the additional property 'matched' with match timestamp.
-    template_name='dtr5app/matches.html'
+    template_name = 'dtr5app/matches.html'
     # pg = int(request.GET.get('page', 1))
-
     user_list = get_matches_user_list(request.user)
-
     user_list = add_auth_user_latlng(request.user, user_list)
+    #
+    # TODO: pagination!!!
+    #
     request.user.profile.matches_count = count_matches(request.user)
     request.user.profile.save()
     ctx = {'user_list': user_list}

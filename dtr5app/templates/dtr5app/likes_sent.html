@@ -8,7 +8,8 @@
 
 <article>
   <div class="card">
-    <h2>{{user_list.paginator.count}} likes</h2>
+    <h2>you sent {{user_list.paginator.count}} upvotes</h2>
+    <p class="subhead">These are people you upvoted. Wait for them to respond and upvote you back.</p>
     {% include 'dtr5app/user_list.html' %}
   </div>
 

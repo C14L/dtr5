@@ -7,11 +7,17 @@
 {% block main %}
 
 <section class="subheader">
-  <span class="info"><strong>found {% if user_list.paginator.count >= RESULTS_BUFFER_LEN %}{{RESULTS_BUFFER_LEN}}+{% else %}{{user_list.paginator.count}}{% endif %} new redditors</strong> - <a href="{% url 'me_page' %}">change search options</a>{% if user_list.0 %} - <a href="{% url 'profile_page' user_list.0.username %}">browse profiles one by one</a>{% endif %}</span>
+  <span class="info">
+    <strong>found {% if user_list.paginator.count >= RESULTS_BUFFER_LEN %}{{RESULTS_BUFFER_LEN}}+{% else %}{{user_list.paginator.count}}{% endif %} new redditors</strong>
+    {% if user_list.0 %}
+      or <a href="{% url 'profile_page' user_list.0.username %}">browse profiles one by one</a>
+    {% endif %}
+  </span>
 </section>
 
 {% if user_list %}
   <article>
+
     <ul class="user-list">
       {% for v in user_list %}
         <li>
@@ -22,14 +28,31 @@
               <img src="/static/nopic.jpg" alt="{{v.username}}">
             {% endif %}
           </a>
-          <span class="info">
-            <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
+
+          <a href="{% url 'profile_page' v.username %}" class="info">
+            <span class="username">{{v.username}}</span>
             <span class="asl">
               {{v.profile.get_age}}
               {{v.profile.get_sex_symbol}}
               {{v.profile.get_distance_in_km|floatformat:"1"}} km away
             </span>
-          </span>
+          </a>
+
+          <div class="like-nope-btns">
+            <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' v.username %}" title="ignore">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
+              <!-- <span class="fa fa-meh-o"></span> -->
+              <input type="submit" value="">
+            </form>
+            <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' v.username %}" title="connect">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
+              <!-- <span class="fa fa-smile-o"></span> -->
+              <input type="submit" value="">
+            </form>
+          </div>
+
         </li>
       {% endfor %}
     </ul>
@@ -45,6 +68,7 @@
         {{user_list.number}} / {{user_list.paginator.num_pages}}
       </span>
     </div>
+
   </article>
 {% else %}
   <div style="text-align:center; margin-top: 100px;">there is nobody</div>

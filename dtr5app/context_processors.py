@@ -21,5 +21,6 @@ def selected_settings(request):
         'SEX': settings.SEX,
         'LOOKINGFOR': settings.LOOKINGFOR,
         'RESULTS_BUFFER_LEN': settings.RESULTS_BUFFER_LEN,
+        'ABSOLUTE_URI': request.build_absolute_uri(),
 
     }

@@ -184,12 +184,17 @@ def count_matches(user):
         ).distinct().count()
 
 
+def get_matches_user_queryset(user):
+    return User.objects.filter(
+        flags_sent__receiver=user, flags_sent__flag=Flag.LIKE_FLAG,
+        flags_received__sender=user, flags_received__flag=Flag.LIKE_FLAG)
+
+
 def get_matches_user_list(user):
     """Return a user_list with all mutual likes for 'user'."""
-    user_list = list(User.objects.filter(
-        flags_sent__receiver=user, flags_sent__flag=Flag.LIKE_FLAG,
-        flags_received__sender=user, flags_received__flag=Flag.LIKE_FLAG))
+    user_list = list(get_matches_user_queryset(user))
     for x in user_list:
+        # set the datetime they matched
         c1 = x.flags_sent.get(receiver=user.pk).created
         c2 = user.flags_sent.get(receiver=x.pk).created
         setattr(x, 'matched', c1 if c1 > c2 else c2)

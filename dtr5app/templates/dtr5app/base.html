@@ -46,13 +46,26 @@
       </div>
       <div class="site-links">
 
-        <a class="item matches" href="{% url 'matches_page' %}"><span class="text">matches</span><span class="icon fa fa-bullseye"></span>{% if user.profile.matches_count %}<span class="number">{{user.profile.matches_count}}</span>{% endif %}</a><span class="sep"> | </span>
+        <a class="item matches" href="{% url 'matches_page' %}">
+          <span class="text">upvote&nbsp;matches</span>
+          <span class="icon fa fa-bullseye"></span>
+          {% if user.profile.matches_count %}
+            <span class="number">{{user.profile.matches_count}}</span>
+          {% endif %}
+        </a>
 
-        <a class="item reddit-mailbox" href="https://www.reddit.com/message/messages/" title="reddit mailbox"><span class="text">reddit mailbox</span><span class="icon fa fa-envelope"></span></a><span class="sep"> | </span>
+        <a class="item reddit-mailbox" href="https://www.reddit.com/message/messages/" title="reddit mailbox">
+          <span class="text">reddit mailbox</span>
+          <span class="icon fa fa-envelope"></span>
+        </a>
 
-        <a class="item settings" href="{% url 'me_page' %}"><span class="text">preferences</span><span class="icon fa fa-cog"></span></a><span class="sep"> | </span>
+        <a class="item settings" href="{% url 'me_page' %}">
+          <span class="text">preferences</span>
+          <span class="icon fa fa-cog"></span>
+        </a>
 
         {% if user.is_authenticated %}
+
           <nav class="dotmenu">
             <span class="fa fa-ellipsis-h"></span>
             <input type="checkbox">
@@ -61,14 +74,32 @@
                 <span class="icon fa fa-user"></span>
                 <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a>
               </li>
-              <li>
+
+              <li class="">
+                <span class="cst-arrow-up"></span>
+                <a href="{% url 'me_recv_like_page' %}">upvotes inbox</a>
+              </li>
+
+              <li class="">
+                <span class="cst-arrow-up gray"></span>
+                <a href="{% url 'me_like_page' %}">upvotes you sent</a>
+              </li>
+
+              <li class="secondary">
+                <span class="fa fa-arrow-down"></span>
+                <a href="{% url 'me_nope_page' %}">ignored profiles</a>
+              </li>
+
+              <li class="secondary">
                 <span class="fa fa-sign-out"></span>
                 <a class="logout" href="{% url 'logout_page' %}">logout</a>
               </li>
             </ul>
           </nav>
+
         {% else %}
           <a class="item login" href="/"><span class="text">signup/login</span><span class="icon fa fa-sign-in"></span></a>
+
         {% endif %}
       </div>
     </header>
