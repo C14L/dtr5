@@ -1048,8 +1048,13 @@ body.profile.is-match .match-box {
   overflow: hidden;
 }
 
-/* Buttons on user profile pages for "like", "nope", or "dunno". */
+/*
 
+Buttons on user profile pages for "like", "nope", or "dunno".
+
+TODO: change into upvote / downvote buttons
+
+*/
 body.profile.is-none .like-nope-duno {
   display: block;
   margin: 0; padding: 24px 16px;
@@ -1086,7 +1091,7 @@ body.profile.is-none .like-nope-duno > .opt.like {
   margin-left: 40px;
 }
 body.profile.is-none .like-nope-duno > .opt.nope {
-  background-color: #111;
+  background-color: gray;
   margin-right: 40px;
 }
 body.profile.is-none .like-nope-duno > .opt.duno {
@@ -1211,10 +1216,10 @@ body.profile.is-like .match-box .announce .tx {
 
 body.profile.is-nope .match-box .announce {}
 body.profile.is-nope .match-box .announce .fa {
-  background-color: #111;
+  background-color: gray;
 }
 body.profile.is-nope .match-box .announce .tx {
-  background-color: #111;
+  background-color: gray;
 }
 
 
