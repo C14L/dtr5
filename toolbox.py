@@ -147,11 +147,13 @@ def get_dob_range(minage, maxage):
 
 
 WESTERN_ZODIAC = (
-    (0, ''), (1, 'aries'), (2, 'taurus'), (3, 'gemini'),
-    (4, 'cancer'), (5, 'leo'), (6, 'virgo'), (7, 'libra'), (8, 'scorpio'),
-    (9, 'sagittarius'), (10, 'capricorn'), (11, 'aquarius'), (12, 'pisces'))
+    (0, ''),
+    (1, 'aries'), (2, 'taurus'), (3, 'gemini'), (4, 'cancer'), (5, 'leo'),
+    (6, 'virgo'), (7, 'libra'), (8, 'scorpio'), (9, 'sagittarius'),
+    (10, 'capricorn'), (11, 'aquarius'), (12, 'pisces'))
 
 WESTERN_ZODIAC_SYMBOLS = (
+    (0, ''),
     (1, '♈'), (2, '♉'), (3, '♊'), (4,  '♋'), (5,  '♌'), (6,  '♍'),
     (7, '♎'), (8, '♏'), (9, '♐'), (10, '♑'), (11, '♒'), (12, '♓'))
 
@@ -160,11 +162,13 @@ WESTERN_ZODIAC_UPPER_LIMIT = (
     (823, 5), (923, 6), (1023, 7), (1122, 8), (1222, 9), (1231, 10))
 
 EASTERN_ZODIAC = (
-    (0, ''), (1, 'rat'), (2, 'ox'), (3, 'tiger'), (4, 'rabbit'),
+    (0, ''),
+    (1, 'rat'), (2, 'ox'), (3, 'tiger'), (4, 'rabbit'),
     (5, 'dragon'), (6, 'snake'), (7, 'horse'), (8, 'goat'),
     (9, 'monkey'), (10, 'rooster'), (11, 'dog'), (12, 'pig'))
 
 EASTERN_ZODIAC_SYMBOLS = (
+    (0, ''),
     (1, '鼠'), (2, '牛'), (3, '虎'), (4, '兔'), (5, '龍'), (6, '蛇'),
     (7, '馬'), (8, '羊'), (9, '猴'), (10, '鷄'), (11, '狗'), (12, '猪'))
 
