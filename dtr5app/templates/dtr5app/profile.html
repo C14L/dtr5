@@ -42,18 +42,18 @@
 
         <div class="announce nope">
           <span class="fa fa-arrow-down"></span>
-          <span class="tx">you downvoted them</span>
+          <span class="tx">you noped them</span>
         </div>
 
       {% else %}
 
         <div class="like-nope-duno">
-          <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}" title="downvote/ignore">
+          <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}" title="nope!">
             {% csrf_token %}
             <span class="fa fa-arrow-down"></span>
             <input type="submit" value="">
           </form>
-          <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}" title="upvote">
+          <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}" title="upvote!">
             {% csrf_token %}
             <span class="fa fa-arrow-up"></span>
             <input type="submit" value="">
@@ -102,7 +102,7 @@
               <form class="set-nope-form" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
                 {% csrf_token %}
                 <span class="fa fa-arrow-down"></span>
-                <input type="submit" class="nope opt" value="ignore">
+                <input type="submit" class="nope opt" value="nope">
               </form>
             </li>
           {% endif %}

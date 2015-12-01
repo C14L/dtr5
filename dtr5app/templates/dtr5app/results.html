@@ -39,7 +39,7 @@
           </a>
 
           <div class="like-nope-btns">
-            <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' v.username %}" title="ignore">
+            <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' v.username %}" title="nope">
               {% csrf_token %}
               <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
               <!-- <span class="fa fa-meh-o"></span> -->
