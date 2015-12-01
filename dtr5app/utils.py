@@ -205,7 +205,7 @@ def get_matches_user_list(user):
 def get_user_and_related_or_404(username, *args):
     """Like get_user_or_404 but prefetches the givem related items."""
     if isinstance(username, str):
-        q = {'username': username}
+        q = {'username__iexact': username}
     elif isinstance(username, int):
         q = {'pk': username}
     else:
@@ -214,3 +214,14 @@ def get_user_and_related_or_404(username, *args):
         return User.objects.prefetch_related(*args).get(**q)
     except User.DoesNotExist:
         raise Http404
+
+def normalize_sr_names(li):
+    """
+    Receive a set of randomly cased subreddit names, and return a set of
+    appropriately cased subreddit names.
+    """
+    sr_qs = Sr.objects.none()
+    for x in li:
+        sr_qs |= Sr.objects.filter(name__iexact=x)
+
+    return sr_qs.values_list('name', flat=True)

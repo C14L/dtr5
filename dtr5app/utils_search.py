@@ -8,86 +8,112 @@ from toolbox import (to_iso8601,
                      from_iso8601,
                      get_dob_range,
                      get_latlng_bounderies)
-from .models import (Sr)  #, Subscribed, Flag)
 
 
-def search_subreddit_users(request, sr):
+def search_subreddit_users(user, sr):
     """
     fetch users subscribed to this subreddit return a queryset that can
     be paginated.
+
+    :sr: Sr instance.
     """
-    return search_users_by_options_queryset(request, include_flagged=True)\
-        .filter(subs__sr=sr).order_by('last_login')
+    return search_users_by_options_queryset(user, include_flagged=True)\
+        .filter(subs__sr=sr).prefetch_related('profile', 'subs')\
+        .order_by('last_login')
 
 
 def get_blocked_usernames_list():
-    """Return a list of usernames blocked by admin."""
+    """
+    Return a list of usernames blocked by admin.
+
+    TODO:
+    """
     return []
 
 
-def search_users_by_options_queryset(request, include_flagged=False):
+def search_users_by_options_queryset(user, include_flagged=False):
     """
-    return a User queryset that filters by search opetions and some other
-    basic filters like blocked usernames, etc.
+    return a User queryset that filters by search options of the user and
+    some other basic filters, like globally blocked usernames, etc. this is
+    used, for example, for the Sr view user list.
 
-    include_flagged (bool) default False
-        show users be included that were already flagged (like, nope, etc)
-        by auth user?
+    :user: <User instance> who's search option settings to use. Most likely,
+        this is the request.user instance.
+
+    :include_flagged: <bool> default False. Whether to include users that were
+        already flagged (like, nope, etc) by user.
     """
     # 1
     li = User.objects.all()
+
     # 2 search option: sex
-    if request.user.profile.f_sex > 0:
-        li = li.filter(profile__sex=request.user.profile.f_sex)
+    if user.profile.f_sex > 0:
+        li = li.filter(profile__sex=user.profile.f_sex)
+
     # 3 search option: age
-    dob_earliest, dob_latest = get_dob_range(request.user.profile.f_minage,
-                                             request.user.profile.f_maxage)
+    dob_earliest, dob_latest = get_dob_range(user.profile.f_minage,
+                                             user.profile.f_maxage)
     li = li.filter(profile__dob__gt=dob_earliest, profile__dob__lt=dob_latest)
+
     # 4 search option: distance
-    if request.user.profile.f_distance:
+    if user.profile.f_distance:
         lat_min, lng_min, lat_max, lng_max = get_latlng_bounderies(
-            request.user.profile.lat, request.user.profile.lng,
-            request.user.profile.f_distance)
+            user.profile.lat, user.profile.lng,
+            user.profile.f_distance)
         li = li.filter(profile__lat__gte=lat_min, profile__lat__lte=lat_max,
                        profile__lng__gte=lng_min, profile__lng__lte=lng_max)
+
     # x only show SFW profiles?
-    if request.user.profile.f_over_18:  # unused
+    if user.profile.f_over_18:  # unused
         pass
         # li = li.filter(profile__over_18=True)
+
     # x only users with a verified email on reddit?
-    if request.user.profile.f_has_verified_email:  # unused
+    if user.profile.f_has_verified_email:  # unused
         pass
         # li = li.filter(profile__has_verified_email=True)
+
     # 5 exclude auth user themself.
-    li = li.exclude(pk=request.user.pk)
+    li = li.exclude(pk=user.pk)
+
     # 5a. exclude banned users
     li = li.exclude(is_active=False)
+
     # 5b. exclude users who deleted their account (deleted last_login)
     li = li.exclude(last_login=None)
+
     # 5c. exclude users with low karma
     li = li.exclude(
         profile__link_karma__lte=settings.USER_MIN_LINK_KARMA,
         profile__comment_karma__lte=settings.USER_MIN_COMMENT_KARMA)
+
     # 6 are not already flagged by auth user ('like', 'nope', 'block')
     if not include_flagged:
-        li = li.exclude(flags_received__sender=request.user)
+        li = li.exclude(flags_received__sender=user)
+
     # 7 are not blocked by admin via username blocklist,
     li = li.exclude(username__in=get_blocked_usernames_list())
+
     # 8 have at least one picture URL,
     li = li.exclude(profile___pics='"[]"')
 
-    print('--> li.query', li.query)
+    if settings.DEBUG:
+        print('--> li.query', li.query)
+
     return li
 
 
-def get_username_list_for_search_options_only(request):
-    """
-    Return a list of usernames that are matches for auth user's
-    selected search options.
-    """
-    BUFFER_LEN = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
-    li = search_users_by_options_queryset(request)
-    return list(li[:BUFFER_LEN].values_list('username', flat=True))
+# def get_username_list_for_search_options_only(request):
+#    """
+#    Return a list of usernames that are matches ONLY for auth user's
+#    selected search options, and DO NOT take subreddit subscriptions into
+#    consideration.
+#
+#    TODO: appparently not used currently.
+#    """
+#    BUFFER_LEN = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
+#    li = search_users_by_options_queryset(request.user)
+#    return list(li[:BUFFER_LEN].values_list('username', flat=True))
 
 
 def search_users(request, usernames_only=True):
@@ -152,6 +178,9 @@ def search_users(request, usernames_only=True):
     # part 1.2
     # a list of Sr.display_name values. these subreddits should NOT be
     # considered when producing matches.
+    # Subreddit names should appear as case insensitive! The f_ignore_sr_li
+    # list of subreddit names is supposed to be "cleaned up" already, with
+    # the appropriate lettercase of a subreddit's name.
     if request.user.profile.f_ignore_sr_li:
         query_params += request.user.profile.f_ignore_sr_li
         x = ', '.join(['%s'] * len(request.user.profile.f_ignore_sr_li))

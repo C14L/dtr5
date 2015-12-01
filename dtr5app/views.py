@@ -33,7 +33,7 @@ from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
                     get_user_list_after, update_list_of_subscribed_subreddits,
                     get_paginated_user_list, prepare_paginated_user_list,
                     get_user_list_from_username_list,
-                    get_matches_user_queryset)
+                    get_matches_user_queryset, normalize_sr_names)
 
 from .utils_search import (search_results_buffer, search_subreddit_users)
 
@@ -41,18 +41,17 @@ logger = logging.getLogger(__name__)
 
 
 @require_http_methods(["GET", "HEAD"])
-def home_view(request):
+def home_view(request, template_name='dtr5app/home_anon.html'):
     if request.user.is_authenticated():
         return redirect(reverse('me_results_page'))
 
-    template_name = 'dtr5app/home_anon.html'
     ctx = {'auth_url': api.make_authorization_url(request)}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
 
 @login_required
-def me_view(request, template_name="dtr5app/me.html"):
+def me_view(request, template_name='dtr5app/me.html'):
     """Show a settings page for auth user's profile."""
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
@@ -122,7 +121,7 @@ def me_view(request, template_name="dtr5app/me.html"):
 
 @login_required
 @require_http_methods(["GET", "HEAD", "POST"])
-def me_account_del_view(request, template_name="dtr5app/account_del.html"):
+def me_account_del_view(request, template_name='dtr5app/account_del.html'):
     """delete all account data."""
     if request.method in ["POST"]:
         request.user.profile.reset_all_and_save()
@@ -177,7 +176,8 @@ def me_update_view(request):
 
     # Reload user profile data from Reddit.
     reddit_user = api.get_user(request)
-    print('--> reddit_user: ', reddit_user)
+    if settings.DEBUG:
+        print('--> reddit_user: ', reddit_user)
 
     # make sure the types are correct!
     if reddit_user:
@@ -205,14 +205,13 @@ def me_update_view(request):
 
 @login_required
 @require_http_methods(["GET", "POST"])
-def me_locate_view(request):
+def me_locate_view(request, template_name='dtr5app/location_form.html'):
     """
     Receive latitude/longitude values found with the HTML5 geolocation API.
     The values are already "fuzzied" in the browser, so they are only the
     user's approximate location, but good enough for our purpose.
     """
     if request.method == "GET":
-        template_name = "dtr5app/location_form.html"
         ctx = {}
         return render_to_response(template_name, ctx,
                                   context_instance=RequestContext(request))
@@ -229,19 +228,23 @@ def me_locate_view(request):
 def me_favsr_view(request):
     """
     Save favorite subreddits picked by auth user from their list of
-    subreddits.
+    subreddits. TODO: currently unused
     """
     sr_id_li = [x[3:] for x in request.POST.keys() if x.startswith('id_')]
+
     if len(sr_id_li) > settings.SR_FAVS_COUNT_MAX:
         sr_id_li = sr_id_li[:settings.SR_FAVS_COUNT_MAX]  # limit nr of favs
         messages.warning(request, 'There is a maximum of {} favorites '
                          'subreddits.'.format(settings.SR_FAVS_COUNT_MAX))
+
     sr_li = Subscribed.objects.filter(user=request.user)
     sr_li.update(is_favorite=False)  # delete all favorites of user
     sr_li = Subscribed.objects.filter(user=request.user, sr__in=sr_id_li)
+
     if sr_li:
         sr_li.update(is_favorite=True)  # and set favorite on the subset
         # messages.success(request, 'Favorite subreddits updated.')
+
     return redirect(reverse('me_page'))
 
 
@@ -301,6 +304,7 @@ def me_pic_del_view(request):
         messages.info(request, 'Picture removed.')
     except:
         messages.info(request, 'Picture not found.')
+
     return redirect(reverse('me_page') + '#id_pics')
 
 
@@ -327,6 +331,7 @@ def me_picture_view(request):
     except:
         return HttpResponse(
             'The image {} is loading too slowly.'.format(pic_url))
+
     if r.status_code != 200:
         return HttpResponse('The image "{}"" can not be accessed, it returned '
                             'HTTP status code "{}".'.
@@ -347,9 +352,11 @@ def me_picture_view(request):
     if len(request.user.profile.pics) >= settings.USER_MAX_PICS_COUNT:
         messages.info(request, 'oldest picture was deleted to make room for '
                                'the picture you added.')
+
     # prepend the new pic to make it the new "profile pic"
     request.user.profile.pics = [{'url': pic_url}] + request.user.profile.pics
     request.user.profile.save()
+
     return redirect(reverse('me_page') + '#id_pics')
 
 
@@ -364,11 +371,14 @@ def me_search_view(request):
     if request.method in ["GET", "HEAD"]:
         # Find the next profile to show and redirect.
         search_results_buffer(request)
+
         if len(request.session['search_results_buffer']) < 1:
             messages.warning(request, txt_not_found)
             return redirect(request.POST.get('next', reverse('me_page')))
+
         x = {'username': request.session['search_results_buffer'][0]}
         _next = request.POST.get('next', reverse('profile_page', kwargs=x))
+
         return redirect(_next)
 
     p = request.user.profile
@@ -385,8 +395,13 @@ def me_search_view(request):
     if request.POST.get('f_has_verified_email', None):
         p.f_has_verified_email = bool(request.POST.get('f_has_verified_email'))
 
+    # List of subreddit names. This needs to be cleaned for appropriate
+    # letter case, so its useful in raw SQL search. Since Django has no
+    # case insensivity support :( we look up the correctly cased subreddit
+    # names here once, and store those as the user's search settings.
     try:
-        p.f_ignore_sr_li = sr_str_to_list(request.POST['f_ignore_sr_li'])
+        li = sr_str_to_list(request.POST['f_ignore_sr_li'])
+        p.f_ignore_sr_li = normalize_sr_names(li)
     except MultiValueDictKeyError:
         pass  # don't change the search vaue if not POSTed.
     try:
@@ -394,7 +409,8 @@ def me_search_view(request):
     except MultiValueDictKeyError:
         pass  # don't change the search vaue if not POSTed.
     try:
-        p.f_exclude_sr_li = sr_str_to_list(request.POST['f_exclude_sr_li'])
+        li = sr_str_to_list(request.POST['f_exclude_sr_li'])
+        p.f_exclude_sr_li = normalize_sr_names(li)
     except MultiValueDictKeyError:
         pass  # don't change the search vaue if not POSTed.
 
@@ -406,10 +422,11 @@ def me_search_view(request):
     #
     request.user.profile.save()
     search_results_buffer(request, force=True)
-    #
+
     if len(request.session['search_results_buffer']) < 1:
         messages.warning(request, txt_not_found)
         return redirect(request.POST.get('next', reverse('me_page')))
+
     # messages.success(request, 'Search options updated.')
     if (request.session.get('view_post_signup', False)):
         return redirect(request.POST.get('next', reverse('me_page')))
@@ -431,6 +448,7 @@ def me_results_view(request, template_name='dtr5app/results.html'):
     li = prepare_paginated_user_list(li, pg)
     li.object_list = get_user_list_from_username_list(li.object_list)
     li.object_list = add_auth_user_latlng(request.user, li.object_list)
+
     ctx = {'user_list': li}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
@@ -446,10 +464,10 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
 
     if not view_user.is_active:
         # user was banned
-        return HttpResponseNotFound('404 - user was banned')
+        return HttpResponseNotFound('user was banned')
     if not view_user.last_login:
         # user deleted their account
-        return HttpResponseNotFound('404 - user does not exist')
+        raise Http404
 
     # Add auth user's latlng, so we can query their distance.
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
@@ -491,11 +509,13 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
 
 @login_required
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
-    """Display a list of users who are subscribed to a subreddit."""
+    """
+    Display a list of users who are subscribed to a subreddit.
+    """
     pg = int(request.GET.get('page', 1))
-    view_sr = get_object_or_404(Sr, display_name=sr)
-    ul = search_subreddit_users(request, view_sr).prefetch_related('profile',
-                                                                   'subs')
+    view_sr = get_object_or_404(Sr, display_name__iexact=sr)
+    ul = search_subreddit_users(request.user, view_sr)
+
     ctx = {'view_sr': view_sr,
            'user_list': get_paginated_user_list(ul, pg, request.user),
            'user_subs_all': request.user.subs.all().prefetch_related('sr')}
@@ -506,23 +526,29 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
 @login_required
 @require_http_methods(["POST", "GET", "HEAD"])
 def me_flag_del_view(request):
-    """Delete all listed flags authuser set on other users."""
+    """
+    Delete all listed flags authuser set on other users.
+    """
     if request.method in ['GET', 'HEAD']:
         # Return a "are you sure" page.
         template_name = 'dtr5app/flag_del_all.html'
         ctx = {}
+
         return render_to_response(template_name, ctx,
                                   context_instance=RequestContext(request))
+
     elif request.method in ['POST']:
         flag_str = request.POST.get('flags', 'like,nope')
         flag_ids = [Flag.FLAG_DICT[x] for x in flag_str.split(',')]
         q = Flag.objects.filter(flag__in=flag_ids, sender=request.user)
         count = q.count()
         q.delete()
+
         if Flag.FLAG_DICT['like'] in flag_ids:
             request.user.profile.matches_count = 0
             request.user.profile.save()
         messages.info(request, '{} items deleted.'.format(count))
+
         return redirect(reverse('me_page'))
 
 
@@ -548,7 +574,7 @@ def me_flag_view(request, action, flag, username):
                    'report_reasons': Report.REASON_CHOICES}
             return render_to_response(template_name, ctx,
                                       context_instance=RequestContext(request))
-        return HttpResponseNotFound()
+        raise Http404
 
     elif request.method in ['POST']:
         if action == 'set' and flag in flags.keys():
@@ -581,7 +607,7 @@ def me_flag_view(request, action, flag, username):
             return redirect(reverse('profile_page',
                                     args={view_user.username}))
         else:
-            return HttpResponseNotFound()
+            raise Http404
 
         # Redirect the user, either to the "next profile" if there is any
         # in the search results buffer, or to the same profile if they were
