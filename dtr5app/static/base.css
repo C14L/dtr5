@@ -927,7 +927,8 @@ footer {
 }
 footer a {
   color: inherit;
-  text-decoration: underline;
+  text-decoration: inherit;
+  font-weight: bold;
 }
 
 

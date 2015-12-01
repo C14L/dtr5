@@ -121,7 +121,19 @@
         <span>our {{member_count}} members have liked each other {{like_count}} times.</span>
       </p>
       <p>
-        &copy; 2015 redddate.com -- discuss on <a href="https://www.reddit.com/r/redddate">r/redddate</a> -- view source on <a href="https://github.com/C14L/dtr5">Github</a> -- use of this site constitutes acceptance of our <a href="{% static 'useragreement.html' %}">User Agreement</a> and <a href="{% static 'privacy.html' %}">Privacy Policy</a>.
+        discuss on <a href="https://www.reddit.com/r/redddate">r/redddate</a>
+        &middot;
+        view source on <a href="https://github.com/C14L/dtr5"><span class="fa fa-github"></span> GitHub</a>
+        &middot;
+        tweet on <a href="https://twitter.com/redddate"><span class="fa fa-twitter"></span></a>
+        &middot;
+        pin on <a href="https://www.pinterest.com/redddate/"><span class="fa fa-pinterest"></span></a>
+        &middot;
+        blog on <a href="https://redddate.wordpress.com/"><span class="fa fa-wordpress"></span></a>
+        and <a href="https://www.tumblr.com/blog/redddate"><span class="fa fa-tumblr"></span></a>
+      </p>
+      <p>
+        &copy; 2015 redddate.com -- use of this site constitutes acceptance of our <a href="{% static 'useragreement.html' %}">User Agreement</a> and <a href="{% static 'privacy.html' %}">Privacy Policy</a>.
       <p>
 
       {% if DEBUG or user.is_superuser %}
