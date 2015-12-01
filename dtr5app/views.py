@@ -124,6 +124,18 @@ def me_view(request, template_name='dtr5app/me.html'):
 def me_account_del_view(request, template_name='dtr5app/account_del.html'):
     """delete all account data."""
     if request.method in ["POST"]:
+        # fetch all of this users matches and discount them from the other
+        # users match counts. currently, it can happen that a user sees a
+        # match in the "upvote matches" header, but that match was from a
+        # deleted user who doesn't exist anymore.
+        qs = get_matches_user_queryset(request.user)
+        qs = qs.prefetch_related('profile')
+        for match_user in qs:
+            if match_user.profile.matches_count > 0:
+                match_user.profile.matches_count -= 1
+                match_user.profile.save()
+
+        # remove all data
         request.user.profile.reset_all_and_save()
         request.user.subs.all().delete()
         request.user.flags_sent.all().delete()
