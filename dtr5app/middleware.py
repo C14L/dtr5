@@ -74,16 +74,17 @@ class UserSetDefaultLocalizationValues():
                ]
 
     def process_request(self, request):
-        if not request.user.profile.pref_distance_unit:
-            # if no distance unit set by user, try to find one based on user's
-            # browser settings.
-            lc = request.META['HTTP_ACCEPT_LANGUAGE']
-            lc = lc.split(';', 1)[0].split(',', 1)[0]
-            lc = re.sub(r'[^a-z]', '', lc.lower())
+        if request.user.is_authenticated():
+            if not request.user.profile.pref_distance_unit:
+                # if no distance unit set by user, try to find one based on user's
+                # browser settings.
+                lc = request.META['HTTP_ACCEPT_LANGUAGE']
+                lc = lc.split(';', 1)[0].split(',', 1)[0]
+                lc = re.sub(r'[^a-z]', '', lc.lower())
 
-            if lc in self.mi_vals:
-                request.user.profile.pref_distance_unit = 'mi'
-            else:
-                request.user.profile.pref_distance_unit = 'km'
+                if lc in self.mi_vals:
+                    request.user.profile.pref_distance_unit = 'mi'
+                else:
+                    request.user.profile.pref_distance_unit = 'km'
 
         return None

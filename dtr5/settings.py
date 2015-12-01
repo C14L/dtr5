@@ -228,6 +228,7 @@ SEX_SYMBOL = (  # ♀♂⚥⚢⚣⚤⚪★☆⮕♥
 )
 LOOKINGFOR = (
     (1, 'someone to chat'),
+    (17, 'penpals'),
     (2, 'hugs and nice words'),
     (3, 'new friends'),
     (4, 'sexy time'),
