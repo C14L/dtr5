@@ -820,10 +820,12 @@ header .site-links {
   position: absolute; top: 0; right: 0;
 }
 header .site-links .dotmenu {
+  position: absolute; top: 0; right: 0;
   border-left: 1px solid rgba(255,255,255,0.28);
+  display: inline-block;
   color: white;
-  height: 46px; width: 64px;
   padding-top: 10px;
+  width: 64px; height: 46px;
 }
 header .site-links .item {
   background-color: rgba(255,255,255,0);
@@ -834,6 +836,9 @@ header .site-links .item {
   position: relative;
   text-align: center;
   transition: 0.1s ease-out;
+}
+header .site-links .item:last-of-type {
+  margin-right: 64px;
 }
 header .site-links .item:hover {
   background-color: rgba(255,255,255,0.28);
