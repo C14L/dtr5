@@ -71,27 +71,32 @@ def me_view(request, template_name='dtr5app/me.html'):
         # the user has no subs in their profile, offer to load them
         template_name = 'dtr5app/step_2.html'
         request.session['view_post_signup'] = True
+
     elif not request.user.profile.created:
         # the user reddit profile is incomplete, download it again
         # template_name = 'dtr5app/step_3_something.html'
         template_name = 'dtr5app/step_2.html'
         request.session['view_post_signup'] = True
+
     elif not (request.user.profile.link_karma >= LK or
               request.user.profile.comment_karma >= CK):
         # if they don't have sufficient karma, they can't sign up
         template_name = 'dtr5app/step_3_err_karma.html'
         # request.user.is_active = False
         # request.user.save()
+
     elif ((datetime.now().date() - request.user.profile.created) <
             timedelta(settings.USER_MIN_DAYS_REDDIT_ACCOUNT_AGE)):
         # if the account isn't old enough, they can's sign up
         template_name = 'dtr5app/step_3_err_account_age.html'
         # request.user.is_active = False
         # request.user.save()
+
     elif not (request.user.profile.lat and request.user.profile.lng):
         # geolocation missing, offer to auto-set it
         template_name = 'dtr5app/step_3.html'
         request.session['view_post_signup'] = True
+
     elif not (request.user.profile.dob and
               request.user.profile.sex and request.user.profile.about):
         # required manually input profile data is missing
@@ -101,14 +106,17 @@ def me_view(request, template_name='dtr5app/me.html'):
             date.today().year-118, date.today().month, date.today().day)
         ctx['dob_max'] = '{}-{}-{}'.format(
             date.today().year-18, date.today().month, date.today().day)
+
     elif len(request.user.profile.pics) == 0:
         # no pics yet, ask to link one picture
         template_name = 'dtr5app/step_5.html'
         request.session['view_post_signup'] = True
-    elif not (request.user.profile.f_distance):
+
+    elif not request.user.profile.f_distance:
         # no search settings found, ask user to chose search settings
         template_name = 'dtr5app/step_6.html'
         request.session['view_post_signup'] = True
+
     elif (request.session.get('view_post_signup', False)):
         # user just set at least one required item. now show them the "all
         # done" page to make display of the first search result less abrupt

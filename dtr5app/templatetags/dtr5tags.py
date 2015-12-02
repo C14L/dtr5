@@ -12,3 +12,8 @@ def prefdist(val, arg):
         return '{} km'.format(floatformat(meters_in_km(val), 1))
     elif arg.profile.pref_distance_unit == 'mi':
         return '{} miles'.format(floatformat(meters_in_miles(val), 1))
+
+
+@register.filter(name='to_miles')
+def to_miles(km):
+    return meters_in_miles(km*1000)

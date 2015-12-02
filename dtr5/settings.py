@@ -269,3 +269,17 @@ FITNESS = (  # unused
     (5, 'even more'),
 )
 # REPORT_REASON_CHOICES = ()
+
+DISTANCE = (
+    (    1, 'worldwide'),  # any value below 5 will be used for "worldwide"...
+    ( 5000, '5000 km / 3100 miles'),  # ...don't set 0 because it would be ...
+    ( 2000, '2000 km / 1250 miles'),  # ...intercepted by the signup flow.
+    ( 1000, '1000 km / 620 miles'),
+    (  700,  '700 km / 435 miles'),
+    (  500,  '500 km / 310 miles'),
+    (  300,  '300 km / 186 miles'),
+    (  200,  '200 km / 125 miles'),
+    (  100,  '100 km / 62 miles'),
+    (   50,   '50 km / 31 miles'),
+    (   20,   '20 km / 12 miles'),
+)

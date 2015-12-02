@@ -20,7 +20,6 @@
 
       <div>
         <label>
-          <span>Find</span>&nbsp;
           <select name="f_sex" size="1">
             <option value="">everybody</option>
             {% for sex in sex_choices %}
@@ -29,19 +28,16 @@
               {% endif %}
             {% endfor %}
           </select>
-        </label>&nbsp;
+        </label>
+        &nbsp;
         <label>
-          <span></span>
-          <select name="f_distance" size="1"><!-- in km -->
-            <option{% if user.profile.f_distance == 20040 %} selected{% endif %}  value="20040">worldwide</option>
-            <option{% if user.profile.f_distance == 300 %} selected{% endif %}  value="3000">flyable</option>
-            <option{% if user.profile.f_distance == 300 %} selected{% endif %}  value="300">driveable</option>
-            <option{% if user.profile.f_distance == 50 %} selected{% endif %}  value="100">not too far</option>
-            <option{% if user.profile.f_distance == 15 %} selected{% endif %} value="25">close by</option>
+          <select name="f_distance" size="1">
+            {% for x in DISTANCE %}
+              <option{% if user.profile.f_distance == x.0 %} selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+            {% endfor %}
           </select>
         </label>
       </div>
-
       <div>
         <label class="submit">
           <input type="submit">

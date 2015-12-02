@@ -56,7 +56,13 @@ def search_users_by_options_queryset(user, include_flagged=False):
     li = li.filter(profile__dob__gt=dob_earliest, profile__dob__lt=dob_latest)
 
     # 4 search option: distance
-    if user.profile.f_distance:
+    #
+    # Values too close are inaccurate because of location fuzzying. Also,
+    # f_distance must be at least 1, so that the signup flow doesn't intercept
+    # it because it has no value set! Leave this to only search distances
+    # above 5 km or so, and return "worldwide" for any value below 5 km.
+    #
+    if user.profile.f_distance > 5:
         lat_min, lng_min, lat_max, lng_max = get_latlng_bounderies(
             user.profile.lat, user.profile.lng,
             user.profile.f_distance)
@@ -211,7 +217,13 @@ def search_users(request, usernames_only=True):
     # part 4: lat/lng
     # li = li.filter(profile__lat__gte=lat_min, profile__lat__lte=lat_max,
     #                profile__lng__gte=lng_min, profile__lng__lte=lng_max)
-    if request.user.profile.f_distance:
+    #
+    # Values too close are inaccurate because of location fuzzying. Also,
+    # f_distance must be at least 1, so that the signup flow doesn't intercept
+    # it because it has no value set! Leave this to only search distances
+    # above 5 km or so, and return "worldwide" for any value below 5 km.
+    #
+    if request.user.profile.f_distance > 5:
         lat_min, lng_min, lat_max, lng_max = get_latlng_bounderies(
             request.user.profile.lat,
             request.user.profile.lng,
