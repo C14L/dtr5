@@ -837,7 +837,7 @@ header .site-links .item {
   text-align: center;
   transition: 0.1s ease-out;
 }
-header .site-links .item:last-of-type {
+header .site-links .item.settings:last-of-type {
   margin-right: 64px;
 }
 header .site-links .item:hover {
