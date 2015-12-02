@@ -292,6 +292,10 @@ def me_manual_view(request):
     if request.POST.getlist('lookingfor', None):
         request.user.profile.lookingfor = request.POST.getlist('lookingfor')
 
+    if request.POST.get('pref_distance_unit', None):
+        request.user.profile.pref_distance_unit = \
+            request.POST.get('pref_distance_unit')
+
     if request.POST.get('tagline', None):  # unused
         request.user.profile.tagline = request.POST.get('tagline')
     if request.POST.get('relstatus', None):  # unused
@@ -307,7 +311,10 @@ def me_manual_view(request):
 
     request.user.profile.save()
     messages.success(request, 'Profile data updated.')
-    return redirect(reverse('me_page') + '#id_profile')
+    _next = request.POST.get('next', '#id_profile')
+    if _next.startswith('#'):
+        _next = reverse('me_page') + _next
+    return redirect(_next)
 
 
 @login_required

@@ -183,6 +183,15 @@
 
   <div class="card section-account" id="id_account">
     <h2>account settings</h2>
+    <section>
+      <form method="POST" action="{% url 'me_manual_page' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="#id_account">
+        <label><input{% if user.profile.pref_distance_unit == 'km' %} checked{% endif %} type="radio" name="pref_distance_unit" value="km"> km</label> or
+        <label><input{% if user.profile.pref_distance_unit == 'mi' %} checked{% endif %} type="radio" name="pref_distance_unit" value="mi"> miles</label>
+        <input type="submit">
+      </form>
+    </section>
     <ul>
       <li>
         <a href="{% url 'me_flag_del_page' %}">delete all my upvotes and nopes</a>&nbsp;
