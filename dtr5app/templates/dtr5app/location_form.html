@@ -3,19 +3,17 @@
   <head>
     <title>Set your geo location</title>
   </head>
-  <body>
-    <p>Setting the (fuzzied) geo location automatically requires Javascript to be enabled in your browser. But you can also set the geo location manually here:</p>
-    <form method="POST" action="">
+  <body style="min-width:360px; max-width:600px; margin:0 auto; padding:16px;">
+    <p style="font-size:1.25rem;">Setting the (fuzzied) geolocation automatically, requires Javascript to be enabled in your browser. If you prefer not to use JS, you can set your geolocation manually here:</p>
+    <form method="POST" action="" style="line-height:1.5em;">
       {% csrf_token %}
-      <label>
-        <span>Latitude:</span>
-        <input type="text" name="lat" value="{{user.profile.lat}}">
-      </label>
-      <label>
-        <span>Longitude:</span>
-        <input type="text" name="lng" value="{{user.profile.lng}}">
-      </label>
-      <input type="submit">
+      <label style="white-space:nowrap;"><span>Latitude:</span>&nbsp;<input type="text" name="lat" value="{{user.profile.lat}}"></label>
+      <label style="white-space:nowrap;"><span>Longitude:</span>&nbsp;<input type="text" name="lng" value="{{user.profile.lng}}"></label>
+      <span><input type="submit"></span>
     </form>
+    <hr>
+    <h3>Where to find it?</h3>
+    <p>Look up your location on Google Maps, move the maps a little, and the latitude/longitide values will show up in the address bar:</p>
+    <p><img style="width:100%;" src="/static/example-lat-lng-gmaps.png" alt="find you lat/lng geolocation, GMaps example"></p>
   </body>
 </html>
