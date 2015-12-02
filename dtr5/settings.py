@@ -170,6 +170,9 @@ SR_FAVS_COUNT_MAX = 10
 USERS_PER_PAGE = 10
 USERS_ORPHANS = 0
 
+# Use this to only show profiles with pic in search results
+REQUIRE_PROFILE_PIC = False  # partially implemented
+
 # Strings for common regular expressions: username, subreddit, etc.
 #
 # https://github.com/reddit/reddit/blob/master/r2/r2/models/subreddit.py#L111
