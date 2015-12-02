@@ -159,7 +159,9 @@
       {% if view_user.profile.accessed %}
         last active {{view_user.profile.accessed|timesince}} ago &middot;
       {% endif %}
-      a redditor for {{view_user.profile.created|timesince}} &middot;
+      {% if show_created %}
+       a redditor for {{view_user.profile.created|timesince}} &middot;
+      {% endif %}
       on redddate for {{view_user.date_joined|timesince}}
     </div>
   </div>
@@ -279,7 +281,7 @@
           <tbody>
             <tr>
               <td>signed up:</td>
-              <td>{{view_user.profile.created|timesince}} ago</td>
+              <td>{% if show_created %}{{view_user.profile.created|timesince}} ago{% endif %}</td>
             </tr>
             <tr>
               <td><a href="https://www.reddit.com/user/{{view_user.username}}/submitted/">link karma</a>:</td>

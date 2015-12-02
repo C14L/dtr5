@@ -194,7 +194,7 @@ def me_update_view(request):
     # make sure the types are correct!
     if reddit_user:
         # Update user profile data
-        t = force_int(reddit_user['created_utc'])
+        t = reddit_user['created_utc']
 
         p = request.user.profile
         p.name = reddit_user['name']
@@ -507,7 +507,10 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
         view_user.profile.views_count += 1
         view_user.profile.save()
 
-    ctx = {'view_user': view_user,
+    # there was an error with the "created" timestamp handling, so some were
+    # set to "0", i.e. Epoch time 1970-01-01. Filter those out.
+    ctx = {'show_created': view_user.profile.created > date(1970, 1, 1),
+           'view_user': view_user,
            'is_match': request.user.profile.match_with(view_user),
            'is_like': request.user.profile.does_like(view_user),
            'is_nope': request.user.profile.does_nope(view_user),
