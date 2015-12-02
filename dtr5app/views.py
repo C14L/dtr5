@@ -314,6 +314,7 @@ def me_manual_view(request):
     _next = request.POST.get('next', '#id_profile')
     if _next.startswith('#'):
         _next = reverse('me_page') + _next
+
     return redirect(_next)
 
 
