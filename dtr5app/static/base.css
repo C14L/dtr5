@@ -1545,7 +1545,58 @@ body.reports .report.card .sender {
 
 @media only screen and (max-width: 600px) {  /* < sm */
 
-  .site-announcements {  /* remove the colored annoucement bar on <sm */
+  /* signup screens */
+
+  body.as-overlay main,
+  body.signup-steps main {
+    background: none; min-height: 0;
+  }
+  body.as-overlay article,
+  body.signup-steps article {
+    margin: 0; padding: 0;
+    width: auto;
+  }
+  body.as-overlay article .overlay,
+  body.signup-steps article .overlay {
+    display: block;
+    margin: 0; padding: 16px;
+    width: auto;
+    text-align: center;
+  }
+  body.as-overlay article .overlay h1,
+  body.signup-steps article .overlay h1 {
+    margin: 0; padding: 8px;
+    float: none;
+    line-height: 1.15em;
+  }
+  body.as-overlay article .overlay .mainbtn,
+  body.signup-steps article .overlay .mainbtn {
+    margin: 0 auto;
+  }
+  body.as-overlay article .abouts,
+  body.signup-steps article .abouts {
+    margin: 0; padding: 0 8px;
+    width: auto; min-height: 50vh;
+  }
+  body.signup-steps .show-signup-steps {
+    padding: 4px;
+  }
+  body.signup-steps .show-signup-steps > div {
+    padding: 4px;
+  }
+  body.signup-steps .show-signup-steps > div:not(:first-child):before {
+    content: '';
+    margin: 0; padding: 0;
+  }
+
+
+
+  /*
+
+  remove the colored annoucement bar on <sm
+
+  */
+  .site-announcements {
     display: none;
   }
 
