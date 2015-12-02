@@ -6,3 +6,4 @@ static_files/
 dtr5/settings_secrets.py
 NOTES
 simple_reddit_oauth
+**/__*

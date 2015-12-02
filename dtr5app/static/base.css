@@ -865,16 +865,17 @@ between "header" and "main" only if there are any messeges.
 
  */
 ul#site-messages {
-  background-color: #C00;
+  background-color: rgba(0,0,0,0.8);
   clear: both;
-  color: #FFF;
+  color: white;
   display: block;
   font-size: 1.15rem;
   list-style: none;
   cursor: pointer;
+  min-height: 33vh;
   margin: 0; padding: 8px;
-  opacity: 0.7;
-  position: fixed; top: 56px; right: 0; left: 0;
+  opacity: 1;
+  position: fixed; bottom: 0; right: 0; left: 0;
   z-index: 999;
 }
 ul#site-messages li {
