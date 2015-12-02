@@ -344,6 +344,10 @@ def me_picture_view(request):
         return HttpResponse(
             'The image {} is loading too slowly.'.format(pic_url))
 
+    if r.status_code == 302 and 'imgur.com' in pic_url:
+        return HttpResponse('The image at "{}" can not be accessed, it was '
+                            '<b>probably deleted on Imgur</b>.'.
+                            format(pic_url))
     if r.status_code != 200:
         return HttpResponse('The image "{}"" can not be accessed, it returned '
                             'HTTP status code "{}".'.
