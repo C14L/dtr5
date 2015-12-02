@@ -178,7 +178,7 @@ def add_auth_user_latlng(user, user_list):
 def count_matches(user):
     """Return the number of matches (mututal likes) of 'user'."""
     return User.objects.filter(
-        flags_sent__receiver=user, flags_received__flag=Flag.LIKE_FLAG,
+        flags_sent__receiver=user, flags_received__flag=Flag.LIKE_FLAG
         ).filter(
         flags_received__sender=user, flags_received__flag=Flag.LIKE_FLAG
         ).distinct().count()

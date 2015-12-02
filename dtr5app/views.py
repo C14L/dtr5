@@ -575,6 +575,7 @@ def me_flag_view(request, action, flag, username):
     Valid action values: 'set', 'delete'.
     Valid flag values: 'like', 'nope', 'report'.
     """
+    _next = None
     view_user = get_user_and_related_or_404(username)
     flags = {x[1]: x[0] for x in Flag.FLAG_CHOICES}
 
@@ -593,13 +594,11 @@ def me_flag_view(request, action, flag, username):
         if action == 'set' and flag in flags.keys():
             Flag.set_flag(request.user, view_user, flag)
 
-            if flag == 'like':
-                # if "like", then check for both users their match counts
-                request.user.profile.matches_count = \
-                    count_matches(request.user)
-                request.user.profile.save()
-                view_user.profile.matches_count = count_matches(view_user)
-                view_user.profile.save()
+            if flag == 'like' and request.user.profile.match_with(view_user):
+                # if authuser set a like flag, and we have a match, then show
+                # the newly matched profile again, so authuser can write them
+                # a message!
+                _next = reverse('profile_page', args={view_user.username})
 
             if flag == 'report':
                 # also create an entry in Report for the moderator
@@ -614,26 +613,44 @@ def me_flag_view(request, action, flag, username):
                               .format(view_user.username))
 
         elif action == 'delete' and flag in flags.keys():
-
-            if flag == 'like':
-                # if a like flag is removed, check if they were a match, and
-                # discount the destroyed match from their match counts.
-                if request.user.profile.match_with(view_user):
-                    if request.user.profile.matches_count > 0:
-                        request.user.profile.matches_count -= 1
-                        request.user.profile.save()
-                    if view_user.profile.matches_count > 0:
-                        view_user.profile.matches_count -= 1
-                        view_user.profile.save()
-
             Flag.delete_flag(request.user, view_user)
             # if this was a "remove like" or "remove nope" then display the
             # same profile again, because most likely the auth user wants to
             # change their flag.
-            return redirect(reverse('profile_page',
-                                    args={view_user.username}))
+            _next = reverse('profile_page', args={view_user.username})
+
         else:
             raise Http404
+
+        # after changing a flag, always recount, because setting a flag may
+        # delete another in the same process, there is no way to simply add
+        # one to the match count cache.
+        #
+        # BUG: TODO: occasionally, this does not count correctly. no idea
+        # why, comes incorrect from count_matches().
+        #
+        if settings.DEBUG:
+            print('-----> SET/DELETE FLAG -----> RECOUNT MATCHED -----')
+            print('before: request.user.profile.matches_count: ',
+                  request.user.profile.matches_count)
+
+        request.user.profile.matches_count = count_matches(request.user)
+        request.user.profile.save(update_fields=['matches_count'])
+
+        if settings.DEBUG:
+            print('after: request.user.profile.matches_count: ',
+                  request.user.profile.matches_count)
+            print('---------------------------------------------------')
+            print('before: view_user.profile.matches_count: ',
+                  view_user.profile.matches_count)
+
+        view_user.profile.matches_count = count_matches(view_user)
+        view_user.profile.save(update_fields=['matches_count'])
+
+        if settings.DEBUG:
+            print('after: view_user.profile.matches_count: ',
+                  view_user.profile.matches_count)
+            print('---------------------------------------------------')
 
         # Redirect the user, either to the "next profile" if there is any
         # in the search results buffer, or to the same profile if they were
@@ -641,18 +658,22 @@ def me_flag_view(request, action, flag, username):
         # buffer list. Or, if they ran out of results in the results buffer
         # then redirect them to the preferences page, so they can run the
         # search again and maybe fill new profiles into the results buffer.
+        if _next:
+            return redirect(_next)
+
         if len(request.session['search_results_buffer']) > 0:
+            # if there are more profiles, show them.
             if view_user.username in request.session['search_results_buffer']:
                 prev_user, next_user = get_prevnext_user(request, view_user)
                 _next = reverse('profile_page', args={next_user.username})
-                request.session[
-                    'search_results_buffer'].remove(view_user.username)
+                username = view_user.username
+                request.session['search_results_buffer'].remove(username)
                 request.session.modified = True
             else:
                 username = request.session['search_results_buffer'][0]
                 _next = reverse('profile_page', args={username})
         elif len(request.session['search_results_buffer']) < 1:
-            messages.warning(request, 'Nobody found. Try searching again!')
+            messages.warning(request, 'nobody found :(')
             return redirect(reverse('me_page'))
 
         return redirect(request.POST.get('next', _next))
