@@ -54,7 +54,7 @@
           <p>
             <label>
               <span><b>ignore</b> all subreddits larger than:</span>
-              <input type="text" name="f_ignore_sr_max" value="{{user.profile.f_ignore_sr_max}}" maxlength="10" size="10" placeholder="5,000,000">
+              <input type="number" min="0" max="123456789" name="f_ignore_sr_max" value="{{user.profile.f_ignore_sr_max}}" maxlength="10" size="10" placeholder="5,000,000">
               <span>subscribers</span>
             </label>
             <p class="help">all subreddits larger than this will be treated as if you were <b>not</b> subscribed to them.</p>
@@ -68,6 +68,9 @@
             <p class="help"><strong>use carefully!</strong> anybody subscribed to any of these subreddits will be <strong>removed</strong> from your search results!</p>
           </p>
 -->
+          <p>
+            <span><b>age range</b>: between <input type="number" min="18" max="98" name="f_minage" value="{{user.profile.f_minage}}"> and <input type="number" min="19" max="100" name="f_maxage" value="{{user.profile.f_maxage}}"> years old</span>
+          </p>
         </div>
       </section>
     </form>

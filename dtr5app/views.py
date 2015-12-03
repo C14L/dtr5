@@ -419,11 +419,12 @@ def me_search_view(request):
     p.f_sex = force_int(request.POST.get('f_sex', ''))
 
     if request.POST.get('f_distance', None):
-        p.f_distance = force_int(request.POST.get('f_distance'), max=21000)
+        p.f_distance = force_int(request.POST.get('f_distance'),
+                                 min=0, max=21000)
     if request.POST.get('f_minage', None):
-        p.f_minage = force_int(request.POST.get('f_minage'), min=18)
+        p.f_minage = force_int(request.POST.get('f_minage'), min=18, max=99)
     if request.POST.get('f_maxage', None):
-        p.f_maxage = force_int(request.POST.get('f_maxage'), max=100)
+        p.f_maxage = force_int(request.POST.get('f_maxage'), min=19, max=100)
     if request.POST.get('f_over_18', None):
         p.f_over_18 = bool(request.POST.get('f_over_18'))
     if request.POST.get('f_has_verified_email', None):
