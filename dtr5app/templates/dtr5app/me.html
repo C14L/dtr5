@@ -46,9 +46,9 @@
           <p>
             <label>
               <span><b>ignore</b> these subreddits:</span>
-              <input type="text" name="f_ignore_sr_li" value="{{user.profile.f_ignore_sr_li|join:', '}}" maxlength="250" size="50" placeholder="AskReddit, news, Pics, Funny">
+              <input type="text" name="f_ignore_sr_li" value="{{user.profile.f_ignore_sr_li|join:', '}}" maxlength="800" size="50" placeholder="AskReddit, news, Pics, Funny">
             </label>
-            <p class="help">these subreddits will be treated as if you were <b>not</b> subscribed to them.</p>
+            <p class="help">these subreddits will be treated as if you were <b>not</b> subscribed to them. <a href="#" id="id_auto_add_default_subs"></a></p>
           </p>
 
           <p>
@@ -204,4 +204,20 @@
     </ul>
   </div>
 </article>
+<script>
+
+(function(){
+
+  var elLnk = document.getElementById('id_auto_add_default_subs');
+  var defaultSRs = 'announcements Art AskReddit askscience aww blog books creepy dataisbeautiful DIY Documentaries EarthPorn explainlikeimfive Fitness food funny Futurology gadgets gaming GetMotivated gifs history IAmA InternetIsBeautiful Jokes LifeProTips listentothis mildlyinteresting movies Music news nosleep nottheonion OldSchoolCool personalfinance philosophy photoshopbattles pics science Showerthoughts space sports television tifu todayilearned TwoXChromosomes UpliftingNews videos worldnews WritingPrompts';
+  elLnk.innerHTML = 'add default subreddits';
+  elLnk.addEventListener('click', function(e){
+    e.preventDefault();
+    var elInp = document.querySelector('input[name="f_ignore_sr_li"]');
+    elInp.value = defaultSRs;
+  }, false);
+})();
+
+</script>
+
 {% endblock %}

@@ -90,12 +90,12 @@ class Profile(models.Model):
     f_has_verified_email = models.BooleanField(default=False)       # unused
 
     # space separated list of subreddit names to ignore in search
-    _f_ignore_sr_li = models.CharField(default='', max_length=250)
+    _f_ignore_sr_li = models.CharField(default='', max_length=800)
     # subreddits with more members than this are ignored in search
     f_ignore_sr_max = models.PositiveIntegerField(default=100000000)
     # space separated list of subreddits whose subscribers will be
     # REMOVED from user's search results.
-    _f_exclude_sr_li = models.CharField(default='', max_length=250)
+    _f_exclude_sr_li = models.CharField(default='', max_length=800)
 
     # x_ --> only show my profile listed in another redditor's
     # search results, if the other redditor...

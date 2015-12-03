@@ -188,12 +188,12 @@ on the <h2/> title of the section. similar to .dotmenu
 
  */
 .toggle-section {
-  cursor: pointer;
   display: block;
   padding: 0; margin: 0 -16px -16px -16px;
   border-top: 1px solid rgba(0,0,0,0.12);
 }
 .toggle-section > label > h3 {
+  cursor: pointer;
   display: block;
   margin: 0; padding: 16px;
   font-size: 1rem; line-height: 1rem;
