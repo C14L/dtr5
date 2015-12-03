@@ -868,6 +868,11 @@ def stats(request, template_name='dtr5app/stats.html'):
         'likes_count': utils_stats.get_likes_count(),
         'nopes_count': utils_stats.get_nopes_count(),
         'matches_count': utils_stats.get_matches_count(),
+
+        # active users in the past 1, 5, and 15 minutes
+        'users_active_1m': utils_stats.get_active_users(1),
+        'users_active_5m': utils_stats.get_active_users(5),
+        'users_active_15m': utils_stats.get_active_users(15),
     }
 
     return render_to_response(template_name, ctx,

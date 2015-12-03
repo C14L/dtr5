@@ -1,5 +1,9 @@
+from datetime import timedelta
+
 from django.db.models import Count
 from django.contrib.auth.models import User
+from django.utils.timezone import now
+
 from dtr5app.models import Flag
 
 
@@ -48,3 +52,9 @@ def get_matches_count():
     dtr5app_flag.receiver
     dtr5app_flag.flag
     """
+
+
+def get_active_users(mins):
+    """Return number of users active over the past "mins" minutes."""
+    min_dt = now() - timedelta(minutes=mins)
+    return User.objects.filter(profile__accessed__gte=min_dt).count()

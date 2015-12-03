@@ -1,12 +1,4 @@
 from django.conf import settings
-from dtr5app import utils_stats
-
-
-def site_stats(request):
-    return {
-        'member_count': utils_stats.get_users_count(),
-        'like_count': utils_stats.get_likes_count(),
-    }
 
 
 def selected_settings(request):
