@@ -1309,15 +1309,15 @@ body.signup-steps .show-signup-steps {
   box-shadow: 0 0 8px rgba(0,0,0,0.3);
   text-align: center;
 }
+body.signup-steps .show-signup-steps > span {
+  color: gray;
+  display: inline-block;
+  margin: 0; padding: 8px;
+}
 body.signup-steps .show-signup-steps > div {
-  color: #888;
+  color: gray;
   display: inline-block;
   margin: 0; padding: 16px 0;
-}
-body.signup-steps .show-signup-steps > div:not(:first-child):before {
-  color: #888;
-  content: '⮕';
-  margin: 0; padding: 16px;
 }
 body.signup-steps.step-1 .show-signup-steps > div.step-1,
 body.signup-steps.step-2 .show-signup-steps > div.step-2,
