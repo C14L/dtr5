@@ -1,12 +1,11 @@
 from django.conf import settings
-from django.contrib.auth.models import User
-from .models import Flag
+from dtr5app import utils_stats
 
 
 def site_stats(request):
     return {
-        'member_count': User.objects.all().count(),
-        'like_count': Flag.objects.filter(flag=Flag.LIKE_FLAG).count(),
+        'member_count': utils_stats.get_users_count(),
+        'like_count': utils_stats.get_likes_count(),
     }
 
 

@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator, EmptyPage  #, PageNotAnInteger
+from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse,
                          HttpResponseNotFound,
@@ -27,6 +27,8 @@ from .models import (Subscribed, Sr, Flag, Report)
 
 from toolbox import (force_int, force_float, set_imgur_url, get_age,
                      sr_str_to_list)
+
+from . import utils_stats
 
 from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
                     get_prevnext_user, get_user_and_related_or_404,
@@ -855,5 +857,17 @@ def mod_deluser_view(request, pk):
 
     template_name = 'dtr5app/mod_del_profile.html'
     ctx = {'view_user': view_user}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+def stats(request, template_name='dtr5app/stats.html'):
+    ctx = {
+        'users_by_sex': utils_stats.get_users_by_sex(),
+        'likes_count': utils_stats.get_likes_count(),
+        'nopes_count': utils_stats.get_nopes_count(),
+        'matches_count': utils_stats.get_matches_count(),
+    }
+
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

@@ -17,3 +17,8 @@ def prefdist(val, arg):
 @register.filter(name='to_miles')
 def to_miles(km):
     return meters_in_miles(km*1000)
+
+
+@register.filter(name='display_choice')
+def display_choice(val, arg):
+    return [x[1] for x in arg if x[0] == val][0]

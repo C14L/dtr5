@@ -1,0 +1,41 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+{% load dtr5tags %}
+
+{% block title %}stats{% endblock %}
+
+{% block head %}
+<style type="text/css">
+table { border: 3px solid gray; display: inline-block; vertical-align: top; margin: 0 16px 16px 0; }
+table tr {}
+table tr th { padding: 8px; background-color: gray; color: white; font-weight: normal; }
+table tr td { padding: 8px; border: 1px solid gray; border-collapse: collapse; background-color: white; }
+table tr td.num { text-align: right; }
+
+</style>
+{% endblock %}
+
+{% block body_classes %}stats{% endblock %}
+
+{% block main %}
+
+<article>
+  <h1>Stats</h1>
+
+  <table>
+    <tr><th colspan="2">users by sex/pref</th></tr>
+    {% for x in users_by_sex %}
+      <tr><td>{{x.sex|display_choice:SEX}}</td><td class="num">{{x.count}}</td>
+    {% endfor %}
+  </table>
+
+  <table>
+    <tr><th colspan="2">likes/nopes/matches</th></tr>
+    <tr><td>likes</td><td class="num">{{likes_count}}</td>
+    <tr><td>nopes</td><td class="num">{{nopes_count}}</td>
+    <tr><td>matches</td><td class="num">{{matches_count}}</td>
+  </table>
+
+</article>
+
+{% endblock %}

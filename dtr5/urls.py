@@ -75,4 +75,6 @@ urlpatterns = [
         name="mod_report_page"),
     url(r'^mod/reports/(?P<pk>\d*)/$', views.mod_report_view,
         name="mod_report_item_page"),
+
+    url(r'^stats/$', views.stats, name="stats"),
 ]
