@@ -451,6 +451,9 @@ class Subscribed(models.Model):
         verbose_name_plural = "subreddit subscriptions"
         ordering = ['sr__display_name']
 
+        # TODO: add this here, first clean up dupes.
+        # unique_together = [user, sr]
+
     def __str__(self):
         return '{} --> {}'.format(self.user.username, self.sr.name)
 
