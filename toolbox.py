@@ -68,10 +68,15 @@ def force_int(x, min=None, max=None):
     larger than max, if either is given, are set to min or max
     respectively.
     """
-    try:
-        i = int(x.replace(',', ''))
-    except:
-        return 0
+    if isinstance(x, str):
+        x = x.replace(',', '')  # remove any "," separators
+    if x:
+        try:
+            i = int(x)
+        except ValueError:
+            i = 0
+    else:
+        i = 0
     if min and i < min:
         i = min
     if max and i > max:
