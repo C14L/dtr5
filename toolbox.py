@@ -283,7 +283,7 @@ def distance_between_geolocations(p1, p2):
     a = (0.5 - math.cos((lat2 - lat1) * p)/2 +
          math.cos(lat1 * p) *
          math.cos(lat2 * p) *
-        (1 - math.cos((lng2 - lng1) * p)) / 2)
+         (1 - math.cos((lng2 - lng1) * p)) / 2)
     return 12742000 * math.asin(math.sqrt(a))  # 12742000 == 2 * Earth radius
 
 
