@@ -170,6 +170,9 @@ SR_FAVS_COUNT_MAX = 10
 USERS_PER_PAGE = 10
 USERS_ORPHANS = 0
 
+# Limit number of subreddits to fetch
+SR_FETCH_LIMIT = 200  # None to fetch all
+
 # Use this to only show profiles with pic in search results
 REQUIRE_PROFILE_PIC = False  # partially implemented
 
