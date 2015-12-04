@@ -222,3 +222,12 @@ def normalize_sr_names(li):
         sr_qs |= Sr.objects.filter(name__iexact=x)
 
     return sr_qs.values_list('name', flat=True)
+
+
+def get_recent_views_to(user):
+    """
+    Returns a queryset of users that recently visited the profile of "user".
+    """
+    return User.objects.filter(
+        visited__host=user, last_login__isnull=False,
+        is_active=True).prefetch_related('profile', 'visited')

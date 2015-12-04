@@ -23,7 +23,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 from simple_reddit_oauth import api
 
-from .models import (Subscribed, Sr, Flag, Report)
+from .models import (Subscribed, Sr, Flag, Report, Visit)
 
 from toolbox import (force_int, force_float, set_imgur_url, get_age,
                      sr_str_to_list)
@@ -35,7 +35,8 @@ from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
                     get_user_list_after, update_list_of_subscribed_subreddits,
                     get_paginated_user_list, prepare_paginated_user_list,
                     get_user_list_from_username_list,
-                    get_matches_user_queryset, normalize_sr_names)
+                    get_matches_user_queryset, normalize_sr_names,
+                    get_recent_views_to)
 
 from .utils_search import (search_results_buffer, search_subreddit_users)
 
@@ -527,8 +528,11 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
 
     # Count the profile view, unless auth user is viewing their own profile.
     if request.user.pk != view_user.pk:
+        # count the view in view_user's profile
         view_user.profile.views_count += 1
         view_user.profile.save()
+        # remember the view for visitor history
+        Visit.objects.create(visitor=request.user, host=view_user)
 
     # there was an error with the "created" timestamp handling, so some were
     # set to "0", i.e. Epoch time 1970-01-01. Filter those out.
@@ -713,6 +717,18 @@ def me_nope_view(request):
     ul = User.objects.filter(flags_received__sender=request.user,
                              flags_received__flag=Flag.NOPE_FLAG
                              ).prefetch_related('profile')
+    ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
+    return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
+def me_viewed_me_view(request):
+    """A list of users who recently viewed auth user's profile."""
+    template_name = 'dtr5app/viewed_me.html'
+    pg = int(request.GET.get('page', 1))
+    ul = get_recent_views_to(request.user)
     ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))

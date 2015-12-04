@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 class Profile(models.Model):
     """All user specific information."""
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                primary_key=True, related_name="profile")
+                                primary_key=True, editable=False,
+                                related_name="profile")
     # static Reddit user account data:
     name = models.CharField(default="", max_length=20)
     created = models.DateField(null=True, default=None)  # created_utc
@@ -96,6 +97,8 @@ class Profile(models.Model):
     # space separated list of subreddits whose subscribers will be
     # REMOVED from user's search results.
     _f_exclude_sr_li = models.CharField(default='', max_length=800)
+    # hide profiles without picture in search results?
+    f_hide_no_pic = models.BooleanField(default=False)
 
     # x_ --> only show my profile listed in another redditor's
     # search results, if the other redditor...
@@ -470,3 +473,21 @@ def create_user_profile(sender, instance, created, **kwargs):
         except:
             logger.error('Profile "%s" not created', instance.username)
             pass
+
+
+class Visit(models.Model):
+    visitor = models.ForeignKey(User, editable=False, related_name='visited',
+                                db_index=True)
+    host = models.ForeignKey(User, editable=False, related_name='was_visited',
+                             db_index=True)
+    created = models.DateTimeField(default=now)
+    hidden = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "visit"
+        verbose_name_plural = "visits"
+        ordering = ['-created']
+
+    def __str__(self):
+        return '{} visited {}'.format(self.visitor.user.username,
+                                      self.host.user.username)

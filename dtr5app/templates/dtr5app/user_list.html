@@ -26,6 +26,8 @@
           {% if v.matched %}
             <span class="matched">matched {{v.matched|timesince}} ago</span>
             <a class="mainbtn" href="https://www.reddit.com/message/compose/?to={{v.username}}">send message</a>
+          {% elif viewedme %}
+            <span class="viewed">viewed your profile {{v.was_visited.created|timesince}} ago</span>
           {% endif %}
         </span>
       </li>

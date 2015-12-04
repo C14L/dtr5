@@ -34,14 +34,11 @@ urlpatterns = [
     url(r'^me/pic/$', views.me_picture_view, name="me_picture_page"),
     url(r'^me/pic/delete$', views.me_pic_del_view, name="me_pic_del_page"),
     url(r'^me/flag/delete$', views.me_flag_del_view, name="me_flag_del_page"),
-
+    url(r'^me/visitors/$', views.me_viewed_me_view, name="me_viewed_me_page"),
     url(r'^me/upvotes_inbox$',
         views.me_recv_like_view, name="me_recv_like_page"),
-
     url(r'^me/upvotes_sent$', views.me_like_view, name="me_like_page"),
-
     url(r'^me/nopes_sent$', views.me_nope_view, name="me_nope_page"),
-
     url(r'^me/account/delete$', views.me_account_del_view,
         name="me_account_del_page"),
 
