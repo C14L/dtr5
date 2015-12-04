@@ -5,6 +5,6 @@ what it does
 
 the site matches redditors according to the subreddits they belong to. additionally, users can be filtered by geolocation and gender.
 
-but the main idea is matching people anonymously by the subreddits they are active in. the post history gives a good idea about how a person thinks and acts in an anonymous emvironment.
+but the main idea is matching people anonymously by the subreddits they are active in. the post history gives a good idea about how a person thinks and acts in an anonymous environment.
 
 redditors can sign up with their reddit account, if it meets some minimum requirements of account age and karma points.
