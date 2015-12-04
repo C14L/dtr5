@@ -180,7 +180,7 @@ def me_update_view(request):
     the success or report failure.
     """
     # Reload user's subreddit list from reddit.
-    subscribed = api.get_sr_subscriber(request)
+    subscribed = api.get_sr_subscriber(request, settings.SR_FETCH_LIMIT)
     if subscribed:
         update_list_of_subscribed_subreddits(request.user, subscribed)
 
