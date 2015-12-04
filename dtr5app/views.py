@@ -185,7 +185,8 @@ def me_update_view(request):
         update_list_of_subscribed_subreddits(request.user, subscribed)
 
         if len(subscribed) > settings.USER_MIN_SUBSCRIBED_SUBREDDITS:
-            messages.success(request, 'Subreddit list updated.')
+            messages.success(request, 'Subreddit list updated with {} items.'
+                             .format(len(subscribed)))
         else:
             messages.success(request, 'Subreddit list updated, but you are '
                              'only subscribed to {} subreddits. Find some '
