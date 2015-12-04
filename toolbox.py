@@ -3,6 +3,8 @@ Collection of random simple general-purpose helper functions.
 """
 
 from datetime import date, datetime
+from geopy.distance import great_circle
+
 import dateutil.parser
 import math
 import pytz
@@ -278,7 +280,8 @@ def distance_between_geolocations(p1, p2):
     lat1, lng1 = float(p1[0]), float(p1[1])
     lat2, lng2 = float(p2[0]), float(p2[1])
 
-    # Fast Haversine http://stackoverflow.com/a/21623206/101801
+    # Fast Haversine http://stackoverflow.com/a/21623206/101801 and
+    # https://github.com/geopy/geopy/blob/1.11.0/geopy/distance.py#L237
     p = 0.017453292519943295  # math.pi / 180
     a = (0.5 - math.cos((lat2 - lat1) * p)/2 +
          math.cos(lat1 * p) *
@@ -288,20 +291,23 @@ def distance_between_geolocations(p1, p2):
 
 
 def get_latlng_bounderies(lat, lng, distance):
-    """Return min/max lat/lng values for a distance around a latlng.
-
-    Receives a geolocation as lat/lng floats and a distance (km) around
-    that point. To simplify database lookup, only get a square around
-    the geolocation. Return (lat_min, lng_min) and (lat_max, lng_max)
-    geolocation points to draw the box.
     """
-    lat_1deg = 110574.0  # m
-    lng_1deg = 111320.0 * math.cos(lat)  # m
-    dist_m = float(distance * 1000)
-    lat_dist_deg = abs(dist_m / lat_1deg)
-    lng_dist_deg = abs(dist_m / lng_1deg)
-    return (lat-lat_dist_deg, lng-lat_dist_deg,
-            lat+lng_dist_deg, lng+lng_dist_deg)
+    Return min/max lat/lng values for a distance around a latlng.
 
+    :lat:, :lng: the center of the area.
+    :distance: in km, the "radius" around the center point.
+
+    :returns: Two corner points of a square that countains the circle,
+              lat_min, lng_min, lat_max, lng_max.
+    """
+    gc = great_circle(kilometers=distance)
+    p0 = gc.destination((lat, lng), 0)
+    p90 = gc.destination((lat, lng), 90)
+    p180 = gc.destination((lat, lng), 180)
+    p270 = gc.destination((lat, lng), 270)
+
+    ret = p180[0], p270[1], p0[0], p90[1]
+    print(ret)
+    return ret
 
 # ------------------------------------------------------------------- #
