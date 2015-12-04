@@ -1,5 +1,4 @@
 import dateutil.parser
-import logging
 import pytz
 import requests  # to check image URLs for HTTO 200 responses
 from time import time as unixtime
@@ -39,8 +38,6 @@ from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
                     get_recent_views_to)
 
 from .utils_search import (search_results_buffer, search_subreddit_users)
-
-logger = logging.getLogger(__name__)
 
 
 @require_http_methods(["GET", "HEAD"])

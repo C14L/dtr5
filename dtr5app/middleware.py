@@ -3,7 +3,6 @@ from os.path import join, exists
 from datetime import datetime
 from pytz import utc
 from django.conf import settings
-from django.utils.timezone import now
 from django.http import HttpResponse
 
 
@@ -13,14 +12,8 @@ def return_site_offline_response():
         html = (
             '<h1>oh, nose!</h1>'
             '<p>the site is temporarily unavailable for some reason or '
-            'another. sorry, please come back a bit later :)</p>'
-            '<h2>Possible reasons:</h2>'
-            '<ul>'
-            '<li>too many people, our server is too busy.</li>'
-            '<li>too few people, our server fell asleep.</li>'
-            '<li>we fixed the app and are updating the server.</li>'
-            '<li>we did not fix the app ...but probably should have.</li>'
-            '</ul>')
+            'another. sorry, please come back a bit later :)</p>')
+
         return HttpResponse(content=html,
                             content_type='text/html',
                             status=HTTP_SERVICE_UNAVAILABLE,

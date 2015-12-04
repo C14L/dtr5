@@ -1,6 +1,5 @@
 import json
-import logging
-from datetime import date
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -18,8 +17,6 @@ from toolbox import (get_imgur_page_from_picture_url,
                      distance_between_geolocations,
                      get_age,
                      sr_str_to_list)
-
-logger = logging.getLogger(__name__)
 
 
 class Profile(models.Model):
@@ -463,15 +460,12 @@ class Subscribed(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    logger.info('User -> post_save signal received.')
     if created:
-        logger.info('New user instance was created.')
         profile = Profile(user=instance)
         profile.name = instance.username
         try:
             profile.save()
         except:
-            logger.error('Profile "%s" not created', instance.username)
             pass
 
 
