@@ -273,18 +273,18 @@ def get_eastern_zodiac_symbol(dob):
 def distance_between_geolocations(p1, p2):
     """
     Gets two geolocation points p1 and p2 as (lat, lng) tuples. Returns
-    the approximate distance in meters. Does not account for earth's
-    curvature, so that inaccurency increases with distance.
+    the approximate distance in meters.
     """
-    p1_lat, p1_lng = float(p1[0]), float(p1[1])
-    p2_lat, p2_lng = float(p2[0]), float(p2[1])
-    lat_1_deg = 110574.0  # 1 deg lat in meters (m)
-    p1_lng_1_deg = 111320.0 * math.cos(p1_lat)  # 1 deg lng in m for p1_lat
-    p2_lng_1_deg = 111320.0 * math.cos(p2_lat)  # 1 deg lng in m for p2_lat
-    lng_1_deg = (p1_lng_1_deg + p2_lng_1_deg) / 2  # average them
-    lat_delta_m = (p1_lat - p2_lat) * lat_1_deg
-    lng_delta_m = (p1_lng - p2_lng) * lng_1_deg
-    return int(math.sqrt(math.pow(lat_delta_m, 2) + math.pow(lng_delta_m, 2)))
+    lat1, lng1 = float(p1[0]), float(p1[1])
+    lat2, lng2 = float(p2[0]), float(p2[1])
+
+    # Fast Haversine http://stackoverflow.com/a/21623206/101801
+    p = 0.017453292519943295  # math.pi / 180
+    a = (0.5 - math.cos((lat2 - lat1) * p)/2 +
+         math.cos(lat1 * p) *
+         math.cos(lat2 * p) *
+        (1 - math.cos((lng2 - lng1) * p)) / 2)
+    return 12742000 * math.asin(math.sqrt(a))  # 12742000 == 2 * Earth radius
 
 
 def get_latlng_bounderies(lat, lng, distance):
