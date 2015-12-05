@@ -78,12 +78,12 @@
           <section>
             <span><b>pictures</b> in profiles:&nbsp;
             <label>
-              <input type="radio" name="f_hide_no_pic" value="0"{% if not user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;
+              <input type="radio" name="f_hide_no_pic" value="nope"{% if not user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;
               <span>find all profiles</span>
             </label>
             &nbsp;&middot;&nbsp;
             <label>
-              <input type="radio" name="f_hide_no_pic" value="1"{% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;
+              <input type="radio" name="f_hide_no_pic" value="yep"{% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;
               <span>only profiles with pictures</span>
             </label>
           </section>
