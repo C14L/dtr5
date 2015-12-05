@@ -57,10 +57,10 @@ function geoloc(form) {
         //
         // Get geoloction from browser object.
         fuzzyCoords = fuzzyGeoloc(loc.coords.latitude, loc.coords.longitude,
-                                  form.children.fuzzy.value);
+                                  form.fuzzy.value);
         // Now set the fuzzy values on the form and submit.
-        form.children.lat.value = fuzzyCoords.lat;
-        form.children.lng.value = fuzzyCoords.lng;
+        form.lat.value = fuzzyCoords.lat;
+        form.lng.value = fuzzyCoords.lng;
         // Now submit the form.
         form.method = "POST"
         form.submit();
