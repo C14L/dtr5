@@ -1,5 +1,6 @@
-from datetime import timedelta
-
+import pytz
+from datetime import datetime, timedelta
+from datetime import time as dt_time
 from django.db.models import Count
 from django.contrib.auth.models import User
 from django.utils.timezone import now
@@ -15,6 +16,37 @@ def get_users_by_sex():
 
     return [{'sex': x['profile__sex'],
              'count': x['profile__user__count']} for x in users]
+
+
+def get_signups_per_day(day_date, still_active=False):
+    """
+    Return the total number of new user accounts created that day. Limited to
+    accounts that are still active, if "still_active" is True.
+    """
+    qs = User.objects.filter(date_joined__contains=day_date)
+
+    if still_active:
+        qs = qs.filter(is_active=True, last_login__isnull=False)
+
+    return qs.count()
+
+
+def get_signups_per_day_for_range(day_from, day_until, still_active=False):
+    """
+    Return the signups per day for a range of days. Limited to accounts that
+    are still active, if "still_active" is True.
+    """
+    noon = dt_time(12, 0)
+    d1 = datetime.combine(day_from, noon).replace(tzinfo=pytz.utc)
+    d2 = datetime.combine(day_until, noon).replace(tzinfo=pytz.utc)
+
+    qs = User.objects.filter(date_joined__gte=d1, date_joined__lte=d2)
+    if still_active:
+        qs = qs.filter(is_active=True, last_login__isnull=False)
+    qs = qs.extra({'day': "date(date_joined)"}).values('day')
+    qs = qs.annotate(Count('id')).order_by('day')
+
+    return qs
 
 
 def get_historic_users_count():

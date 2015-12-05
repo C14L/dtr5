@@ -8,9 +8,11 @@
 <style type="text/css">
 .title { }
 .title h1 { display: inline-block; line-height: 1.5rem; vertical-align: middle; }
-.title p { display: inline-block; line-height: 1.5rem; vertical-align: middle; margin-left: 1.5rem;}
-.title p span.dt { color: gray; }
-.title p span.dd { }
+
+.usestats { display: inline-block; line-height: 1.5rem; vertical-align: middle; margin: 0; padding: 0 0 0 8px; }
+.usestats dl { display: inline-block; margin: 2px; padding: 0; background-color: yellow; }
+.usestats dl dt { display: inline-block; margin: 0; padding: 4px 8px; color: gray; background-color: rgba(255,255,255,0.8); }
+.usestats dl dd { display: inline-block; margin: 0; padding: 4px 8px; color: black; background-color: rgba(255,255,255,0.5); }
 
 table { border: 3px solid gray; display: inline-block; vertical-align: top; margin: 0 16px 16px 0; }
 table tr {}
@@ -28,16 +30,27 @@ table tr td.num { text-align: right; }
 <article>
   <div class="title">
     <h1>Stats</h1>
-    <p>
-      <span class="dt">past minute</span>&nbsp;
-      <span class="dd">{{users_active_1m}}</span>&nbsp;&middot;&nbsp;
-      <span class="dt">past 5 minutes</span>&nbsp;
-      <span class="dd">{{users_active_5m}}</span>&nbsp;&middot;&nbsp;
-      <span class="dt">past 15 minutes</span>&nbsp;
-      <span class="dd">{{users_active_15m}}</span>&nbsp;
-      <span class="dt">active users</span>
-    </p>
   </div>
+
+  <table>
+    <tr><th colspan="2">active users</th></tr>
+    <tr><td>past minute</td><td>{{users_active_1m}}</td></tr>
+    <tr><td>past 5 mins</td><td>{{users_active_5m}}</td></tr>
+    <tr><td>past 15 mins</td><td>{{users_active_15m}}</td></tr>
+    <tr><td>past hour</td><td>{{users_active_1h}}</td></tr>
+    <tr><td>past day</td><td>{{users_active_24h}}</td></tr>
+    <tr><td>past week</td><td>{{users_active_7d}}</td></tr>
+    <tr><td>past month</td><td>{{users_active_30d}}</td></tr>
+    <tr><td>past quarter</td><td>{{users_active_90d}}</td></tr>
+    <tr><td>past year</td><td>{{users_active_1y}}</td></tr>
+  </table>
+
+  <table>
+    <tr><th colspan="2">sign-ups per day</th></tr>
+    {% for d in signups_per_day %}
+      <tr><td>{{d.day}}</td><td>{{d.id__count}}</td></tr>
+    {% endfor %}
+  </table>
 
   <table>
     <tr><th colspan="2">users by sex/pref</th></tr>

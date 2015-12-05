@@ -886,6 +886,7 @@ def mod_deluser_view(request, pk):
 
 
 def stats(request, template_name='dtr5app/stats.html'):
+
     ctx = {
         'users_by_sex': utils_stats.get_users_by_sex(),
         'likes_count': utils_stats.get_likes_count(),
@@ -896,6 +897,15 @@ def stats(request, template_name='dtr5app/stats.html'):
         'users_active_1m': utils_stats.get_active_users(1),
         'users_active_5m': utils_stats.get_active_users(5),
         'users_active_15m': utils_stats.get_active_users(15),
+        'users_active_1h': utils_stats.get_active_users(60),  # past hour
+        'users_active_24h': utils_stats.get_active_users(24*60),  # past 24h
+        'users_active_7d': utils_stats.get_active_users(7*24*60),  # past 7d
+        'users_active_30d': utils_stats.get_active_users(30*24*60),  # past 30d
+        'users_active_90d': utils_stats.get_active_users(90*24*60),  # past 90d
+        'users_active_1y': utils_stats.get_active_users(356*24*60),  # past 1y
+
+        'signups_per_day': utils_stats.get_signups_per_day_for_range(
+            (date.today() - timedelta(days=30)), date.today())
     }
 
     return render_to_response(template_name, ctx,
