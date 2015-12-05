@@ -18,13 +18,24 @@
       {% csrf_token %}
       <input type="hidden" name="lat" value="">
       <input type="hidden" name="lng" value="">
+      <div style="padding:8px 0;">
+        fuzzy my location by&nbsp;
+        <select name="fuzzy">
+          <option value="2"{% if user.profile.fuzzy == 2 %} selected{% endif %}>2 km / 1.25 miles</option>
+          <option value="5"{% if user.profile.fuzzy == 5 %} selected{% endif %}>5 km / 3 miles</option>
+          <option value="10"{% if user.profile.fuzzy == 10 %} selected{% endif %}>10 km / 6 miles</option>
+          <option value="20"{% if user.profile.fuzzy == 20 %} selected{% endif %}>20 km / 12 miles</option>
+          <option value="50"{% if user.profile.fuzzy == 50 %} selected{% endif %}>50 km / 31 miles</option>
+          <option value="100"{% if user.profile.fuzzy == 100 %} selected{% endif %}>100 km / 62 miles</option>
+        </select>
+      </div>
       <span class="mainbtn"><input type="submit" value="locate"></span>
     </form>
   </div>
   <div class="abouts">
-    <p><strong>your browser will ask you for permission</strong> to get your latitude/longitude values.</p>
-    <p>your location is then automatically fuzzied by a 2 km / 1.2 miles radius, so that your precise location will never be revealed. have a look at the source code to see how its done. <u>your exact location will <em>NOT</em> be transmitted at any time.</u></p>
+    <p>your <strong>real location is fuzzied</strong> automatically by the radius you decide. that means, your actual location <strong>will never be known</strong> and will <u>not</u> be uploaded.</u></p>
     <p>if you prefer, you can also <a href="{% url 'me_locate_page' %}">type in your geolocation manually</a>.</p>
+    <p>when you click "locate", your browser will ask you for permission to get your latitude/longitude values.</p>
     <noscript><p><strong>it looks like you have Javascript disabled, so you will need to enter your geolocation manually.</strong></p></noscript>
   </div>
 </article>

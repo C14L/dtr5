@@ -132,11 +132,20 @@
       {% csrf_token %}
       <input type="hidden" name="lat" value="">
       <input type="hidden" name="lng" value="">
+      fuzzy my location by&nbsp;
+      <select name="fuzzy">
+        <option value="2"{% if user.profile.fuzzy == 2 %} selected{% endif %}>2 km / 1.25 miles</option>
+        <option value="5"{% if user.profile.fuzzy == 5 %} selected{% endif %}>5 km / 3 miles</option>
+        <option value="10"{% if user.profile.fuzzy == 10 %} selected{% endif %}>10 km / 6 miles</option>
+        <option value="20"{% if user.profile.fuzzy == 20 %} selected{% endif %}>20 km / 12 miles</option>
+        <option value="50"{% if user.profile.fuzzy == 50 %} selected{% endif %}>50 km / 31 miles</option>
+        <option value="100"{% if user.profile.fuzzy == 100 %} selected{% endif %}>100 km / 62 miles</option>
+      </select>
       <input type="submit" value="locate">
       or <a href="{% url 'me_locate_page' %}">type in your geolocation manually</a>
     </form>
     <p class="help">
-      your geolocation will randomly be fuzzied up to a 2 km / 1.25 miles radius. that happens right in your browser, so you exact location is never uploaded anywhere. current location: <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a>
+      your location will randomly be fuzzied by the radius you select. fuzzying happens <u>in your browser</u>, so your real location is <u>never</u> uploaded anywhere. your current fuzzied location is: <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a>
     </p>
   </div>
 

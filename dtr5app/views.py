@@ -237,6 +237,7 @@ def me_locate_view(request, template_name='dtr5app/location_form.html'):
         return render_to_response(template_name, ctx,
                                   context_instance=RequestContext(request))
     else:
+        request.user.profile.fuzzy = force_float(request.POST.get('fuzzy', 2))
         request.user.profile.lat = force_float(request.POST.get('lat', 0.0))
         request.user.profile.lng = force_float(request.POST.get('lng', 0.0))
         request.user.profile.save()

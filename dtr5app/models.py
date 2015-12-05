@@ -42,6 +42,7 @@ class Profile(models.Model):
     # other data:
     lat = models.FloatField(default=0.0)
     lng = models.FloatField(default=0.0)
+    fuzzy = models.IntegerField(default=2)  # km lat/lng fuzziness radius
 
     # manually input data
     dob = models.DateField(null=True, default=None)  # user's b'day

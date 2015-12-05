@@ -25,11 +25,10 @@ function geoloc(form) {
     return false;
   }
 
-  function fuzzyGeoloc(lat, lng) {
+  function fuzzyGeoloc(lat, lng, fuzzyKm) {
         // Check if valid
         if (!lat || !lng) throw "No valid geolocation coords found.";
         // Fuzzy it by +/- x km, but we need that in degrees lat/lng.
-        var fuzzyKm = 1.0; // km
         var latOneDegInKm = 110.574; // km
         var lngOneDegInKm = 111.320 * Math.cos(lat); // km
         // Get the degrees for 5 km.
@@ -57,7 +56,8 @@ function geoloc(form) {
         // - Longitude: 1 deg = 111.320 * cos(latitude) km
         //
         // Get geoloction from browser object.
-        fuzzyCoords = fuzzyGeoloc(loc.coords.latitude, loc.coords.longitude);
+        fuzzyCoords = fuzzyGeoloc(loc.coords.latitude, loc.coords.longitude,
+                                  form.children.fuzzy.value);
         // Now set the fuzzy values on the form and submit.
         form.children.lat.value = fuzzyCoords.lat;
         form.children.lng.value = fuzzyCoords.lng;
