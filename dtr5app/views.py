@@ -540,7 +540,10 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
 
     # there was an error with the "created" timestamp handling, so some were
     # set to "0", i.e. Epoch time 1970-01-01. Filter those out.
-    ctx = {'show_created': view_user.profile.created > date(1970, 1, 1),
+    show_created = (view_user.profile.created and
+                    view_user.profile.created > date(1970, 1, 1))
+
+    ctx = {'show_created': show_created,
            'view_user': view_user,
            'is_match': request.user.profile.match_with(view_user),
            'is_like': request.user.profile.does_like(view_user),
