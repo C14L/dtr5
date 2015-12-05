@@ -281,7 +281,12 @@ def me_manual_view(request):
             dob = dateutil.parser.parse(request.POST.get('dob', None)).date()
             request.user.profile.dob = dob
         except:
-            dob = 0
+            # messages.error('')
+            # Older browsers may submit a completely malformated dob. Ignore it
+            # and carry on, no good to bother the user with this during the
+            # signup flow.
+            dob = datetime(year=1990, month=1, day=1).date()
+
         if get_age(dob) < 18:
             messages.warning(request, 'sorry, you need to be 18 or older '
                                       'to sign up on this site.')
