@@ -184,7 +184,7 @@ nav.dotmenu > .opts > li > .cst-arrow-up.gray {
 /*
 
 a section that can be "opened and closed" by clicking
-on the <h2/> title of the section. similar to .dotmenu
+on the <h3/> title of the section. similar to .dotmenu
 
  */
 .toggle-section {
@@ -210,14 +210,25 @@ on the <h2/> title of the section. similar to .dotmenu
 .toggle-section > .opts {
   display: none;
   overflow: hidden;
-  padding: 0 16px;
+  margin: 0; padding: 0;
 }
 .toggle-section > input[type="checkbox"]:checked + .opts {
   display: block;
 }
 
-
-
+body.me .card.section-search .toggle-section h3 {
+  text-align: center;
+  background-color: #F9F9F9;
+}
+body.me .card.section-search .toggle-section > .opts {
+}
+body.me .card.section-search .toggle-section > .opts > section {
+  padding: 24px 32px;
+  border-top: 1px solid rgba(0,0,0,0.12);
+}
+body.me .card.section-search .toggle-section > .opts > section p {
+  margin: 0; padding: 0;
+}
 
 /*
 

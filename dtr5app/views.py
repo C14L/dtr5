@@ -430,9 +430,12 @@ def me_search_view(request):
         p.f_minage = force_int(request.POST.get('f_minage'), min=18, max=99)
     if request.POST.get('f_maxage', None):
         p.f_maxage = force_int(request.POST.get('f_maxage'), min=19, max=100)
-    if request.POST.get('f_over_18', None):
+    if request.POST.get('f_hide_no_pic', None):
+        p.f_hide_no_pic = bool(request.POST.get('f_hide_no_pic'))
+
+    if request.POST.get('f_over_18', None):  # unused
         p.f_over_18 = bool(request.POST.get('f_over_18'))
-    if request.POST.get('f_has_verified_email', None):
+    if request.POST.get('f_has_verified_email', None):  # unused
         p.f_has_verified_email = bool(request.POST.get('f_has_verified_email'))
 
     # List of subreddit names. This needs to be cleaned for appropriate

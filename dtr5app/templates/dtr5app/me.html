@@ -12,8 +12,7 @@
     <form class="item" method="POST" action="{% url 'me_search_page' %}">
       {% csrf_token %}
       <input type="hidden" name="next" value="{% url 'me_page' %}">
-      <p>
-        <span>find</span>&nbsp;
+      <p style="text-align:center">
         <label>
           <select name="f_sex" size="1">
             <option value="">everybody</option>
@@ -33,44 +32,61 @@
         </label>&nbsp;
         <label class="submit">
           <input type="submit" value="search">
-          <span class="help">
+          <!-- <span class="help">
             find people subscribed to the same subreddits as you.
-          </span>
+          </span> -->
         </label>
       </p>
 
       <section class="toggle-section">
-        <label for="id_984hfhe"><h3>more search settings</h3></label>
+        <label for="id_984hfhe">
+          <h3>more search settings</h3>
+        </label>
         <input id="id_984hfhe" type="checkbox">
         <div class="opts">
-          <p>
+          <section>
             <label>
-              <span><b>ignore</b> these subreddits:</span>
+              <span><b>ignore</b> these subreddits:</span>&nbsp;
               <input type="text" name="f_ignore_sr_li" value="{{user.profile.f_ignore_sr_li|join:', '}}" maxlength="800" size="50" placeholder="AskReddit, news, Pics, Funny">
             </label>
             <p class="help">these subreddits will be treated as if you were <b>not</b> subscribed to them. <a href="#" id="id_auto_add_default_subs"></a></p>
-          </p>
+          </section>
 
-          <p>
+          <section>
             <label>
-              <span><b>ignore</b> all subreddits larger than:</span>
-              <input type="number" min="0" max="123456789" name="f_ignore_sr_max" value="{{user.profile.f_ignore_sr_max}}" maxlength="10" size="10" placeholder="5,000,000">
+              <span><b>ignore</b> all subreddits larger than:</span>&nbsp;
+              <input type="number" min="0" max="123456789" name="f_ignore_sr_max" value="{{user.profile.f_ignore_sr_max}}" maxlength="10" size="10" placeholder="5,000,000">&nbsp;
               <span>subscribers</span>
             </label>
             <p class="help">all subreddits larger than this will be treated as if you were <b>not</b> subscribed to them.</p>
-          </p>
+          </section>
 <!--
-          <p>
+          <section>
             <label>
               <span><b>exclude</b> everybody subscribed to any of these subreddits:</span>
               <input type="text" name="f_exclude_sr_li" value="{{user.profile.f_exclude_sr_li|join:', '}}" maxlength="250" size="50" placeholder="shitredditsays, dragonsfuckingcars, sexyabortions, coontown">
             </label>
             <p class="help"><strong>use carefully!</strong> anybody subscribed to any of these subreddits will be <strong>removed</strong> from your search results!</p>
-          </p>
+          </section>
 -->
-          <p>
-            <span><b>age range</b>: between <input type="number" min="18" max="98" name="f_minage" value="{{user.profile.f_minage}}"> and <input type="number" min="19" max="100" name="f_maxage" value="{{user.profile.f_maxage}}"> years old</span>
-          </p>
+          <section>
+            <span><b>age range</b>: between&nbsp;
+            <input type="number" min="18" max="98" name="f_minage" value="{{user.profile.f_minage}}">&nbsp;and&nbsp;
+            <input type="number" min="19" max="100" name="f_maxage" value="{{user.profile.f_maxage}}">&nbsp;
+            years old</span>
+          </section>
+          <section>
+            <span><b>pictures</b> in profiles:&nbsp;
+            <label>
+              <input type="radio" name="f_hide_no_pic" value="0"{% if not user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;
+              <span>find all profiles</span>
+            </label>
+            &nbsp;&middot;&nbsp;
+            <label>
+              <input type="radio" name="f_hide_no_pic" value="1"{% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;
+              <span>only profiles with pictures</span>
+            </label>
+          </section>
         </div>
       </section>
     </form>

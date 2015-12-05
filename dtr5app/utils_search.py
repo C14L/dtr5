@@ -120,8 +120,8 @@ def search_users_by_options_queryset(user, include_flagged=False):
         print('search_users_by_options_queryset --> blocklist: ', li.count())
 
     # 8 have at least one picture URL,
-    if getattr(settings, 'REQUIRE_PROFILE_PIC', False):
-        li = li.exclude(profile___pics='')
+    if user.profile.f_hide_no_pic:
+        li = li.exclude(profile___pics__in=('', '[]', ))
     if settings.DEBUG:
         print('search_users_by_options_queryset --> pics: ', li.count())
 
@@ -273,8 +273,9 @@ def search_users(request, usernames_only=True):
     # part 8: have at least one picture URL in the JSON string
     # li = li.exclude(profile___pics='[]')
     # TODO: for now, allow no-picture profiles, to make testing easier
-    # query_params += []
-    # query_string += ''' AND NOT (p._pics = '[]') '''
+    if request.user.profile.f_hide_no_pic:
+        query_params += []
+        query_string += ''' AND p._pics NOT IN ('', '[]') '''
 
     # finish up
     query_params += [BUFFER_LEN]
