@@ -57,15 +57,15 @@ def update_list_of_subscribed_subreddits(user, subscribed):
     """
     for row in subscribed:
         sr, sr_created = Sr.objects.get_or_create(id=row['id'], defaults={
-            'name': row['display_name'],  # display_name
+            'name': row['display_name'][:50],  # display_name
             'created': datetime.utcfromtimestamp(
                 int(row['created_utc'])).replace(tzinfo=pytz.utc),
-            'url': row['url'],
+            'url': row['url'][:50],
             'over18': row['over18'],
             'lang': row['lang'],
-            'title': row['title'],
+            'title': row['title'][:100],
             'display_name': row['display_name'],
-            'subreddit_type': row['subreddit_type'],
+            'subreddit_type': row['subreddit_type'][:50],
             'subscribers': row['subscribers'], })
         # Add the user as subscriber to the subredit object, if that's
         # not already the case.
