@@ -7,11 +7,22 @@ register = template.Library()
 
 @register.filter(name='prefdist')
 def prefdist(val, arg):
-    # {{v.profile.get_distance|prefdist:user}}
+    """
+    Example: {{v.profile.get_distance|prefdist:user}}
+
+    :val: distance in meters
+    :arg: User instance who's pref_distance_unit setting to use
+    """
     if arg.profile.pref_distance_unit == 'km':
         return '{} km'.format(floatformat(meters_in_km(val), 1))
     elif arg.profile.pref_distance_unit == 'mi':
         return '{} miles'.format(floatformat(meters_in_miles(val), 1))
+
+
+@register.filter(name='prefdist_km')
+def prefdist_km(val, arg):
+    """Same as above, but val is in km."""
+    return prefdist(val * 1000, arg)
 
 
 @register.filter(name='to_miles')

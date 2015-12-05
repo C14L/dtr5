@@ -10,11 +10,7 @@
 
 <section class="subheader">
   <span class="info">
-    found <strong>{% if user_list.paginator.count >= RESULTS_BUFFER_LEN %}{{RESULTS_BUFFER_LEN}}+{% else %}{{user_list.paginator.count}}{% endif %} new redditors</strong>
-
-    {% if 1 == 0 and user.profile.f_distance > 5 %}
-      <span>within {{user.profile.f_distance}} km</span>
-    {% endif %}
+    found <strong>{% if user_list.paginator.count >= RESULTS_BUFFER_LEN %}{{RESULTS_BUFFER_LEN}}+{% else %}{{user_list.paginator.count}}{% endif %} new redditors</strong>{% if user.profile.f_hide_no_pic %}&nbsp;<a href="{% url 'me_page' %}">with picture</a>{% endif %} between&nbsp;<a href="{% url 'me_page' %}">{{user.profile.f_minage}} and {{user.profile.f_maxage}}</a> years old{% if user.profile.f_distance > 5 %} and&nbsp;<a href="{% url 'me_page' %}">within {{user.profile.f_distance|prefdist_km:user}}</a> of you{% endif %}.
 
     {% if user_list.0 %}
       <a style="float:right" href="{% url 'profile_page' user_list.0.username %}">browse profiles one by one</a>

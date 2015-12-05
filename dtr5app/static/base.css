@@ -469,6 +469,9 @@ body.sr article,
 body.results article {
   text-align: center;
 }
+body.results .subheader .info span {
+  border-bottom: 1px dotted gray;
+}
 
 
 
