@@ -56,10 +56,11 @@ def update_list_of_subscribed_subreddits(user, subscribed):
     part of the Subscribed model.
     """
     for row in subscribed:
+        # Fetch this subreddit onject or create it.
         sr, sr_created = Sr.objects.get_or_create(id=row['id'], defaults={
             'name': row['display_name'][:50],  # display_name
-            'created': datetime.utcfromtimestamp(
-                int(row['created_utc'])).replace(tzinfo=pytz.utc),
+            'created': datetime.utcfromtimestamp(int(row['created_utc'])
+                                                 ).replace(tzinfo=pytz.utc),
             'url': row['url'][:50],
             'over18': row['over18'],
             'lang': row['lang'],
@@ -67,27 +68,44 @@ def update_list_of_subscribed_subreddits(user, subscribed):
             'display_name': row['display_name'],
             'subreddit_type': row['subreddit_type'][:50],
             'subscribers': row['subscribers'], })
+
         # Add the user as subscriber to the subredit object, if that's
         # not already the case.
-        sub, sub_created = Subscribed.objects.get_or_create(
-            user=user, sr=sr, defaults={
-                'user_is_contributor': bool(row['user_is_contributor']),
-                'user_is_moderator': bool(row['user_is_moderator']),
-                'user_is_subscriber': bool(row['user_is_subscriber']),
-                'user_is_banned': bool(row['user_is_banned']),
-                'user_is_muted': bool(row['user_is_muted']), })
+        default = {'user_is_contributor': bool(row['user_is_contributor']),
+                   'user_is_moderator': bool(row['user_is_moderator']),
+                   'user_is_subscriber': bool(row['user_is_subscriber']),
+                   'user_is_banned': bool(row['user_is_banned']),
+                   'user_is_muted': bool(row['user_is_muted']), }
+        try:
+            sub, sub_created = Subscribed.objects.get_or_create(
+                user=user, sr=sr, defaults=default)
+
+        except Subscribed.MultipleObjectsReturned:
+            # There are a couple of users who have "double subscriptions" to
+            # some (not all) of their subreddits. These users will cause this
+            # exception whe trying to update their Subscribed list. Fetch the
+            # double subscription and deleted it, then add it again.
+            # TODO: fix all doubles, then fix db schema (unique_together).
+            sub_created = False  # no new subreddit added
+            Subscribed.objects.filter(user=user, sr=sr).delete()
+            Subscribed.objects.create(user=user, sr=sr, defaults=default)
+
         # If the user was newly added to the subreddit, count it as
         # a local user for that subreddit. (a user of the sr who is
         # also a user on this site)
         if sub_created:
             sr.subscribers_here += 1
             sr.save()
-    # After adding the user to all subs, now check if they are still
-    # added to subs they are no longer subbed to.
+
+    # After adding the user to all subs from their new subscribed list, now
+    # check if they are still added to any subs they were previously
+    # subscribed to, but not anymore. That is, any subscription not part of the
+    # new subscribed list.
     sr_ids = [row['id'] for row in subscribed]
     to_del = Subscribed.objects.filter(user=user).exclude(sr__in=sr_ids)
     for row in to_del:
-        row.sr.subscribers_here -= 1
+        if row.sr.subscribers_here > 0:
+            row.sr.subscribers_here -= 1
         row.sr.save()
         row.delete()
 
