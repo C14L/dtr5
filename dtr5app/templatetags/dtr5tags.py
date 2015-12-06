@@ -1,6 +1,6 @@
 from django import template
-from toolbox import meters_in_km, meters_in_miles
 from django.template.defaultfilters import floatformat
+from toolbox import meters_in_km, meters_in_miles
 
 register = template.Library()
 

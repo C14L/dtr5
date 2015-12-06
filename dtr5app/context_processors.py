@@ -1,3 +1,5 @@
+import pytz
+from datetime import datetime
 from django.conf import settings
 
 
@@ -17,4 +19,6 @@ def selected_settings(request):
         'RESULTS_BUFFER_LEN': settings.RESULTS_BUFFER_LEN,
         'DISTANCE': settings.DISTANCE,
 
+
+        'now_utc': datetime.now().replace(tzinfo=pytz.utc),
     }

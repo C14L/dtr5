@@ -8,6 +8,7 @@
 <style type="text/css">
 .title { }
 .title h1 { display: inline-block; line-height: 1.5rem; vertical-align: middle; }
+.title .datetime { padding: 0 16px; vertical-align: middle; color: gray; }
 
 .usestats { display: inline-block; line-height: 1.5rem; vertical-align: middle; margin: 0; padding: 0 0 0 8px; }
 .usestats dl { display: inline-block; margin: 2px; padding: 0; background-color: yellow; }
@@ -30,6 +31,7 @@ table tr td.num { text-align: right; }
 <article>
   <div class="title">
     <h1>Stats</h1>
+    <span class="datetime">{{now_utc}} UTC</span>
   </div>
 
   <table>
