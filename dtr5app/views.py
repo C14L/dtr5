@@ -452,7 +452,8 @@ def me_search_view(request):
     except MultiValueDictKeyError:
         pass  # don't change the search vaue if not POSTed.
     try:
-        p.f_ignore_sr_max = force_int(request.POST['f_ignore_sr_max'])
+        p.f_ignore_sr_max = force_int(request.POST['f_ignore_sr_max'],
+                                      min=100, max=123456789)
     except MultiValueDictKeyError:
         pass  # don't change the search vaue if not POSTed.
     try:
