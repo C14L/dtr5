@@ -471,6 +471,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 
 class Visit(models.Model):
+    """Remember the last visit of a user to another user's profile page."""
     visitor = models.ForeignKey(User, editable=False, related_name='visited',
                                 db_index=True)
     host = models.ForeignKey(User, editable=False, related_name='was_visited',
@@ -484,5 +485,10 @@ class Visit(models.Model):
         ordering = ['-created']
 
     def __str__(self):
-        return '{} visited {}'.format(self.visitor.user.username,
-                                      self.host.user.username)
+        return '{} visited {}'.format(self.visitor.username,
+                                      self.host.username)
+
+    @classmethod
+    def add_visitor_host(cls, visitor, host):
+        Visit.objects.filter(visitor=visitor, host=host).delete()
+        return Visit.objects.create(visitor=visitor, host=host)
