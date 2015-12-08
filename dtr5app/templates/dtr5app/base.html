@@ -6,9 +6,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% block title %}{{request.user.username}}{% endblock %}</title>
+    <title>
+      {% block title %}{{request.user.username}}{% endblock %}
+    </title>
 
-    <link rel="stylesheet" href="{% static 'base.css' %}">
+    <!-- any: 0 < size < ∞ -->
+    <link href="{% static 'base2.any.css' %}"
+          rel="stylesheet">
+    <!-- sm: 0  < size < 600 -->
+    <link rel="stylesheet"
+          href="{% static 'base2.sm.css' %}"
+          media="(max-width: 600px)">
+    <!-- md: 600 < size -->
+    <link rel="stylesheet"
+          href="{% static 'base2.gt-sm.css' %}"
+          media="(min-width: 601px and max-width: 960px)">
+
     <!-- Favicons -->
     <link rel="icon" sizes="32x32" href="{% static 'icon32.png' %}">
     <link rel="icon" sizes="64x64" href="{% static 'icon64.png' %}">
@@ -42,7 +55,7 @@
     <header>
       <div class="site-logo">
         <a class="site-icon" href="/"><img src="{% static 'logo100.gif' %}" alt=""></a>
-        <a class="site-name" href="/">redddate</a>
+        <a class="site-name" href="/">reddmeet</a>
       </div>
       <div class="site-links">
 
