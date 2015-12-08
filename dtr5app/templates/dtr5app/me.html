@@ -122,17 +122,17 @@
       </p>
       <p>
         <span class="key-col">looking for:</span>
-        <span class="val-col">
-          <span class="lookingfor-list">
+        <div class="val-col lookingfor-list">
+          <ul>
             {% for x in lookingfor_choices %}
-              <span>
+              <li>
                 <label>
                   <input {% if x.0 in user.profile.lookingfor %}checked{% endif %} type="checkbox" name="lookingfor" value="{{x.0}}"> {{x.1}}
                 </label>
-              </span>
+              </li>
             {% endfor %}
-          </span>
-        </span>
+          </ul>
+        </div>
       </p>
       <p>
         <label class="val-col submit">
