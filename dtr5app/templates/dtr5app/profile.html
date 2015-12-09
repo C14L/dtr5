@@ -12,12 +12,10 @@
 <article>
 
   {% if view_user.username != user.username %}
-    <div class="match-box">
-      {% if is_match %}
 
-        <div class="announce">
-          <span>You upvoted each other!</span>
-        </div>
+    {% if is_match %}
+      <div class="announce match">
+        <h1>You upvoted each other!</h1>
         <div class="uu">
           <div class="u1">
             <img src="{{user.profile.pics.0.url}}" alt="{{user.username}}">
@@ -30,27 +28,21 @@
         </div>
         <div class="action">
           <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
-          <a class="later" href="{% url 'me_search_page' %}">Not now</a>
+          <a class="later" href="{% url 'me_search_page' %}">not now</a>
         </div>
+      </div>
+    {% endif %}
 
-      {% elif is_like %}
-
-        <div class="announce like">
-          <span class="fa fa-arrow-up"></span>
-          <span class="tx">you upvoted them!</span>
-        </div>
-
-      {% elif is_nope %}
-
+      {% if is_nope %}
         <div class="announce nope">
-          <span class="fa fa-arrow-down"></span>
-          <span class="tx">you noped them</span>
+          <span class="tx">hidden in your search results</span>
+          <form method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
+            {% csrf_token %}
+            <input type="submit" value="show again">
+          </form>
         </div>
-
-      {% else %}
-
-
       {% endif %}
+
     </div>
   {% endif %}
 
@@ -58,6 +50,8 @@
 </style>
 
   <div class="card headcard" id="id_header">
+    {% if is_like %}<div class="announce like"><span class="tx">upvoted</span></div>{% endif %}
+
     <nav class="dotmenu">
       <span class="fa fa-ellipsis-h"></span>
       <input type="checkbox">
@@ -79,7 +73,7 @@
               <form class="delete-nope-form" method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
                 {% csrf_token %}
                 <span class="fa fa-ban"></span>
-                <input type="submit" class="del-nope opt" value="cancel downvote">
+                <input type="submit" class="del-nope opt" value="show again in search">
               </form>
             </li>
           {% endif %}
@@ -115,22 +109,35 @@
     </nav>
 
     <div class="upvote-hide">
-      <form class="upvote" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}" title="upvote">{% csrf_token %}<input type="submit" value=""></form>
-      <div class="middot">&middot;</div>
-      <form class="hide" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}" title="hide from search results">{% csrf_token %}<input type="submit" value="hide"></form>
+      <form class="upvote" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}" title="upvote">
+        {% csrf_token %}
+        <input type="submit" value="">
+        <input type="hidden" name="next" value="{% url 'profile_page' view_user.username %}">
+      </form>
+      <div class="middot">
+        &middot;
+      </div>
+      <form class="hide" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}" title="hide from search results">
+        {% csrf_token %}
+        <input type="submit" value="hide">
+      </form>
     </div>
 
     <div class="intro">
       <div class="top">
         <a href="https://www.reddit.com/user/{{view_user.username}}/submitted/" class="karma">link karma: {{view_user.profile.link_karma}}</a>
         <a href="https://www.reddit.com/user/{{view_user.username}}/comments/" class="karma">comment karma: {{view_user.profile.comment_karma}}</a>
-        <a href="https://www.reddit.com/user/{{view_user.username}}/" class="reddage">on reddit: {{view_user.profile.created|timesince}}</a>
       </div>
       <div class="textline">
         Meet <a href="https://www.reddit.com/u/{{view_user.username}}">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {{view_user.profile.relstatus|default:"single"}} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.reasonhere|default:"mostly dating"}} about <a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if view_user.profile.common_subs|length > 0 %}you have <a href="#id_matches">{{view_user.profile.common_subs|length}} subreddits</a> in common{% endif %}
       </div>
       <div class="meta">
-        <span>active {{view_user.profile.accessed|timesince}} ago</span>&nbsp;&middot;&nbsp;<span>on redddate {{view_user.date_joined|timesince}}</span>
+        <span>last active {{view_user.profile.accessed|timesince}} ago</span>
+        {% if show_created %}
+          &nbsp;&middot;&nbsp;
+          <span><a href="https://www.reddit.com/user/{{view_user.username}}/" class="reddage">a redditor for {{view_user.profile.created|timesince}}</a></span>
+        {% endif %}
+        <!-- <span>on redddate {{view_user.date_joined|timesince}}</span> -->
       </div>
     </div>
     <div class="pics">
@@ -149,8 +156,8 @@
   </div>
 
   <div class="card nopadd">
-    <div class="lookingfor-list">
-      {% if view_user.profile.lookingfor %}
+    {% if view_user.profile.lookingfor %}
+      <section class="lookingfor-list nopadd">
         <ul>
           {% for x in lookingfor_choices %}
             {% if x.0 in view_user.profile.lookingfor %}
@@ -158,57 +165,25 @@
             {% endif %}
           {% endfor %}
         </ul>
-      {% else %}
-        <div class="none">nothing so far</div>
-      {% endif %}
-    </div>
+      </section>
+    {% endif %}
 
     {% if view_user.profile.about %}
-      <div class="about">
+      <section class="about">
         <p>{{view_user.profile.about}}</p>
-      </div>
+      </section>
     {% endif %}
   </div>
 
-  <div class="card sr-list-inline subreddit-matches" id="id_matches">
+  <div class="card nopadd sr-list-inline subreddit-matches" id="id_matches">
     <a href="#" class="fa fa-arrow-up"></a>
     {% if view_user.profile.common_subs|length == 0 %}
       <h2>No subreddit matches :(</h2>
     {% else %}
       <h2>{{view_user.profile.common_subs|length}} subreddit matches!</h2>
-      <ul class="sr-list">
-        {% for row in view_user.profile.common_subs %}
-          <li>
-            {% if row.user_is_banned %}
-              <span class="banned-tag">banned from</span>
-            {% endif %}
-            {% if row.user_is_muted %}
-              <span class="muted-tag">muted on</span>
-            {% endif %}
-            {% if row.user_is_moderator %}
-              <span class="mod-tag">moderator of</span>
-            {% endif %}
-
-            <a href="{% url 'sr_page' row.sr.display_name %}" title="{{row.sr.subscribers_here|intcomma}} subscribers here">r/{{row.sr.display_name}}</a>
-
-            {% if row.sr.over_18 %}
-              <span class="nsfw-tag">NSFW</span>
-            {% endif %}
-
-            <a href="https://www.reddit.com/r/{{row.sr.display_name}}" title="{{row.sr.subscribers|intcomma}} subscribers on reddit"><span class="fa fa-reddit"></span></a>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
-    <section class="toggle-section" style="border:0;margin-bottom:-16px">
-      <label for="id_sdjsfhd">
-        <h3>more subreddits {{view_user.username}} is subscribed to</h3>
-      </label>
-      <input id="id_sdjsfhd" type="checkbox">
-      <div class="opts">
-        <ul class="sr-list smaller">
-          {% for row in view_user.profile.not_common_subs %}
+      <section>
+        <ul class="sr-list">
+          {% for row in view_user.profile.common_subs %}
             <li>
               {% if row.user_is_banned %}
                 <span class="banned-tag">banned from</span>
@@ -217,7 +192,7 @@
                 <span class="muted-tag">muted on</span>
               {% endif %}
               {% if row.user_is_moderator %}
-                <span class="mod-tag">moderator for</span>
+                <span class="mod-tag">moderator of</span>
               {% endif %}
 
               <a href="{% url 'sr_page' row.sr.display_name %}" title="{{row.sr.subscribers_here|intcomma}} subscribers here">r/{{row.sr.display_name}}</a>
@@ -230,6 +205,38 @@
             </li>
           {% endfor %}
         </ul>
+      {% endif %}
+
+      <div class="toggle-section" style="border:0;margin-bottom:-16px">
+        <label for="id_sdjsfhd">
+          <h3>more subreddits {{view_user.username}} is subscribed to</h3>
+        </label>
+        <input id="id_sdjsfhd" type="checkbox">
+        <div class="opts">
+          <ul class="sr-list smaller">
+            {% for row in view_user.profile.not_common_subs %}
+              <li>
+                {% if row.user_is_banned %}
+                  <span class="banned-tag">banned from</span>
+                {% endif %}
+                {% if row.user_is_muted %}
+                  <span class="muted-tag">muted on</span>
+                {% endif %}
+                {% if row.user_is_moderator %}
+                  <span class="mod-tag">moderator for</span>
+                {% endif %}
+
+                <a href="{% url 'sr_page' row.sr.display_name %}" title="{{row.sr.subscribers_here|intcomma}} subscribers here">r/{{row.sr.display_name}}</a>
+
+                {% if row.sr.over_18 %}
+                  <span class="nsfw-tag">NSFW</span>
+                {% endif %}
+
+                <a href="https://www.reddit.com/r/{{row.sr.display_name}}" title="{{row.sr.subscribers|intcomma}} subscribers on reddit"><span class="fa fa-reddit"></span></a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
     </section>
   </div>

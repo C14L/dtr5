@@ -92,13 +92,40 @@
     </form>
   </div>
 
-  <div class="card section-profile" id="id_profile">
+  <div class="card nopadd section-profile" id="id_profile">
     <h2>profile settings</h2>
     <form class="item manual" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
-      <p>
-        <span class="key-col">my gender:</span>
-        <span class="val-col">
+
+      <section class="herefor">
+        <p class="key-col">I am here for:</p>
+        <p class="val-col">
+          <label class="item">
+            <input type="radio" name="herefor" value="1"{% if user.profile.herefor == 1 %} checked{% endif %}>
+            <span class="tx">only dating</span>
+          </label>
+          <label class="item">
+            <input type="radio" name="herefor" value="2"{% if user.profile.herefor == 2 %} checked{% endif %}>
+            <span class="tx">mostly dating</span>
+          </label>
+          <label class="item">
+            <input type="radio" name="herefor" value="3"{% if user.profile.herefor == 3 or not user.profile.herefor %} checked{% endif %}>
+            <span class="tx">friends or dating</span>
+          </label>
+          <label class="item">
+            <input type="radio" name="herefor" value="4"{% if user.profile.herefor == 4 %} checked{% endif %}>
+            <span class="tx">mostly friends</span>
+          </label>
+          <label class="item">
+            <input type="radio" name="herefor" value="5"{% if user.profile.herefor == 5 %} checked{% endif %}>
+            <span class="tx">only friends</span>
+          </label>
+        </p>
+      </section>
+
+      <section>
+        <p class="key-col">my gender:</p>
+        <p class="val-col">
           <label class="sex">
             <select name="sex" size="1">
               {% for sex in sex_choices %}
@@ -106,21 +133,20 @@
               {% endfor %}
             </select>
           </label>
-        </span>
-      </p>
-      <p>
-        <span class="key-col">my birthday:</span>
-        <span class="val-col">
+        </p>
+      </section>
+
+      <section>
+        <p class="key-col">my birthday:</p>
+        <p class="val-col">
           <label class="dob">
             <input type="date" name="dob" placeholder="YYYY-MM-DD" maxlength="10" value="{{user.profile.dob|date:'c'}}">
           </label>
-          &nbsp;
-          <span class="help">
-            never publicly shown! only used to show your age and zodiacs.
-          </span>
-        </span>
-      </p>
-      <p>
+        </p>
+        <span class="help">never publicly shown! only used to show your age and zodiacs.</span>
+      </section>
+
+      <section>
         <span class="key-col">looking for:</span>
         <div class="val-col lookingfor-list">
           <ul>
@@ -133,47 +159,61 @@
             {% endfor %}
           </ul>
         </div>
-      </p>
-      <p>
+      </section>
+
+      <section>
         <label class="val-col submit">
           <input type="submit" value="submit">
         </label>
-      </p>
+      </section>
+
     </form>
   </div>
 
-  <div class="card section-geolocation" id="id_geolocation">
+  <div class="card nopadd section-geolocation" id="id_geolocation">
     <h2>update geolocation</h2>
     <form class="item" method="GET" action="{% url 'me_locate_page' %}" onsubmit="geoloc(this);return false;">
       {% csrf_token %}
       <input type="hidden" name="lat" value="">
       <input type="hidden" name="lng" value="">
-      fuzzy my location by&nbsp;
-      <select name="fuzzy">
-        <option value="2"{% if user.profile.fuzzy == 2 %} selected{% endif %}>2 km / 1.25 miles</option>
-        <option value="5"{% if user.profile.fuzzy == 5 %} selected{% endif %}>5 km / 3 miles</option>
-        <option value="10"{% if user.profile.fuzzy == 10 %} selected{% endif %}>10 km / 6 miles</option>
-        <option value="20"{% if user.profile.fuzzy == 20 %} selected{% endif %}>20 km / 12 miles</option>
-        <option value="50"{% if user.profile.fuzzy == 50 %} selected{% endif %}>50 km / 31 miles</option>
-        <option value="100"{% if user.profile.fuzzy == 100 %} selected{% endif %}>100 km / 62 miles</option>
-      </select>
-      <input type="submit" value="locate">
-      or <a href="{% url 'me_locate_page' %}">type in your geolocation manually</a>
+      <section>
+        <p>
+          fuzzy my location by&nbsp;
+          <select name="fuzzy">
+            <option value="2"{% if user.profile.fuzzy == 2 %} selected{% endif %}>2 km / 1.25 miles</option>
+            <option value="5"{% if user.profile.fuzzy == 5 %} selected{% endif %}>5 km / 3 miles</option>
+            <option value="10"{% if user.profile.fuzzy == 10 %} selected{% endif %}>10 km / 6 miles</option>
+            <option value="20"{% if user.profile.fuzzy == 20 %} selected{% endif %}>20 km / 12 miles</option>
+            <option value="50"{% if user.profile.fuzzy == 50 %} selected{% endif %}>50 km / 31 miles</option>
+            <option value="100"{% if user.profile.fuzzy == 100 %} selected{% endif %}>100 km / 62 miles</option>
+          </select>
+          <input type="submit" value="auto-locate">
+        </p>
+        <p>
+          or <a href="{% url 'me_locate_page' %}">type in your geolocation manually</a>
+        </p>
+      </section>
+      <section class="nopadd foot">
+        <p>
+          your location will randomly be fuzzied by the radius you select. fuzzying happens <u>in your browser</u>, so your real location is <u>never</u> uploaded anywhere. your current fuzzied location is: <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a>
+        </p>
+      </section>
     </form>
-    <p class="help">
-      your location will randomly be fuzzied by the radius you select. fuzzying happens <u>in your browser</u>, so your real location is <u>never</u> uploaded anywhere. your current fuzzied location is: <a href="https://www.google.com/maps/@{{user.profile.lat}},{{user.profile.lng}},11z">lat={{user.profile.lat}} lng={{user.profile.lng}}</a>
-    </p>
   </div>
 
-  <div class="card section-srlist" id="id_srlist">
+  <div class="card nopadd section-srlist" id="id_srlist">
     <h2>update subreddits</h2>
-    <form method="POST" action="{% url 'me_update_page' %}">
-      {% csrf_token %}
-      <input type="submit" value="update">
-    </form>
-    <p class="help">
-      fetches the list of subreddits you are subscribed to from your reddit profile. last updated {{user.profile.updated}}
-    </p>
+    <section>
+      <form method="POST" action="{% url 'me_update_page' %}">
+        {% csrf_token %}
+        <input type="submit" value="update">
+      </form>
+    </section>
+    <section class="nopadd foot">
+      <p>
+        fetches the list of subreddits you are subscribed to from your reddit profile. last updated {{user.profile.updated}}
+      </p>
+    </section>
   </div>
 
   <div class="card section-pics" id="id_pics">
