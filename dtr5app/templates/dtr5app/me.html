@@ -240,14 +240,14 @@
 
     <section class="nopadd toggle-section">
       <label for="id_hdkhfsk7w87e">
-        <h3>set background picture</h3>
+        <h3>set profile background picture</h3>
       </label>
       <input id="id_hdkhfsk7w87e" type="checkbox">
       <div class="opts">
         <section>
           <form method="POST" action="{% url 'me_picture_page' %}">
             {% csrf_token %}
-            <input type="text" name="bg_url" value="" placeholder="https://imgur.com/??????">
+            <input type="text" name="bg_url" value="{{user.profile.background_pic}}" placeholder="https://imgur.com/??????">
             <input type="submit" value="add a background picture">
           </form>
         </section>

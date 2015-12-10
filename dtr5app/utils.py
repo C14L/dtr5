@@ -2,6 +2,7 @@
 All kinds of supporting functions for views and models.
 """
 import pytz
+import requests
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -9,6 +10,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
 from .models import (Sr, Subscribed, Flag)
 from .utils_search import search_results_buffer
+from toolbox import force_int
 
 
 def prepare_paginated_user_list(user_list, page):
@@ -241,3 +243,41 @@ def normalize_sr_names(li):
 
     return sr_qs.values_list('name', flat=True)
 
+
+class PictureInaccessibleError(Exception):
+    pass
+
+
+def assert_pic_accessible(pic_url):
+    # Check for HTTP 200 response on that URL, load time,
+    # file size, file type, etc.
+    try:
+        r = requests.head(pic_url, timeout=5)
+    except:
+        raise PictureInaccessibleError(
+            'The image {} is loading very slowly.'.format(pic_url))
+
+    if r.status_code == 302 and 'imgur.com' in pic_url:
+        return PictureInaccessibleError(
+            'The image at "{}" can not be accessed, it was <b>probably '
+            'deleted on Imgur</b>.'.format(pic_url))
+
+    if r.status_code != 200:
+        return PictureInaccessibleError(
+            'The image "{}"" can not be accessed, it returned HTTP status '
+            'code "{}".'.format(pic_url, r.status_code))
+
+    if r.headers.get('content-type', None) not in settings.PIC_CONTENT_TYPES:
+        return PictureInaccessibleError(
+            'Not recognized as an image file. Please only use jpg, gif, '
+            'png, or webp images. Recognized content type was "{}".'.
+            format(r.headers.get('content-type', '')))
+
+    if force_int(r.headers.get('content-length')) > (1024 * 512):
+        x = int(int(r.headers.get('content-length')) / 1024)
+        return PictureInaccessibleError(
+            'The image file size ({} kiB) is too large. Please use a '
+            'smaller size (max. 500 kiB) to ensure that your profile '
+            'page loads fast for your visitors.'.format(x))
+
+    return True

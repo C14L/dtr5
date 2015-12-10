@@ -67,6 +67,19 @@ Zodiac symbol boxes.
 
 /*
 
+Background colors for "herefor" values.
+
+ */
+.herefor-bg1 { background-color: #FF0000; }
+.herefor-bg2 { background-color: #bd0042; }
+.herefor-bg4 { background-color: #94006d; }
+.herefor-bg8 { background-color: #65009d; }
+.herefor-bg16{ background-color: #0000FF; }
+
+
+
+/*
+
 for lists, arrows left and right for previous and next page.
 
 */

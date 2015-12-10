@@ -124,6 +124,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 ALLOW_USER_SIGNUP = True  # new users can register               # unused
 ALLOW_USER_LOGIN = True  # existing users can login              # unused
 
+# Content types for user profile pictures
+PIC_CONTENT_TYPES = ['image/jpeg', 'image/gif', 'image/webp', 'image/png']
+
 # turn OFF entire site. WARNING: there is another switch to turn off the
 # site via the dtr5app.middleware.MakeSiteUnavailable()
 SITE_TEMPORARILY_UNAVAILABLE = False
@@ -236,28 +239,35 @@ LOOKINGFOR = (
     (15, 'stahp!'),
     (16, 'just some nice person, really'),
 )
+
+# Below are bitmaps for future-proof...
+
 RELSTATUS = (  # unused
-    (2, 'single'),
-    (4, 'seeing someone'),
-    (6, 'in a relationship'),
-    (8, 'open relationship'),
-    (10, 'married'),
+    (1,   "don't know"),
+    (2,   'single'),
+    (4,   'seeing someone'),
+    (8,   'in a relationship'),
+    (16,  'in an open relationship'),
+    (32,  'married'),
 )
 EDUCATION = (  # unused
-    (2, 'high school'),
-    (4, 'trade school'),
-    (6, 'university'),
-    (8, 'masters degree'),
-    (10, 'PhD, MD, etc.'),
-    (12, 'yes'),
-    (14, 'no'),
+    (1, 'yes'),
+    (2, 'no'),
+    (4, 'other'),
+    (8, 'trade school'),
+    (16, 'high school'),
+    (32, 'university'),
+    (64, 'masters degree'),
+    (128, 'PhD, MD, etc.'),
+    (256, 'self-taught'),
 )
 FITNESS = (  # unused
-    (1, 'not really'),
-    (2, 'somewhat'),
-    (3, 'yes'),
-    (4, 'very'),
-    (5, 'even more'),
+    (1,  "don't know"),
+    (2,  'not really'),
+    (4,  'somewhat'),
+    (8,  'yes'),
+    (16, 'very'),
+    (32, 'a lot'),
 )
 # REPORT_REASON_CHOICES = ()
 
@@ -275,11 +285,11 @@ DISTANCE = (
     (20,   '20 km / 12 miles'),
 )
 
-HEREFOR_ONLY_DATING = 2
-HEREFOR_MOSTLY_DATING = 4
-HEREFOR_FRIENDS_OR_DATING = 8
-HEREFOR_MOSTLY_FRIENDS = 16
-HEREFOR_ONLY_FRIENDS = 32
+HEREFOR_ONLY_DATING = 1
+HEREFOR_MOSTLY_DATING = 2
+HEREFOR_FRIENDS_OR_DATING = 4
+HEREFOR_MOSTLY_FRIENDS = 8
+HEREFOR_ONLY_FRIENDS = 16
 HEREFOR = (
     (HEREFOR_ONLY_DATING, 'only dating'),
     (HEREFOR_MOSTLY_DATING, 'mostly dating'),

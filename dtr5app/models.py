@@ -9,14 +9,19 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.timezone import now
 
-from toolbox import (get_imgur_page_from_picture_url,
-                     get_western_zodiac,
-                     get_western_zodiac_symbol,
-                     get_eastern_zodiac,
-                     get_eastern_zodiac_symbol,
+# from bitfield import BitField
+
+from toolbox import (
                      distance_between_geolocations,
                      get_age,
-                     sr_str_to_list)
+                     get_eastern_zodiac,
+                     get_eastern_zodiac_symbol,
+                     get_imgur_page_from_picture_url,
+                     get_western_zodiac,
+                     get_western_zodiac_symbol,
+                     set_imgur_url,
+                     sr_str_to_list,
+                    )
 
 
 class Profile(models.Model):
@@ -52,6 +57,14 @@ class Profile(models.Model):
     # url: char field with the complete picture URL.
     # src: char field with the comeplete URL to the pic's source page.
     _pics = models.TextField(default='')
+    background_pic = models.CharField(default='', max_length=250)
+
+    # classify as only or mostly dating or friends, or both.
+    herefor = models.PositiveIntegerField(
+        choices=settings.HEREFOR, default=settings.HEREFOR_FRIENDS_OR_DATING)
+    # The user may want to either exclude people who are here /only/ for dating
+    # or /only/ for friends. HEREFOR_ONLY_FRIENDS / HEREFOR_ONLY_DATING
+    herefor_exclude = models.PositiveSmallIntegerField(default=0)
 
     # even more manually input data
     tagline = models.CharField(default='', max_length=160)          # unused
@@ -59,12 +72,12 @@ class Profile(models.Model):
     weight = models.PositiveSmallIntegerField(default=0)  # in kg   # unused
     _lookingfor = models.CommaSeparatedIntegerField(  # settings.LOOKINGFOR
         max_length=50, blank=True, default='')
-    relstatus = models.PositiveSmallIntegerField(                   # unused
-        blank=True, null=True, default=None, choices=settings.RELSTATUS)
-    education = models.PositiveSmallIntegerField(                   # unused
-        blank=True, null=True, default=None, choices=settings.EDUCATION)
-    fitness = models.PositiveSmallIntegerField(                     # unused
-        blank=True, null=True, default=None, choices=settings.FITNESS)
+    relstatus = models.PositiveSmallIntegerField(default=1,
+                                                 choices=settings.RELSTATUS)
+    education = models.PositiveSmallIntegerField(default=1,  # unused
+                                                 choices=settings.EDUCATION)
+    fitness = models.PositiveSmallIntegerField(default=1,  # unused
+                                               choices=settings.FITNESS)
 
     # Some numbers
     views_count = models.PositiveSmallIntegerField(default=0)
@@ -210,6 +223,14 @@ class Profile(models.Model):
             self._pref_distance_unit = val
         else:
             raise ValueError('pref_distance_unit must be "km" or "mi".')
+
+    def display_background_pic(self):
+        """
+        Return the URL of the background_pic with the correct size Byte in
+        case of Imgur pictures.
+        """
+        return set_imgur_url(self.background_pic, size='l')
+
 
     def get_sex_symbol(self):
         """Returns the symbol for the user's sex."""

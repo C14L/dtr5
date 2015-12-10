@@ -1,6 +1,5 @@
 import dateutil.parser
 import pytz
-import requests  # to check image URLs for HTTO 200 responses
 from time import time as unixtime
 from datetime import datetime, timedelta, date
 from django.conf import settings
@@ -33,7 +32,8 @@ from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
                     get_user_list_after, update_list_of_subscribed_subreddits,
                     get_paginated_user_list, prepare_paginated_user_list,
                     get_user_list_from_username_list,
-                    get_matches_user_queryset, normalize_sr_names)
+                    get_matches_user_queryset, normalize_sr_names,
+                    PictureInaccessibleError, assert_pic_accessible)
 
 from .utils_search import (search_results_buffer, search_subreddit_users)
 
@@ -301,6 +301,9 @@ def me_manual_view(request):
         request.user.profile.pref_distance_unit = \
             request.POST.get('pref_distance_unit')
 
+    if request.POST.get('herefor', None):
+        request.user.profile.herefor = request.POST.get('herefor')
+
     if request.POST.get('tagline', None):  # unused
         request.user.profile.tagline = request.POST.get('tagline')
     if request.POST.get('relstatus', None):  # unused
@@ -347,53 +350,41 @@ def me_picture_view(request):
     """
     Save the URL of a picture.
     """
-    allowed_content_types = ['image/jpeg', 'image/gif', 'image/webp',
-                             'image/png']
     pic_url = request.POST.get('pic_url', '')
-    if not pic_url:
+    bg_url = request.POST.get('bg_url', '')
+    if not pic_url and not bg_url:
         return HttpResponse('Please add the URL for a picture.')
 
     # TODO: check for valid URL schema.
 
-    # If imgur.com picture, set to "medium" size.
-    pic_url = set_imgur_url(pic_url, size='m')
-    # Check for HTTP 200 response on that URL, load time,
-    # file size, file type, etc.
+    # If imgur pic, set "medium" size for normal pics, "large" for backgrounds.
     try:
-        r = requests.head(pic_url, timeout=5)  # ? sec timeout
-    except:
-        return HttpResponse(
-            'The image {} is loading too slowly.'.format(pic_url))
+        if pic_url:
+            pic_url = set_imgur_url(pic_url, size='m')
+            assert_pic_accessible(pic_url)
+        elif bg_url:
+            assert_pic_accessible(set_imgur_url(bg_url, size='l'))
+    except PictureInaccessibleError as e:
+        return HttpResponse(e)
 
-    if r.status_code == 302 and 'imgur.com' in pic_url:
-        return HttpResponse('The image at "{}" can not be accessed, it was '
-                            '<b>probably deleted on Imgur</b>.'.
-                            format(pic_url))
-    if r.status_code != 200:
-        return HttpResponse('The image "{}"" can not be accessed, it returned '
-                            'HTTP status code "{}".'.
-                            format(pic_url, r.status_code))
-    if r.headers.get('content-type', None) not in allowed_content_types:
-        return HttpResponse('Not recognized as an image file. Please only '
-                            'use jpg, gif, png, or webp images. Recognized '
-                            'mime type was "{}".'.
-                            format(r.headers.get('content-type', '')))
-    if force_int(r.headers.get('content-length')) > (1024 * 512):
-        x = int(int(r.headers.get('content-length')) / 1024)
-        return HttpResponse('The image file size ({} kiB) is too large. '
-                            'Please use a smaller size (max. 500 kiB).'.
-                            format(x))
-    if pic_url in [x['url'] for x in request.user.profile.pics]:
-        return HttpResponse('That picture already exists in your profile.')
+    if pic_url:
+        if pic_url in [x['url'] for x in request.user.profile.pics]:
+            return HttpResponse('That picture already exists in your profile.')
+        if len(request.user.profile.pics) >= settings.USER_MAX_PICS_COUNT:
+            messages.info(request, 'oldest picture was deleted to make room '
+                          'for the picture you added.')
+        else:
+            messages.info(request, 'picture added.')
 
-    if len(request.user.profile.pics) >= settings.USER_MAX_PICS_COUNT:
-        messages.info(request, 'oldest picture was deleted to make room for '
-                               'the picture you added.')
+        # prepend the new pic to make it the new "profile pic"
+        request.user.profile.pics = \
+            [{'url': pic_url}] + request.user.profile.pics
 
-    # prepend the new pic to make it the new "profile pic"
-    request.user.profile.pics = [{'url': pic_url}] + request.user.profile.pics
+    if bg_url:
+        request.user.profile.background_pic = bg_url
+        messages.info(request, 'background picture updated.')
+
     request.user.profile.save()
-
     return redirect(reverse('me_page') + '#id_pics')
 
 

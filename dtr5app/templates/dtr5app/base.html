@@ -50,7 +50,7 @@
 
     {% block head %}{% endblock %}
   </head>
-  <body class="{% block body_classes %}{% endblock %}{% if user.is_authenticated %} auth-user{% else %} anon-user{% endif %}">
+  <body class="{% block body_classes %}{% endblock %}{% if user.is_authenticated %} auth-user{% else %} anon-user{% endif %}"{% if view_user and view_user.profile.background_pic %} style="background-image: url({{view_user.profile.display_background_pic}}); background-attachment: fixed; background-position: center center; background-repeat: no-repeat; background-size: cover; "{% endif %}>
 
     <header>
       <div class="site-logo">

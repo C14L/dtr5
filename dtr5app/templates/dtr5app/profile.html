@@ -12,8 +12,8 @@
 <article>
 
   {% if view_user.username != user.username %}
-
     {% if is_match %}
+
       <div class="announce match">
         <h1>You upvoted each other!</h1>
         <div class="uu">
@@ -31,23 +31,25 @@
           <a class="later" href="{% url 'me_search_page' %}">not now</a>
         </div>
       </div>
+
+    {% elif is_nope %}
+
+      <div class="announce nope">
+        <span class="tx">hidden in your search results</span>
+        <form method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
+          {% csrf_token %}
+          <input type="submit" value="show again">
+        </form>
+      </div>
+
+    {% else %}
+<!--
+      <div class="announce herefor">
+        <span class="herefor-bg{{view_user.profile.herefor}}">{{view_user.profile.herefor|display_choice:settings.HEREFOR}}</span>
+      </div>
+-->
     {% endif %}
-
-      {% if is_nope %}
-        <div class="announce nope">
-          <span class="tx">hidden in your search results</span>
-          <form method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
-            {% csrf_token %}
-            <input type="submit" value="show again">
-          </form>
-        </div>
-      {% endif %}
-
-    </div>
   {% endif %}
-
-<style>
-</style>
 
   <div class="card headcard" id="id_header">
     {% if is_like %}<div class="announce like"><span class="tx">upvoted</span></div>{% endif %}
@@ -131,7 +133,7 @@
         <a href="https://www.reddit.com/user/{{view_user.username}}/comments/" class="karma">comment karma: {{view_user.profile.comment_karma}}</a>
       </div>
       <div class="textline">
-        Meet <a href="https://www.reddit.com/u/{{view_user.username}}">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {{view_user.profile.relstatus|default:"single"}} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.reasonhere|default:"mostly dating"}} about <a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if view_user.profile.common_subs|length > 0 %}you have <a href="#id_matches">{{view_user.profile.common_subs|length}} subreddits</a> in common{% endif %}
+        Meet <a class="username" href="https://www.reddit.com/u/{{view_user.username}}">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {{view_user.profile.relstatus|default:"single"}} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.get_herefor_display|default:"friends or dating"}} and <a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if view_user.profile.common_subs|length > 0 %}you have <a href="#id_matches">{{view_user.profile.common_subs|length}} subreddits</a> in common{% endif %}
       </div>
       <div class="meta">
         <span>last active {{view_user.profile.accessed|timesince}} ago</span>
@@ -371,8 +373,8 @@
                 <td>{{view_user.date_joined|timesince}} ago</td>
               </tr>
               <tr>
-                <td>last login:</td>
-                <td>{{view_user.last_login|timesince}} ago</td>
+                <td>last active:</td>
+                <td>{{view_user.profile.accessed|timesince}} ago</td>
               </tr>
               <tr>
                 <td>profile views:</td>
