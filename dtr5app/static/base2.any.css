@@ -218,20 +218,19 @@ on the <h3/> title of the section. similar to .dotmenu
   display: block;
 }
 
-body.me .card.section-search .toggle-section h3 {
+.card .toggle-section h3 {
   text-align: center;
   background-color: #F9F9F9;
 }
-body.me .card.section-search .toggle-section > .opts {
+.card .toggle-section > .opts {
 }
-body.me .card.section-search .toggle-section > .opts > section {
+.card .toggle-section > .opts > section {
   padding: 24px 32px;
   border-top: 1px solid rgba(0,0,0,0.12);
 }
-body.me .card.section-search .toggle-section > .opts > section p {
+.card .toggle-section > .opts > section p {
   margin: 0; padding: 0;
 }
-
 
 
 

@@ -44,6 +44,18 @@
         </label>
         <input id="id_984hfhe" type="checkbox">
         <div class="opts">
+          <!--
+          <section>
+            <label class="item">
+              <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_FRIENDS %} checked{% endif %}>
+              <span class="tx">show redditors here for friends only</span>
+            </label>
+            <label class="item">
+              <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_DATING %} checked{% endif %}>
+              <span class="tx">show redditors here only for dating</span>
+            </label>
+          </section>
+          -->
           <section>
             <label>
               <span><b>ignore</b> these subreddits:</span>&nbsp;
@@ -100,26 +112,12 @@
       <section class="herefor">
         <p class="key-col">I am here for:</p>
         <p class="val-col">
-          <label class="item">
-            <input type="radio" name="herefor" value="1"{% if user.profile.herefor == 1 %} checked{% endif %}>
-            <span class="tx">only dating</span>
-          </label>
-          <label class="item">
-            <input type="radio" name="herefor" value="2"{% if user.profile.herefor == 2 %} checked{% endif %}>
-            <span class="tx">mostly dating</span>
-          </label>
-          <label class="item">
-            <input type="radio" name="herefor" value="3"{% if user.profile.herefor == 3 or not user.profile.herefor %} checked{% endif %}>
-            <span class="tx">friends or dating</span>
-          </label>
-          <label class="item">
-            <input type="radio" name="herefor" value="4"{% if user.profile.herefor == 4 %} checked{% endif %}>
-            <span class="tx">mostly friends</span>
-          </label>
-          <label class="item">
-            <input type="radio" name="herefor" value="5"{% if user.profile.herefor == 5 %} checked{% endif %}>
-            <span class="tx">only friends</span>
-          </label>
+          {% for x in settings.HEREFOR %}
+            <label class="item">
+              <input type="radio" name="herefor" value="{{x.0}}"{% if user.profile.herefor == x.0 %} checked{% elif not user.profile.herefor and x.0 == settings.HEREFOR_FRIENDS_OR_DATING %} checked{% endif %}>
+              <span class="tx">{{x.1}}</span>
+            </label>
+          {% endfor %}
         </p>
       </section>
 
@@ -216,17 +214,18 @@
     </section>
   </div>
 
-  <div class="card section-pics" id="id_pics">
+  <div class="card nopadd section-pics" id="id_pics">
     <h2>pictures of <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></h2>
-    <div class="item pics-form">
+    <section class="item pics-form">
       <form method="POST" action="{% url 'me_picture_page' %}">
         {% csrf_token %}
         <input type="text" name="pic_url" value="" placeholder="https://imgur.com/??????">
         <input type="submit" value="add picture">
         <span class="help">&nbsp;max. {{USER_MAX_PICS_COUNT}} pics</span>
       </form>
-    </div>
-    <div class="item pics-preview">
+    </section>
+
+    <section class="item pics-preview">
       {% for pic in request.user.profile.pics %}
       <div class="pic">
         <a href="{{pic.src}}"><img src="{{pic.url}}" alt=""></a>
@@ -237,7 +236,23 @@
         </form>
       </div>
       {% endfor %}
-    </div>
+    </section>
+
+    <section class="nopadd toggle-section">
+      <label for="id_hdkhfsk7w87e">
+        <h3>set background picture</h3>
+      </label>
+      <input id="id_hdkhfsk7w87e" type="checkbox">
+      <div class="opts">
+        <section>
+          <form method="POST" action="{% url 'me_picture_page' %}">
+            {% csrf_token %}
+            <input type="text" name="bg_url" value="" placeholder="https://imgur.com/??????">
+            <input type="submit" value="add a background picture">
+          </form>
+        </section>
+      </div>
+    </section>
   </div>
 
   <div class="card section-about" id="id_about">

@@ -262,15 +262,63 @@ FITNESS = (  # unused
 # REPORT_REASON_CHOICES = ()
 
 DISTANCE = (
-    (    1, 'worldwide'),  # any value below 5 will be used for "worldwide"...
-    ( 5000, '5000 km / 3100 miles'),  # ...don't set 0 because it would be ...
-    ( 2000, '2000 km / 1250 miles'),  # ...intercepted by the signup flow.
-    ( 1000, '1000 km / 620 miles'),
-    (  700,  '700 km / 435 miles'),
-    (  500,  '500 km / 310 miles'),
-    (  300,  '300 km / 186 miles'),
-    (  200,  '200 km / 125 miles'),
-    (  100,  '100 km / 62 miles'),
-    (   50,   '50 km / 31 miles'),
-    (   20,   '20 km / 12 miles'),
+    (1,    'worldwide'),  # any value below 5 will be used for "worldwide"...
+    (5000, '5000 km / 3100 miles'),  # ...don't set 0 because it would be ...
+    (2000, '2000 km / 1250 miles'),  # ...intercepted by the signup flow.
+    (1000, '1000 km / 620 miles'),
+    (700,  '700 km / 435 miles'),
+    (500,  '500 km / 310 miles'),
+    (300,  '300 km / 186 miles'),
+    (200,  '200 km / 125 miles'),
+    (100,  '100 km / 62 miles'),
+    (50,   '50 km / 31 miles'),
+    (20,   '20 km / 12 miles'),
 )
+
+HEREFOR_ONLY_DATING = 2
+HEREFOR_MOSTLY_DATING = 4
+HEREFOR_FRIENDS_OR_DATING = 8
+HEREFOR_MOSTLY_FRIENDS = 16
+HEREFOR_ONLY_FRIENDS = 32
+HEREFOR = (
+    (HEREFOR_ONLY_DATING, 'only dating'),
+    (HEREFOR_MOSTLY_DATING, 'mostly dating'),
+    (HEREFOR_FRIENDS_OR_DATING, 'friends or dating'),
+    (HEREFOR_MOSTLY_FRIENDS, 'mostly friends'),
+    (HEREFOR_ONLY_FRIENDS,  'only friends'),
+)
+
+GENDER = (  # bitmap  # unused
+    (1, "don't know"),
+    (2, ""),
+    (4, ""),
+    (8, ""),
+    (16, ""),
+    (32, ""),
+    (64, ""),
+    (128, ""),
+    (256, ""),
+    (512, ""),
+    (1024, ""),
+)
+
+PREFERENCE = (  # bitmap  # unused
+    (1, "don't know"),
+    (2, ""),
+    (4, ""),
+    (8, ""),
+    (16, ""),
+    (32, ""),
+    (64, ""),
+    (128, ""),
+    (256, ""),
+    (512, ""),
+    (1024, ""),
+    (2048, ""),
+    (4096, ""),
+    (8192, ""),
+    (16384, ""),
+    (32768, ""),
+    (65536, ""),
+)
+

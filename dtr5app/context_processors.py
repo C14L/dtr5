@@ -21,4 +21,5 @@ def selected_settings(request):
 
 
         'now_utc': datetime.now().replace(tzinfo=pytz.utc),
+        'settings': settings,
     }

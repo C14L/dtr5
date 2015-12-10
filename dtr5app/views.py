@@ -535,6 +535,10 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
 
     # Find previous and next user on the list, relative to view user.
     prev_user, next_user = get_prevnext_user(request, view_user)
+    if not prev_user and user_list:
+        prev_user = user_list[-1]
+    if not next_user and user_list:
+        next_user = user_list[0]
 
     # Count the profile view, unless auth user is viewing their own profile.
     if request.user.pk != view_user.pk:

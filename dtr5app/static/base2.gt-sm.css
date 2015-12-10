@@ -124,6 +124,7 @@ body.me .card.section-geolocation,
 body.me .card.section-srlist {
   text-align: center;
 }
+
 body.me .card.section-profile section:not(:last-of-type),
 body.me .card.section-srlist section:first-of-type {
   padding: 32px;
@@ -549,11 +550,10 @@ body.profile .about {
   margin: 0; padding: 16px;
 }
 body.profile .links-to-reddit-profile {
-  border-bottom: 1px solid rgba(0,0,0,0.12);
   display: block;
   list-style: none;
-  margin: -16px; margin-bottom: 0; padding: 0;
   text-align: center;
+  margin: 0; padding: 0;
 }
 body.profile .links-to-reddit-profile li {
   display: inline-block;
@@ -561,11 +561,11 @@ body.profile .links-to-reddit-profile li {
 }
 body.profile .info-tables {
   overflow: hidden;
-  margin: 0; padding: 0;
+  margin: 0; padding: 0 8px;
 }
 body.profile .info {
   float: left;
-  margin: 0 16px; padding: 0;
+  margin: 8px; padding: 0;
 }
 body.profile .info table {
   margin: 16px 0;
@@ -583,6 +583,27 @@ body.profile .info table tbody tr td {
   line-height: 40px;
   border: 1px solid #CCC;
 }
+
+body.profile .fullpics {}
+
+body.profile .fullpics > span {
+  background-color: black;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width: 200px; height: 200px;
+}
+body.profile .fullpics > span > a,
+body.profile .fullpics > span > span {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: block;
+  overflow: hidden;
+  width: inherit; height: inherit;
+}
+
+
 
 /*
 
