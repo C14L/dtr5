@@ -32,4 +32,5 @@ def to_miles(km):
 
 @register.filter(name='display_choice')
 def display_choice(val, arg):
+    """Return the display string of the choice item."""
     return [x[1] for x in arg if x[0] == val][0]
