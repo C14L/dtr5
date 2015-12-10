@@ -133,7 +133,7 @@
         <a href="https://www.reddit.com/user/{{view_user.username}}/comments/" class="karma">comment karma: {{view_user.profile.comment_karma}}</a>
       </div>
       <div class="textline">
-        Meet <a class="username" href="https://www.reddit.com/u/{{view_user.username}}">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {{view_user.profile.relstatus|default:"single"}} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.get_herefor_display|default:"friends or dating"}} and <a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if view_user.profile.common_subs|length > 0 %}you have <a href="#id_matches">{{view_user.profile.common_subs|length}} subreddits</a> in common{% endif %}
+        Meet <a class="username" href="https://www.reddit.com/u/{{view_user.username}}">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {% if view_user.profile.relstatus > 1 %}{{view_user.profile.get_relstatus_display|default:"single"}}{% endif %} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.get_herefor_display|default:"friends or dating"}} and <a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if view_user.profile.common_subs|length > 0 %}you have <a href="#id_matches">{{view_user.profile.common_subs|length}} subreddits</a> in common{% endif %}
       </div>
       <div class="meta">
         <span>last active {{view_user.profile.accessed|timesince}} ago</span>
@@ -249,13 +249,11 @@
     <div class="card nopadd">
       <section class="nopadd fullpics">
         {% for pic in view_user.pics_list %}
-          <span>
-            {% if pic.url %}
-              <a href="{{pic.src}}" class="pic" style="background-image: url({{pic.url}});"></a>
-            {% else %}
-              <span class="pic" style="background-image: url({% static 'nopic.jpg' %});"></span>
-            {% endif %}
-          </span>
+          {% if pic.url %}
+            <span><a href="{{pic.src}}" class="pic" style="background-image: url({{pic.url}});"></a></span>
+          {% else %}
+            <span class="no"><span class="pic" style="background-image: url({% static 'nopic.jpg' %});"></span></span>
+          {% endif %}
         {% endfor %}
       </section>
     </div>

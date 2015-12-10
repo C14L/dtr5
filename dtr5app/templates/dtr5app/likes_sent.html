@@ -7,7 +7,7 @@
 {% block main %}
 
 <article>
-  <div class="card">
+  <div class="card nopadd">
     <h2>you sent {{user_list.paginator.count}} upvotes</h2>
     <p class="subhead">These are people you upvoted. Wait for them to respond and upvote you back.</p>
     {% include 'dtr5app/user_list.html' %}

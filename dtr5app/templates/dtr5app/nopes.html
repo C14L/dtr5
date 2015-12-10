@@ -1,15 +1,15 @@
 {% extends 'dtr5app/base.html' %}
 
-{% block title %}nopes sent{% endblock %}
+{% block title %}hidden profiles{% endblock %}
 
 {% block body_classes %}nopes{% endblock %}
 
 {% block main %}
 
 <article>
-  <div class="card">
+  <div class="card nopadd">
     <h2>noped profiles ({{user_list.paginator.count}})</h2>
-    <p class="subhead">you clicked <b>nope</b> on these profiles and they will not show up in your search results anymore</p>
+    <p class="subhead">you clicked <b>hide</b> on these profiles and they will not show up in your search results anymore</p>
     {% include 'dtr5app/user_list.html' %}
   </div>
 

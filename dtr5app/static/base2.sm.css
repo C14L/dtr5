@@ -5,750 +5,56 @@ small screen < 600px
 
 */
 
+
 body {
-  background-color: #F3F3F3;
-  font: normal 16px/16px 'Roboto', sans-serif;
-  margin: 0; padding: 0;
-}
-a {
-  text-decoration: none;
-}
-p {
-  line-height: 1.35em;
-}
-form, button {
-  display: inline;
-  margin: 0
-}
-form {
-  padding: 0;
-}
-ul > li  {
-  line-height: 1.5rem;
-}
-input[type="text"], input[type="date"], input[type="submit"], select {
-  margin: 4px; padding: 4px;
-}
-input[type="submit"], select, label {
-  cursor: pointer;
-}
-input[type="submit"] {
-  min-width: 75px;
 }
 
 
 /*
 
-Slightly smaller and slightly lighter than regular text.
-
- */
-.help {
-  font-size: 0.9rem;
-  color: gray;
-}
-
-
-/*
-
-Zodiac symbol boxes.
-
- */
-.zodiac {
-  display: inline-block;
-  width: 1.5rem; height: 1.5rem;
-  font-size: 1.25rem; line-height: 1.5rem;
-  background-color: #F00; color: #FFF;
-  text-align: center;
-  border-radius: 3px;
-  margin: 0; padding: 0;
-  vertical-align: middle;
-}
-
-
-/*
-
-for lists, arrows left and right for previous and next page.
+Main page content area.
+Usualy contains <article/> and sometimes <aside id="sidebar"/>.
 
 */
-.pagination { display: block; font-size: 3.5rem; line-height: 5rem; color: white; overflow: hidden; margin: 24px 0; padding: 16px; }
-.pagination > a { color: inherit; display: block; width: 5rem; height: 5rem; background-color: red; border-radius: 50%; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); box-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
-.pagination > a.prev { float: left; }
-.pagination > a.next { float: right; }
-.pagination > a > span {}
-.pagination > a.prev > span {}
-.pagination > a.next > span {}
-.pagination > span { display: block; margin: 0 6rem; padding: 0; color: black; text-align: center; font-size: 2rem; line-height: 5rem;  }
 
-
-/*
-
-The three-dots-menu, usually found at the top right corner of cards.
-
- */
-nav.dotmenu {
-  color: gray;
-  cursor: pointer;
-  display: block; width: 2.5rem; height: 2.5rem;
-  float: right;
-  font-weight: normal; font-style: normal;
-  font-size: 2.5rem; line-height: 2.5rem;
-  opacity: 1;
-  padding: 0; margin: 0;
-  position: relative;
-  text-align: center;
-}
-nav.dotmenu:hover {
-  transform: 0.1s;
-}
-nav.dotmenu > .opts {
-  background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 1px 6px 0 rgba(0,0,0,0.6);
-  color: rgba(0,0,0,1);
-  display:none;
-  font-size: 1rem; line-height: 1rem;
-  list-style: none;
+body main,
+body article {
+  clear: both;
+  min-height: 80vh;
   margin: 0; padding: 0;
   overflow: hidden;
-  position: absolute; right: 8px; top: 32px;
-  text-align: left;
-  width: 250px;
-  z-index: 50;
+  width: 100vw;
 }
-nav.dotmenu > input[type="checkbox"] {
-  display: block; width: 2.5rem; height: 2.5rem;
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  opacity: 0; cursor: pointer;
-}
-nav.dotmenu > input[type="checkbox"]:checked + .opts {
-  display: block;
-}
-nav.dotmenu > .opts > li {
-  border-top: 1px solid #ccc;
-  margin: 0; padding: 0;
-  transition: 0.1s ease-in;
-}
-nav.dotmenu > .opts > li:hover {
-  background-color: #F3F3F3;
-  transition: 0.1s ease-out;
-}
-nav.dotmenu > .opts > li:first-child {
-  border-top: 0;
-}
-nav.dotmenu > .opts > li > form > input[type="submit"],
-nav.dotmenu > .opts > li > span,
-nav.dotmenu > .opts > li > a {
-  background: transparent;
-  border: 0;
-  color: inherit;
-  cursor: pointer;
-  display: block;
-  font-weight: normal;
-  font-size: inherit; line-height: inherit;
-  margin: 0 0 0 1.75rem; padding: 1rem;
-  text-align: left;
-  text-decoration: inherit;
-}
-nav.dotmenu > .opts > li > form > input[type="submit"] {
-  width: calc(100% - 2rem);
-}
-nav.dotmenu > .opts > li > span.fa,
-nav.dotmenu > .opts > li > form > span.fa {
-  display: block; float: left;
-  font-size: 1.25rem; line-height: inherit;
-  margin: 0; padding: 1rem 0 1rem 1rem;
-  text-align: center;
-  width: 1rem;
-}
-nav.dotmenu > .opts > li.secondary {
-  color: gray;
-}
-
-
-nav.dotmenu > .opts > li > .cst-arrow-up {
-  background: url(/static/up-arrows-64x56.gif) center center no-repeat;
-  background-size: contain;
-  background-color: transparent;
-  display: block;
-  float: left;
-  margin: 0.75rem 0.5rem 0.75rem 0.5rem; padding: 0;
-  text-align: center;
-  width: 28px; height: 28px;
-}
-nav.dotmenu > .opts > li > .cst-arrow-up.gray {
-  /* background-image: url(/static/up-arrows-64x56-gray.gif); */
-  opacity: 0.75;
-}
-
-
-
-
-/*
-
-a section that can be "opened and closed" by clicking
-on the <h3/> title of the section. similar to .dotmenu
-
- */
-.toggle-section {
-  display: block;
-  padding: 0; margin: 0 -16px -16px -16px;
-  border-top: 1px solid rgba(0,0,0,0.12);
-}
-.toggle-section > label > h3 {
-  cursor: pointer;
-  display: block;
-  margin: 0; padding: 16px;
-  font-size: 1rem; line-height: 1rem;
-  font-weight: normal;
-  color: blue;
-}
-.toggle-section > label > h3:after {
-  content: '⯆';
-  padding-left: 4px;
-}
-.toggle-section > input[type="checkbox"] {
-  display: none; cursor: pointer;
-}
-.toggle-section > .opts {
-  display: none;
-  overflow: hidden;
-  margin: 0; padding: 0;
-}
-.toggle-section > input[type="checkbox"]:checked + .opts {
-  display: block;
-}
-
-body.me .card.section-search .toggle-section h3 {
-  text-align: center;
-  background-color: #F9F9F9;
-}
-body.me .card.section-search .toggle-section > .opts {
-}
-body.me .card.section-search .toggle-section > .opts > section {
-  padding: 24px 32px;
-  border-top: 1px solid rgba(0,0,0,0.12);
-}
-body.me .card.section-search .toggle-section > .opts > section p {
-  margin: 0; padding: 0;
-}
-
-
-
-
-/*
-
-list of "lookingfor" options in profile and settings,
-with and without "checkbox" selectors.
-
- */
-.lookingfor-list {
-  margin: 0; padding: 0;
-}
-.lookingfor-list > div {
-  margin: 0; padding: 0;
-  display: none;
-}
-.lookingfor-list > ul {
-  display: inline-block;
-  list-style: none;
-  margin: 0; padding: 0;
-}
-.lookingfor-list > ul > li {
-  background-color: orange;
-  border: 2px solid orange;
-  color: white;
-  display: inline-block;
-  font-size: 1rem; line-height: 1em;
-  margin: 1px; padding: 8px 12px;
-  vertical-align: middle;
-}
-.lookingfor-list > ul > li > input[type="checkbox"] {
-  margin: 0 0.25rem 0 0; padding: 0;
-  opacity: 0.2;
-  vertical-align: middle;
-  width: 1rem; height: 1rem;
-}
-.lookingfor-list > ul > li > input[type="checkbox"]:checked {
-  opacity: 0.9;
-}
-
-
-/*
-
-Reddit style action button.
-
- */
-.mainbtn {
-  background-color: #FFFFFF;
-  border-radius: 0;
-  border: 1px solid #5F99CF; border-right: 0;
-  -o-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  color: #741A92;
-  cursor: pointer;
-  display: block;
-  font-family: sans-serif;
-  font-size: 19px;
-  font-weight: bold;
-  margin: 0 auto; padding: 7px 0 0 0;
-  overflow: none;
-  position: relative;
-  text-align: center;
-  white-space: nowrap;
-  width: 250px; height: 39px;
-}
-.mainbtn.narrow {
-  width: 150px;
-}
-.mainbtn.wide {
-  width: 350px;
-}
-.mainbtn:before {
-  background-color: #FFFFFF;
-  border-radius: 0;
-  border: 1px solid #5F99CF;
-  border-width: 1px 1px 0 0;
-  content: '';
-  display: block;
-  font-size: 0;
-  margin: 0; padding: 0;
-  position: absolute; top: 5px; right: -14px;
-  width: 26px; height: 26px;
-  -o-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-.mainbtn {
-  background: linear-gradient(0deg, #CEE3F8, #FFFFFF);
-  transition: 0.1s ease-out;
-}
-.mainbtn:before {
-  background: linear-gradient(-45deg, #CEE3F8, #FFFFFF);
-  transition: 0.1s ease-out;
-}
-.mainbtn:hover {
-  background: linear-gradient(0deg, #5F99CF, #CEE3F8);
-  color: #FFFFFF;
-  transition: 0.1s ease-out;
-}
-.mainbtn:hover:before {
-  background: linear-gradient(-45deg, #5F99CF, #CEE3F8);
-  transition: 0.1s ease-out;
-}
-.mainbtn.warning {
-  color: #C00000;
-  border-color: #C00000;
-  transition: 0.2s ease-out;
-}
-.mainbtn.warning:before {
-  border-color: #C00000;
-  transition: 0.2s ease-out;
-}
-.mainbtn.warning:hover {
-  background: #C00000;
-  color: #FFFFFF;
-  transition: 0.2s ease-out;
-}
-.mainbtn.warning:hover:before {
-  background: #C00000;
-  transition: 0.2s ease-out;
-}
-.mainbtn input[type="submit"] {
-  background: 0;
-  border: 0; outline: 0;
-  margin: 0; padding: 0; /* 2px 0 1px 0; */
-  color: inherit;
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-}
-
-
-/*
-
-Standard content card, simplefied Material-style.
-
- */
-.card {
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
-  margin: 16px 0; padding: 16px;
-}
-.card.nopadd {
-  padding: 0;
-}
-.card > a:first-child {
-  background-color: gray;
-  color: white;
-  float: right;
-  font-size: 1.5rem; line-height: 1.5rem;
-  margin: -16px -16px 0 0; padding: 1rem;
-  opacity: 0.2;
-}
-.card > h2 {
-  font-size: 1.5rem; line-height: 3.5rem;
-  border-bottom: 1px solid rgba(0,0,0,0.12);
-  font-weight: bold;
-  margin: -16px -16px 16px -16px; padding: 0;
-  text-align: center;
-}
-.card > p.subhead {
-  background-color: #F3F3F3;
-  border-bottom: 1px solid rgba(0,0,0,0.12);
-  color: rgba(0,0,0,0.56);
-  margin: -16px -16px 16px -16px; padding: 16px;
-  text-align: center;
-}
-.card > section {
-  border-bottom: 1px solid rgba(0,0,0,0.12);
-  margin: -16px -16px 16px -16px; padding: 16px 32px;
-}
-
-/*
-
-Small box with picture links to more user profiles.
-
- */
-.prevnext-user-list {
-  display: block;
-  margin: 32px; padding: 0;
-  overflow: hidden;
-}
-.prevnext-user-list > ul {
-  display: block;
-  font-size: 0;
-  list-style: none;
-  margin: 0; padding: 0;
-  white-space: nowrap;
-  text-align: center;
-}
-.prevnext-user-list > ul > li {
-  display: inline-block;
-  font-size: 0;
-  margin: 0; padding: 0;
-  vertical-align: middle;
+body main {
+  margin-top: 56px;
   position: relative;
 }
-.prevnext-user-list > ul > li > a {
+body.has-sidebar #sidebar {
   display: block;
-  overflow: hidden;
-  position: relative;
-}
-.prevnext-user-list > ul > li > a > img {
-  border: 5px solid white;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-  height: 100px;
-  margin: 16px; padding: 0;
+  float: none;
+  width: 100vw;
+  margin: 0; padding: 0;
 }
 
 
 /*
 
-User list horizontal (inline-block).
-
---> used on body.sr subreddit spcific pages.
-
- */
-
-body .subheader {
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
-  margin: 0; padding: 22px 16px 24px 16px;
-  text-align: left;
-}
-body .subheader > .reddit-link {
-  display: inline-block;
-  font-size: 1.5rem; line-height: 1.5rem;
-  font-weight: normal;
-  margin: 0; padding: 0 16px;
-  vertical-align: middle;
-}
-body .subheader > .reddit-link > .fa {
-  font-size: 1.5rem;
-  margin-right: 4px;
-  opacity: 0.2;
-}
-body .subheader > .info {
-  font-size: 1rem; line-height: 1.5rem;
-  vertical-align: middle;
-}
-
-body.sr article,
-body.results article {
-  text-align: center;
-}
-body.results .subheader .info span {
-  border-bottom: 1px dotted gray;
-}
-
-
-
-/*
-
-list of user profiles by profile picture, with some basic info onmouseover.
-also, two selection buttons are shown onmouseover, to "connect" with the user
-or to "hide" them.
+Site footer, with copyright stuff, content licence, privacy
+statement, terms of service statement, cookie usage statement,
+and whatnot statements.
 
  */
-ul.user-list {
-  display: block;
-  font-size: 0;
-  list-style: none;
-  margin: 16px; padding: 0;
-}
-ul.user-list li {
-  display: inline-block;
-  margin: 8px; padding: 0;
-  position: relative;
-  vertical-align: middle;
-}
-ul.user-list li a.pic {
-  display: block;
-  margin: 0; padding: 0;
-}
-ul.user-list li a.pic img {
-  border: 8px solid #FFFFFF;
-  box-shadow: 2px 2px 3px rgba(0,0,0,0.6);
-  display: block;
-  height: 250px;
-  margin: 0; padding: 0;
-}
-ul.user-list li .info {
-  background-color: rgba(0,0,0,0.6);
-  display: block;
-  font-size: 1rem; line-height: 1.5em;
-  margin: 0; padding: 0; opacity: 0;
-  position: absolute; top: 0; right: 0; bottom: 0; left: 0;
-  transition: 0.3s ease-out;
-}
-ul.user-list li:hover .info { /* combined height: 44px */
-  opacity: 1;
-  transition: 0.3s ease-out;
-}
-ul.user-list li .info .username {
-  display: block;
-  color: white;
-  font-size: 20px; line-height: 20px;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 111px; /* (250px pic height + 2*8px border) - (info height/2) */
-}
-ul.user-list li .info .asl {
-  color: white;
-  display: block;
-  font-size: 16px; line-height: 16px;
-  margin-top: 8px;
-  text-align: center;
-}
-
-ul.user-list li .like-nope-btns {
-  margin: 0; padding: 0;
-  opacity: 0;
-  transition: 0.3s ease-out;
-}
-ul.user-list li:hover .like-nope-btns {
-  opacity: 1;
-  transition: 0.3s ease-out;
-}
-ul.user-list li .like-nope-btns > .opt > input[type="submit"] {
-  margin: 0; padding: 0; border: 0; outline: 0;
-  position: absolute; left: calc(50% - 42px);
-  width: 84px; height: 73px;
-}
-ul.user-list li .like-nope-btns > .opt.like > input[type="submit"] {
-  background: transparent url(/static/up-arrows-2.gif) center center no-repeat;
-  top: 16px;
-}
-ul.user-list li .like-nope-btns > .opt.nope > input[type="submit"] {
-  background: transparent url(/static/down-arrows-2.gif) center center no-repeat;
-  bottom: 16px;
-}
-
-
-
-
-/*
-
-User list vertical (one per line): for matches, nopes, etc.
-
- */
-ul.user-list-vert {
-  background-color: white;
-  display: block;
-  font-size: 0;
-  list-style: none;
-  margin: -16px; padding: 0;
-}
-ul.user-list-vert li {
-  border-bottom: 1px solid rgba(0,0,0,0.12);
-  display: block;
+footer {
+  background-color: rgba(0,0,0,0.56);
+  clear: both;
+  color: silver;
+  font-size: 0.9rem;
   margin: 0; padding: 8px;
-  overflow: hidden;
 }
-ul.user-list-vert li a.pic {
-  display: block;
-  float: left;
-  margin: 0 16px 0 0; padding: 0;
-  text-align: right;
-  width: 300px; height: 150px;
-}
-ul.user-list-vert li a.pic img {
-  background-color: #F3F3F3;
-  border: 0;
-  min-width: 100px; max-width: 250px; height: 150px;
-  overflow: hidden;
-}
-ul.user-list-vert li span.info {
-  display: block;
-  font-size: 1rem; line-height: 1.5em;
-  margin: 0; padding: 0 8px;
-}
-ul.user-list-vert li span.info a.username {
-  display: block;
-  font-size: 2rem; line-height: 2rem;
-  margin: 0; padding: 0; padding-bottom: 0.25rem
-}
-ul.user-list-vert li span.info span.asl {
-  display: block;
-  font-size: 1rem; line-height: 2rem;
-}
-ul.user-list-vert li span.info span.asl.short {
-  display: none;
-}
-ul.user-list-vert li .matched {
-  color: gray;
-  margin: 16px 0 0 0;
-}
-ul.user-list-vert li .mainbtn {
-  margin: 8px 0 0 316px;
-}
-
-/*
-
-The list of settings options on the "preferences" page.
-
- */
-body.me .card .item {
-  margin: 0; padding: 0;
-}
-body.me .card .item > span {
-  margin-left: 4px;
-}
-body.me .card.section-profile > div.item:not(:first-child) {
-  border-top: 1px solid rgba(0,0,0,0.12);
-  margin: 0 -16px 0 -16px; padding: 16px;
-}
-body.me .card.section-profile > form > p {
-  overflow: hidden;
-}
-body.me .card.section-profile > form > p > .key-col {
-  display: block;
-  float: left;
-  width: 120px;
-  margin: 0; padding: 0;
-  text-align: right;
-  line-height: 3rem;
-}
-body.me .card.section-profile > form > p > .val-col {
-  display: block;
-  margin: 0 0 0 130px; padding: 0;
-  line-height: 3rem;
-}
-
-body.me .card.section-about textarea {
-  width: 400px; height: 100px;
-  resize: both;
-}
-body.me .card.section-pics .item.pics-form input[type="text"] {
-  width: 300px;
-}
-body.me .card.section-pics .item.pics-preview {
-  font-size: 0;
-  margin: 8px -8px 0 -8px;
-}
-body.me .card.section-pics .item.pics-preview > .pic {
-  display: inline-block;
-  margin: 8px; padding: 0;
-  position: relative;
-  vertical-align: middle;
-}
-body.me .card.section-pics .item.pics-preview > .pic img {
-  background-color: #F3F3F3;
-  max-width: 500px; height: 200px;
-  border: 8px solid white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
-}
-body.me .card.section-pics .item.pics-preview > .pic input[type="submit"] {
-  cursor: pointer;
-  font-size: 1rem; line-height: 1em;
-  opacity: 0.1;
-  position: absolute; top: 10px; right: 10px;
-  transition: 0.3s ease-out;
-}
-body.me .card.section-pics .item.pics-preview > .pic:hover input[type="submit"] {
-  opacity: 1;
-  transition: 0.3s ease-out;
-}
-
-
-/*
-
-List of subreddit matches on profile view.
-
- */
-.sr-list-inline ul {
-  list-style: none;
-  margin: 0; padding: 0;
-}
-.sr-list-inline ul > li {
-  background-color: #005280;
-  display: inline-block;
-  font-size: 0;
-  margin: 4px; padding: 0;
-  overflow: hidden;
-}
-.sr-list-inline ul > li > a {
-  border: 0;
-  display: inline-block;
-  font-size: 1.25rem; line-height: 2.25rem;
-  padding: 0 8px;
+footer a {
+  color: inherit;
   text-decoration: inherit;
-  color: white;
-}
-.sr-list-inline ul > li > a[href^="https://"] {
-  border-left: 1px solid gray;
-  background-color: rgba(255,255,255,0.28);
-  color: white;
-  display: inline-block;
-  font-size: 1.25rem; line-height: 2.25rem;
-  text-shadow: none;
-}
-.sr-list-inline ul > li > a[href^="https://"] > span.fa { margin: 0; padding: 0; }
-.sr-list-inline ul > li > .banned-tag,
-.sr-list-inline ul > li > .muted-tag,
-.sr-list-inline ul > li > .mod-tag,
-.sr-list-inline ul > li > .nsfw-tag {
-  background-color: gray;
-  color: white;
-  display: inline-block;
-  font-size: 1.25rem; line-height: 2.25rem;
-  margin: 0; padding: 0 8px;
-}
-.sr-list-inline ul > li > .mod-tag {
-  background-color: transparent;
-  color: red;
-  padding-right: 0;
-}
-.sr-list-inline ul.smaller > li > a {
-  font-size: 1rem; line-height: 2rem;
-}
-.sr-list-inline ul.smaller > li > .mod-tag {
-  font-size: 1rem; line-height: 2rem;
+  font-weight: bold;
 }
 
 
@@ -760,17 +66,11 @@ Site header.
  */
 header {
   background-color: rgba(0,82,128,1);
-  /*
-  background-color: rgba(0,82,128,0.56);
-  #005280;
-  #003B6F; reddit default color: #CEE3F8;
-  border-bottom: 1px solid #5F99CF;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
-  */
-  height: 64px;
+  height: 56px;
   margin: 0; padding: 0;
-  position: relative;
+  position: fixed; top: 0; left: 0; right: 0;
   white-space: nowrap;
+  z-index: 1000;
 }
 header .site-logo {
   color: white;
@@ -779,20 +79,16 @@ header .site-logo {
 }
 header .site-logo > a.site-icon > img {
   border: 0;
-  height: 48px;
-  margin: 0; padding: 8px 16px;
+  height: 40px;
+  margin: 0;
+  padding: 0.5rem 1.25rem 0 1.25rem;
   vertical-align: middle;
 }
 header .site-logo > a.site-name {
-  color: inherit; text-decoration: inherit;
-  font-size: 1.5rem; line-height: 64px;
-  font-weight: normal;
-  letter-spacing: 0.3rem;
-  text-shadow: 0 0 2px rgba(0,0,0,0.3);
-  vertical-align: middle;
+  display: none;
 }
 header .site-links {
-  font-size: 1rem; line-height: 56px;
+  font-size: 1rem; line-height: 50px;
   margin: 0; padding: 0;
   position: absolute; top: 0; right: 0;
 }
@@ -803,8 +99,8 @@ header .site-links .dotmenu {
   */
   display: inline-block;
   color: white;
-  padding-top: 14px;
-  width: 64px; height: 50px;
+  padding-top: 8px;
+  width: 56px; height: 50px;
 }
 header .site-links .item {
   background-color: rgba(255,255,255,0);
@@ -813,10 +109,14 @@ header .site-links .item {
   */
   color: white;
   display: inline-block;
-  margin: 0; padding: 4px 16px;
+  margin: 0; padding: 6px 0 0 0;
+  overflow: hidden;
   position: relative;
   text-align: center;
   transition: 0.1s ease-out;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 3.5rem; height: 50px;
 }
 header .site-links .item.settings:last-of-type {
   margin-right: 64px;
@@ -834,9 +134,234 @@ header .site-links .item .number {
   text-align: center;
   text-shadow: 1px 1px 1px black;
 }
-header .site-links .item .icon, .site-links .sep {
+header .site-links .item .text {
   display: none;
 }
+header .site-links .item .icon {
+  display: inline-block;
+  margin: 0; padding: 0;
+  font-size: 1.5rem; line-height: 1rem;
+}
+
+
+
+/*
+
+Standard content card, simplefied Material-style.
+
+ */
+.card {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
+  margin: 0 0 8px 0; padding: 8px;
+}
+.card > a:first-child {
+  /* remove "jump to top" */
+  display: none;
+}
+.card > h2:first-of-type {
+  font-size: 1rem; line-height: 2rem;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  font-weight: bold;
+  margin: -8px -8px 8px -8px; padding: 0;
+  text-align: center;
+}
+.card > p.subhead {
+  background-color: #F3F3F3;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  color: rgba(0,0,0,0.56);
+  margin: -8px -8px 8px -8px; padding: 8px;
+  text-align: center;
+}
+.card.nopadd > p.subhead {
+  margin: 0; padding: 8px;
+}
+.card > section {
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  margin: -8px -8px 0 -8px;
+  padding: 8px 16px;
+}
+.card section.nopadd {
+  padding: 0;
+}
+.card.nopadd {
+  padding: 0;
+}
+.card.nopadd > a:first-child {
+  margin: 0; padding: 1rem;
+}
+.card.nopadd > h2:first-of-type {
+  margin: 0; padding: 0;
+}
+.card.nopadd > .subhead {
+  margin: 0; padding: 8px;
+}
+.card.nopadd section {
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  margin: 0; padding: 8px 16px;
+}
+.card.nopadd section:last-of-type {
+  border-bottom: 0;
+}
+.card.nopadd section.nopadd {
+  margin: 0; padding: 0;
+}
+.card.nopadd section.nopadd.foot p {
+  background-color: #F3F3F3;
+  color: gray;
+  margin: 0; padding: 8px;
+  text-align: left;
+}
+
+
+/*
+
+User list horizontal (inline-block).
+
+--> used on body.sr subreddit spcific pages.
+
+ */
+
+body .subheader {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
+  margin: 0; padding: 11px 8px 13px 8px;
+  text-align: left;
+}
+body .subheader > .reddit-link {
+  display: block;
+  font-size: 1.5rem; line-height: 1em;
+  font-weight: normal;
+  margin: 0; padding: 8px;
+  text-align: center;
+}
+body .subheader > .reddit-link > .fa {
+  font-size: 1.5rem;
+  margin-right: 4px;
+  opacity: 0.5;
+}
+body .subheader > .info {
+  font-size: 1rem; line-height: 1.5rem;
+  vertical-align: middle;
+}
+
+body.sr article,
+body.results article {
+  text-align: center;
+}
+body.results .subheader .info span {
+  border-bottom: 1px dotted gray;
+}
+
+
+/*
+
+The list of settings options on the "preferences" page.
+
+ */
+
+body.me .card.section-profile,
+body.me .card.section-geolocation,
+body.me .card.section-srlist {
+  text-align: center;
+}
+
+body.me .card.section-profile section:not(:last-of-type),
+body.me .card.section-srlist section:first-of-type {
+  padding: 4px;
+}
+body.me .card.section-profile .key-col {
+  display: block;
+  margin: 0 0 8px 0; padding: 0;
+  text-align: center;
+  font-size: 1rem; line-height: 1em;
+  font-weight: normal;
+}
+body.me .card.section-profile .val-col {
+  display: block;
+  margin: 0; padding: 0;
+  line-height: 3rem;
+}
+body.me .card.section-profile .val-col .help {
+  margin: 8px 0 0 0; padding: 0;
+}
+
+body.me .section-profile .herefor .val-col {
+  display: inline-block;
+}
+body.me .section-profile .herefor .val-col .item {
+  border: 1px solid rgba(0,0,0,0.12);
+  border-collapse: collapse;
+  color: white;
+  display: inline-block;
+  margin: 0; padding: 16px 8px;
+  position: relative;
+}
+body.me .section-profile .herefor .val-col .item input {
+  display: none;
+}
+body.me .section-profile .herefor .val-col .item .tx {
+  border: 1px solid transparent;
+  color: white;
+  display: block;
+  opacity: 0.82;
+  font-size: 1rem; line-height: 1em;
+  margin: 0; padding: 7px;
+}
+body.me .section-profile .herefor .val-col .item input:checked + .tx {
+  border-color: white;
+  opacity: 1;
+}
+body.me .section-profile .herefor .val-col .item:nth-child(1) { background-color: #FF0000; }
+body.me .section-profile .herefor .val-col .item:nth-child(2) { background-color: #bd0042; }
+body.me .section-profile .herefor .val-col .item:nth-child(3) { background-color: #94006d; }
+body.me .section-profile .herefor .val-col .item:nth-child(4) { background-color: #65009d; }
+body.me .section-profile .herefor .val-col .item:nth-child(5) { background-color: #0000FF; }
+
+body.me .card.section-geolocation .help {
+  margin: 16px 0 0 0; padding: 8px;
+  background-color: #F9F9F9;
+  text-align: left;
+}
+
+
+
+body.me .card.section-about textarea {
+  width: 85vw; height: 100px;
+  resize: both;
+}
+body.me .card.section-pics .item.pics-form input[type="text"] {
+  width: 85vw;
+}
+body.me .card.section-pics .item.pics-preview {
+  font-size: 0;
+  margin: 8px 0 0 0;
+}
+body.me .card.section-pics .item.pics-preview > .pic {
+  display: inline-block;
+  margin: 8px; padding: 0;
+  position: relative;
+  vertical-align: middle;
+}
+body.me .card.section-pics .item.pics-preview > .pic img {
+  background-color: #F3F3F3;
+  max-width: 50vw; height: 75px;
+  border: 4px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.28);
+}
+body.me .card.section-pics .item.pics-preview > .pic input[type="submit"] {
+  cursor: pointer;
+  font-size: 1rem; line-height: 1em;
+  opacity: 0.1;
+  position: absolute; top: 10px; right: 10px;
+  transition: 0.3s ease-out;
+}
+body.me .card.section-pics .item.pics-preview > .pic:hover input[type="submit"] {
+  opacity: 1;
+  transition: 0.3s ease-out;
+}
+
+
 
 
 /*
@@ -846,14 +371,14 @@ between "header" and "main" only if there are any messeges.
 
  */
 ul#site-messages {
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0,0,0,0.6);
   clear: both;
   color: white;
   display: block;
   font-size: 1.15rem;
   list-style: none;
   cursor: pointer;
-  min-height: 33vh;
+  min-height: 66vh;
   margin: 0; padding: 8px;
   opacity: 1;
   position: fixed; bottom: 0; right: 0; left: 0;
@@ -866,53 +391,6 @@ ul#site-messages li a {
 }
 
 
-/*
-
-Main page content area.
-Usualy contains <article/> and sometimes <aside id="sidebar"/>.
-
-*/
-body main {
-  clear: both;
-  overflow: hidden;
-  min-height: 80vh;
-}
-body article {
-  display: block;
-  max-width: 1000px;
-  margin: 0 auto; padding: 0;
-}
-body.has-sidebar article {
-  margin: 0 300px 0 0;
-}
-body.has-sidebar aside#sidebar {
-  display: block;
-  float: right;
-  width: 300px;
-  padding-top: 16px;
-}
-
-
-/*
-
-Site footer, with copyright stuff, content licence, privacy
-statement, terms of service statement, cookie usage statement,
-and whatnot statements.
-
- */
-footer {
-  background-color: rgba(0,0,0,0.56);
-  clear: both;
-  color: silver;
-  font-size: 0.9rem;
-  margin: 0; padding: 16px;
-}
-footer a {
-  color: inherit;
-  text-decoration: inherit;
-  font-weight: bold;
-}
-
 
 
 
@@ -923,71 +401,68 @@ User profile page.
 
  */
 body.profile {
-  /* background-color: rgba(0,82,128,56); */
-  background-color: rgba(0,82,128,1);
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: fixed;
-  /* background-image: url(https://i.imgur.com/tvSIooM.jpg); */
+  background: rgba(0,82,128,1);
 }
 
-
-body.profile header {
+body.profile article,
+body.profile .card {
+  clear: both;
 }
-body.profile .card.headcard {
+
+body.profile .headcard {
+  overflow: hidden;
   padding: 0;
+  display: block;
   position: relative;
-  height: 280px;
+  height: calc(48px + 100vw);
 }
 body.profile .headcard .intro {
-  background-color: transparent;
   display: block;
-  margin: 0; padding: 16px;
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 440px;
-  text-align: left;
-}
-body.profile .headcard .intro .top {
-  font-size: 15px; line-height: 16px;
   margin: 0; padding: 0;
 }
-body.profile .headcard .intro .top a {
-  background-color: #F3F3F3;
-  border: 1px dotted gray;
-  color: black;
-  font-weight: normal;
-  display: inline-block;
-  margin: 0 4px 16px 0; padding: 8px 4px;
+body.profile .headcard .intro .top {
+  background-color: #005280;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  display: block;
+  height: 48px;
+  margin: 0; padding: 0;
+  text-align: center;
+  white-space: nowrap;
 }
-body.profile .headcard .intro .top a:hover {
-  text-decoration: underline;
+body.profile .headcard .intro .top a {
+  color: rgba(255,255,255,0.82);
+  display: inline-block;
+  font-size: 0.9rem; line-height: 48px;
+  margin: 0; padding: 0 8px;
 }
 body.profile .headcard .intro .textline {
-  font-size: 24px; line-height: 28px;
+  background-color: rgba(255,255,255,0.56);
+  color: black;
+  display: block;
+  font-size: 14px; line-height: 20px;
+  position: absolute; bottom: 0;
+  margin: 0; padding: 8px;
 }
 body.profile .headcard .intro .textline a {
   color: inherit;
   border-bottom: 1px dotted gray;
 }
+body.profile .headcard .intro .textline .username {
+  border-bottom: 0;
+  font-weight: bold;
+}
 body.profile .headcard .intro .meta {
-  position: absolute;
-  right: 0; bottom: 0; left: 0;
   color: gray;
+  display: none;
   padding: 16px;
 }
 
 body.profile .card.headcard .dotmenu {
-  position: absolute; top: 0; right: 0;
-  margin: 0; padding: 8px;
-  background-color: rgba(255,255,255,0.75);
-  border-radius: 0;
-  z-index: 1;
+  display: none;
 }
 
 body.profile .upvote-hide {
-  display: block;
-  position: absolute; top: 0; left: 0;
+  display: none;
   width: 84px;
   margin: 32px 20px 0 22px; padding: 24px 16px;
   border: 1px solid gray;
@@ -1006,6 +481,13 @@ body.profile .upvote-hide .upvote input[type="submit"] {
 body.profile .upvote-hide .upvote input[type="submit"]:hover {
   opacity: 1;
 }
+body.profile.is-like .upvote-hide .upvote {
+}
+body.profile.is-match .upvote-hide .upvote input[type="submit"],
+body.profile.is-like .upvote-hide .upvote input[type="submit"] {
+  opacity: 1;
+}
+
 body.profile .upvote-hide .middot {
   width: 84px;
   margin: 0; margin-top: 16px; padding: 0;
@@ -1032,37 +514,27 @@ body.profile .upvote-hide .hide input[type="submit"]:hover {
 }
 
 body.profile .pics {
-  position: absolute;
-  top: 0; bottom: 0; left: 160px;
-  width: 280px; height: 280px;
+  width: 100vw;
   overflow: hidden;
-  transition: 0.3s ease-out;
-}
-body.profile .pics:hover {
-  width: 840px;
   transition: 0.3s ease-out;
 }
 body.profile .pics ul {
   display: block;
   list-style: none;
   margin: 0; padding: 0;
-  width: 840px; height: inherit;
 }
 body.profile .pics ul li {
+  display: none;
+}
+body.profile .pics ul li:first-child {
   display: block;
-  float: left;
-  width: 140px; height: 140px;
+  width: 100vw; height: 100vw;
   margin: 0; padding: 0;
   overflow: hidden;
 }
-body.profile .pics ul li:first-child {
-  float: left;
-  margin: 0; padding: 0;
-  width: 280px; height: 280px;
-}
-body.profile .pics ul li .pic {
+body.profile .pics ul li:first-child .pic {
   border: 0;
-  display: inline-block;
+  display: block;
   width: inherit; height: inherit;
   background-position: center center;
   background-repeat: no-repeat;
@@ -1074,11 +546,10 @@ body.profile .about {
   margin: 0; padding: 16px;
 }
 body.profile .links-to-reddit-profile {
-  border-bottom: 1px solid rgba(0,0,0,0.12);
   display: block;
   list-style: none;
-  margin: -16px; margin-bottom: 0; padding: 0;
   text-align: center;
+  margin: 0; padding: 0;
 }
 body.profile .links-to-reddit-profile li {
   display: inline-block;
@@ -1086,11 +557,11 @@ body.profile .links-to-reddit-profile li {
 }
 body.profile .info-tables {
   overflow: hidden;
-  margin: 0; padding: 0;
+  margin: 0; padding: 0 8px;
 }
 body.profile .info {
   float: left;
-  margin: 0 16px; padding: 0;
+  margin: 8px; padding: 0;
 }
 body.profile .info table {
   margin: 16px 0;
@@ -1109,191 +580,161 @@ body.profile .info table tbody tr td {
   border: 1px solid #CCC;
 }
 
+body.profile .fullpics {}
 
-/*
-
-the big "you like each other" box when authuser views a profile they "liked"
-
-*/
-body.profile.is-match .match-box {
-  background-color: #CC0000;
-  margin: 0; padding: 24px 16px;
-  overflow: hidden;
-}
-
-/*
-
-Buttons on user profile pages for "like", "nope", or "dunno".
-
-TODO: change into upvote / downvote buttons
-
-*/
-body.profile.is-none .like-nope-duno {
-  display: block;
-  margin: 0; padding: 24px 16px;
-  text-align: center;
-}
-body.profile.is-none .like-nope-duno > .opt {
-  background: none;
-  border: 16px solid white; outline: 0;
-  border-radius: 50%;
-  box-shadow: inset 0 5px 10px 5px rgba(255,255,255,0.3),
-              inset 0 -5px 10px 5px rgba(0,0,0,0.1),
-              0 2px 3px rgba(0,0,0,0.3);
-  color: white;
-  cursor: pointer;
+body.profile .fullpics > span {
+  background-color: black;
   display: inline-block;
-  font-size: 64px; line-height: 96px;
-  margin: 0 -4px; padding: 0;
-  overflow: hidden;
-  position: relative;
   text-align: center;
-  width: 96px; height: 96px;
   vertical-align: middle;
-  z-index: 100;
+  width: 100vw; height: 100vw;
 }
-body.profile.is-none .like-nope-duno > .opt:first-child { margin-left: 0; }
-body.profile.is-none .like-nope-duno > .opt:hover { opacity: 1; }
-body.profile.is-none .like-nope-duno > .opt:active {
-  box-shadow: inset 0 -3px 5px 3px rgba(255,255,255,0.3),
-              inset 0 3px 5px 3px rgba(0,0,0,0.1),
-              0 2px 3px rgba(0,0,0,0.3);
-}
-body.profile.is-none .like-nope-duno > .opt.like {
-  background-color: red;
-  margin-left: 40px;
-}
-body.profile.is-none .like-nope-duno > .opt.nope {
-  background-color: gray;
-  margin-right: 40px;
-}
-body.profile.is-none .like-nope-duno > .opt.duno {
+body.profile .fullpics > span.no {
   display: none;
-  background-color: gray;
-  margin-top: 64px;
-  width: 48px; height: 48px;
-  font-size: 32px; line-height: 48px;
-  z-index: 99;
 }
-body.profile.is-none .like-nope-duno > .opt > span {
-  display: inline-block;
-}
-body.profile.is-none .like-nope-duno > .opt.like > span {
-  padding-top: 16px;
-}
-body.profile.is-none .like-nope-duno > .opt > input[type="submit"] {
-  background-color: transparent;
-  margin: 0; padding: 0; border: 0; outline: 0;
-  position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-  width: 100%; height: 100%;
+body.profile .fullpics > span > a,
+body.profile .fullpics > span > span {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: block;
+  overflow: hidden;
+  width: inherit; height: inherit;
 }
 
-/* when it was a match */
 
-body.profile.is-match .match-box .announce {
+
+/*
+
+when it was a match
+
+*/
+
+body.profile .announce.match {
+  background-color: rgba(255,255,255,0.36);
+  margin: 0; padding: 16px;
+  overflow: hidden;
+  text-align: center;
+}
+body.profile .announce.match h1 {
   font-size: 2.5rem; line-height: 1em;
   font-weight: bold;
-  margin: 0 0 24px 0; padding: 0;
-  text-align: center;
+  letter-spacing: 6px;
+  display: block;
+  color: white;
+  text-shadow: 2px 2px 1px black;
 }
-body.profile.is-match .match-box .announce span {
-  display: inline-block;
-  position: relative;
-  color: #FFFFFF;
-  text-shadow: 2px 2px 2px rgba(0,0,0,0.6);
-}
-body.profile.is-match .match-box .action {
+body.profile .announce.match .action {
   padding: 16px;
   clear: both;
   text-align: center;
 }
-body.profile.is-match .match-box .action .mainbtn {
+body.profile .announce.match .action .mainbtn {
   padding-top: 10px;
-  padding-bottom: 10px;
 }
-body.profile.is-match .match-box .action .later {
-  color: rgba(255,255,255,0.3);
+body.profile .announce.match .action .later {
+  border: 1px solid white;
+  color: white;
   display: inline-block;
-  padding-top: 16px;
-  transition: 0.3s ease-out;
+  font-size: 1rem; line-height: 1em;
+  font-weight: normal;
+  margin: 24px 0 0 0; padding: 8px 16px;
+  opacity: 0.56;
+  transition: 0.2s ease-out;
 }
-body.profile.is-match .match-box .action .later:hover {
-  color: rgba(255,255,255,0.8);
-  transition: 0.3s ease-out;
+body.profile .announce.match .action .later:hover {
+  opacity: 1;
+  transition: 0.2s ease-out;
 }
-body.profile.is-match .match-box .uu {
+body.profile .announce.match .uu {
   display: block;
   text-align: center;
 }
-body.profile.is-match .match-box .uu > div {
-  color: rgba(255,255,255,0.6);
+body.profile .announce.match .uu > div {
   display: inline-block;
-  font-size: 0.8rem;
-  max-width: 300px;
+  font-size: 1rem; line-height: 1em;
   vertical-align: middle;
 }
-body.profile.is-match .match-box .uu > div > span.username {
+body.profile .announce.match .uu > div > span.username {
+  color: white;
   display: block;
+  opacity: 0.56;
+  margin: 4px 0 0 0;
 }
-body.profile.is-match .match-box .uu > div > img {
+body.profile .announce.match .uu > div > img {
   border: 10px solid #FFFFFF;
-  box-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+  box-shadow: 2px 2px 3px rgba(0,0,0,0.56);
   display: block;
-  height: 200px;
+  width: 40vw; height: auto;
   margin: 0; padding: 0;
+
 }
-body.profile.is-match .match-box .uu > div.u1 {
-  margin-right: 8px;
+body.profile .announce.match .uu > div.u1 {
+  margin-right: 16px;
 }
-body.profile.is-match .match-box .uu > div.u2 {
-  margin-left: 8px;
+body.profile .announce.match .uu > div.u2 {
+  margin-left: 16px;
 }
 
-/* when auth user liked view user, but there is no like back (yet) */
+/*
 
-body.profile .match-box .announce {
-  display: block;
-  margin: 0; padding: 24px 0;
-  text-align: center;
-}
-body.profile .match-box .announce .fa {
-  background: none;
-  border: 16px solid white; outline: 0;
-  border-radius: 50%;
-  box-shadow: inset 0 -3px 5px 3px rgba(255,255,255,0.3),
-              inset 0 3px 5px 3px rgba(0,0,0,0.1),
-              0 2px 3px rgba(0,0,0,0.3);
+when auth user liked view user, but there is no like back (yet)
+
+*/
+
+body.profile .announce.like {
+  background-color: red;
   color: white;
   display: inline-block;
-  font-size: 64px; line-height: 96px;
-  margin: 0 -4px; padding: 0;
-  overflow: hidden;
-  position: relative;
-  text-align: center;
-  width: 96px; height: 96px;
-  vertical-align: middle;
-  z-index: 100;
+  margin: 0; padding: 8px 16px;
+  position: absolute; top: 2px; left: -20px;
+  transform: rotate(-25deg);
 }
-body.profile .match-box .announce .tx {
+
+body.profile .announce.nope {
+  background-color: gray;
   color: white;
-  margin: 0; padding: 32px;
+  display: block;
+  margin: 0; padding: 16px 0;
+  text-align: center;
+}
+body.profile .announce.nope form {
+  display: inline-block;
+}
+body.profile .announce.nope form input[type="submit"] {
+  background: 0;
+  border: 1px solid white;
+  display: inline-block;
+  outline: 0;
+  margin: 0 0 0 16px; padding: 4px 8px;
 }
 
-body.profile.is-like .match-box .announce {}
-body.profile.is-like .match-box .announce .fa {
-  background-color: red;
-}
-body.profile.is-like .match-box .announce .tx {
-  background-color: red;
+body.profile .announce.herefor span {
+  color: white;
+  display: block;
+  margin: 16px 0 -16px 0; padding: 16px 32px;
+  text-align: center;
 }
 
-body.profile.is-nope .match-box .announce {}
-body.profile.is-nope .match-box .announce .fa {
-  background-color: gray;
+
+/*
+
+the list with five following profiles
+at the end of the profile view.
+
+ */
+
+body.profile .prevnext-user-list {
+  margin: 0;
+  overflow-x: scroll;
 }
-body.profile.is-nope .match-box .announce .tx {
-  background-color: gray;
-}
+
+
+/*
+
+left-right skip to next / prev user profile
+
+ */
 
 body.profile .prevnext-arrows {
 }
@@ -1302,16 +743,17 @@ body.profile .prevnext-arrows > a {
   box-shadow: 0 0 3px black;
   color: white;
   display: block; width: 56px; height: 56px;
-  font-size: 40px; line-height: 56px;
-  position: fixed; top: calc(50vh - 28px);
+  font-size: 32px; line-height: 56px;
+  opacity: 0.56;
+  position: fixed; bottom: 0;
   text-align: center;
 }
 body.profile .prevnext-arrows > a.prev {
-  border-radius: 0 28px 28px 0;
+  border-radius: 0 28px 0 0;
   left: 0;
 }
 body.profile .prevnext-arrows > a.next {
-  border-radius: 28px 0 0 28px;
+  border-radius: 28px 0 0 0;
   right: 0;
 }
 
@@ -1321,6 +763,7 @@ body.profile .prevnext-arrows > a.next {
 Home page signup screen for anonymous users.
 
  */
+
 body.as-overlay main,
 body.signup-steps main {
   display: block;
@@ -1369,6 +812,7 @@ body.signup-steps article .abouts {
 After signup steps to input basic account info.
 
  */
+
 body.signup-steps {
 }
 body.signup-steps.step-1 {  /* Signup with reddit */
@@ -1482,288 +926,208 @@ body.reports .report.card .details {
 body.reports .report.card .sender {
 }
 
-/* ======================================================================= */
 
-@media only screen and (max-width: 1200px) {  /* < lg */
+
+
+
+
+
+
+/* signup screens */
+
+body.as-overlay main,
+body.signup-steps main {
+  background: none; min-height: 0;
+}
+body.as-overlay article,
+body.signup-steps article {
+  margin: 0; padding: 0;
+  width: auto;
+}
+body.as-overlay article .overlay,
+body.signup-steps article .overlay {
+  display: block;
+  margin: 0; padding: 16px;
+  width: auto;
+  text-align: center;
+}
+body.as-overlay article .overlay h1,
+body.signup-steps article .overlay h1 {
+  margin: 0; padding: 8px;
+  float: none;
+  line-height: 1.15em;
+}
+body.as-overlay article .overlay .mainbtn,
+body.signup-steps article .overlay .mainbtn {
+  margin: 0 auto;
+}
+body.as-overlay article .abouts,
+body.signup-steps article .abouts {
+  margin: 0; padding: 0 8px;
+  width: auto; min-height: 50vh;
+}
+body.signup-steps .show-signup-steps {
+  padding: 4px;
+}
+body.signup-steps .show-signup-steps > div {
+  padding: 4px;
+}
+body.signup-steps .show-signup-steps > div:not(:first-child):before {
+  content: '';
+  margin: 0; padding: 0;
 }
 
-/* ======================================================================= */
 
-@media only screen and (max-width: 960px) {  /* < md */
+/*
 
-  body article,
-  body.has-sidebar article {
-    width: 100vw;
-    margin: 0; padding: 0;
-  }
-  body.has-sidebar aside#sidebar {
-    display: block;
-    float: none;
-    width: 100vw;
-    margin: 0; padding: 0;
-  }
-  body.has-sidebar aside#sidebar section {
-    margin: 0 0 16px 0;
-  }
+remove the colored annoucement bar on <sm
 
-  body {  /* make header menu fixed */
-    padding-top: 56px;
-  }
-  header {
-    position: fixed; top: 0; left: 0; right: 0;
-    z-index: 1000;
-  }
-
-  .card > a:first-child {  /* remove to link "go to top" arrow */
-    display: none;
-  }
-  .card > h2 {  /* removing the link breaks the top padding */
-    margin-top: -8px;
-    background-color: red; color: white;
-    text-shadow: 1px 1px 1px black;
-  }
-  .card > h2 > a {
-    color: inherit;
-  }
-  body article .card {
-    margin-top: 0;
-    padding: 8px;
-  }
-
-  header .site-logo {}
-  header .site-logo .site-icon {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-  header .site-logo > .site-icon > img {
-    height: 2.5rem;
-    padding: 0.5rem 1.25rem 0 1.25rem;
-  }
-  header .site-logo > .site-name {
-    display: none;
-  }
-
-  header .site-links {
-    font-size: 1rem; line-height: 50px;
-    margin: 0 auto; padding: 0;
-  }
-  header .site-links .item {
-    position: relative;
-    width: 3.5rem; height: 50px;
-    padding-top: 6px; padding-bottom: 0;
-    overflow: hidden;
-    vertical-align: middle;
-    white-space: nowrap;
-  }
-  header .site-links .item .text {
-    display: none;
-  }
-  header .site-links .item .icon {
-    display: inline-block;
-    margin: 0; padding: 0;
-    font-size: 1.5rem; line-height: 1rem;
-  }
-
-  /*
-
-  match box on user profiles
-
-   */
-  body.profile.is-match .match-box {
-    margin: 0; padding: 24px 0 0 0;
-  }
-  body.profile.is-match .match-box .uu img {
-    width: 40vw; height: auto;
-  }
-  body.profile.is-none .match-box {
-    margin: 0; padding: 0;
-    position: fixed; bottom: 0; left: 0; right: 0;
-    text-align: center;
-  }
-  body.profile.is-none .match-box .like-nope-duno {
-    display: inline-block;
-    margin: 0; padding: 16px 0;
-    background-color: rgba(255,255,255,0.8);
-    border-radius: 40px 40px 0 0;
-    box-shadow: 0 0 3px rgba(0,0,0,0.6);
-  }
-  body.profile.is-none .match-box .like-nope-duno .opt {
-    margin: 0 16px; padding: 0;
-  }
-
-  ul.user-list-vert li a.pic {
-    margin: 0 8px 0 0; padding: 0;
-    text-align: right;
-    width: 150px; height: 150px;
-    overflow: hidden;
-  }
-  ul.user-list-vert li .matched {
-    margin: 16px 0 0 0;
-  }
-  ul.user-list-vert li .mainbtn {
-    margin: 16px 0 0 150px;
-  }
-
-  body.profile .about {
-    padding: 0;
-  }
-
-  body.sr article {
-    text-align: center;
-  }
-
+*/
+.site-announcements {
+  display: none;
 }
 
-/* ======================================================================= */
-
-@media only screen and (max-width: 600px) {  /* < sm */
-
-  /* signup screens */
-
-  body.as-overlay main,
-  body.signup-steps main {
-    background: none; min-height: 0;
-  }
-  body.as-overlay article,
-  body.signup-steps article {
-    margin: 0; padding: 0;
-    width: auto;
-  }
-  body.as-overlay article .overlay,
-  body.signup-steps article .overlay {
-    display: block;
-    margin: 0; padding: 16px;
-    width: auto;
-    text-align: center;
-  }
-  body.as-overlay article .overlay h1,
-  body.signup-steps article .overlay h1 {
-    margin: 0; padding: 8px;
-    float: none;
-    line-height: 1.15em;
-  }
-  body.as-overlay article .overlay .mainbtn,
-  body.signup-steps article .overlay .mainbtn {
-    margin: 0 auto;
-  }
-  body.as-overlay article .abouts,
-  body.signup-steps article .abouts {
-    margin: 0; padding: 0 8px;
-    width: auto; min-height: 50vh;
-  }
-  body.signup-steps .show-signup-steps {
-    padding: 4px;
-  }
-  body.signup-steps .show-signup-steps > div {
-    padding: 4px;
-  }
-  body.signup-steps .show-signup-steps > div:not(:first-child):before {
-    content: '';
-    margin: 0; padding: 0;
-  }
 
 
 
-  /*
+/*
 
-  remove the colored annoucement bar on <sm
+User list vertical (one per line): for matches, nopes, etc.
 
-  */
-  .site-announcements {
-    display: none;
-  }
-
-  ul.user-list-vert li span.info span.asl.short {
-    display: block;
-  }
-  ul.user-list-vert li span.info span.asl.long {
-    display: none;
-  }
-  ul.user-list-vert li .mainbtn {
-    width: 200px;
-  }
-
-
-  header .site-logo .site-icon {
-    padding-left: 0.5rem;  /* reduce siede padding a bit */
-    padding-right: 0;
-  }
-  header .site-logo > .site-icon > img {
-    padding-left: 0.5rem;  /* reduce side padding a bit */
-    padding-right: 0;
-  }
-  header .site-logo > .site-name {
-    display: none;
-  }
-  header .site-links .item {
-    position: relative;
-    width: 2.5rem; height: 50px;  /* reduce width a bit */
-    padding-top: 6px; padding-bottom: 0;
-    overflow: hidden;
-    vertical-align: middle;
-    white-space: nowrap;
-  }
-  header .site-links .item .icon {
-    display: inline-block;
-    margin: 0; padding: 0;
-    font-size: 1.5rem; line-height: 1rem;
-  }
-
-
-  /*
-
-  match box on user profiles
-
-   */
-  body.profile.is-match .match-box {
-    margin: 0; padding: 8px 0 0 0;
-  }
-  body.profile.is-match .match-box .uu img {
-    width: 40vw; height: auto;
-  }
-  body.profile.is-none .match-box {
-    margin: 0; padding: 0;
-    position: fixed; bottom: 0; left: 0; right: 0;
-    text-align: center;
-    z-index: 200;
-  }
-  body.profile.is-none .match-box .like-nope-duno {
-    background-color: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    display: block;
-    margin: 0; padding: 8px 0;
-  }
-  body.profile.is-none .match-box .like-nope-duno .opt {
-    margin: 0 8px; padding: 0;
-  }
-  body.profile.is-none .match-box .like-nope-duno .opt.duno {
-    display: none;
-  }
-
-
-  /*
-
-  List of system messages to respond to user input etc. Shown
-  between "header" and "main" only if there are any messeges.
-
-   */
-  ul#site-messages {
-    background-color: white; color: black;
-    box-shadow: 0 0 16px black;
-    display: block;
-    font-size: 1rem;
-    list-style: none;
-    cursor: pointer;
-    margin: 0; padding: 8px;
-    min-height: 100px;
-    opacity: 1;
-    position: fixed; top: 32px; left: 16px; right: 16px;
-    z-index: 9999;
-  }
-  ul#site-messages li {
-    margin: 0; padding: 8px;
-  }
-
+ */
+ul.user-list-vert {
+  display: block;
+  font-size: 0;
+  list-style: none;
+  margin: 0; padding: 0;
 }
+ul.user-list-vert li {
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  display: block;
+  margin: 0; padding: 0;
+  overflow: hidden;
+  position: relative;
+  width: 100vw; height: 100vw;
+}
+ul.user-list-vert li a.pic {
+  display: block;
+  margin: 0; padding: 0;
+  width: inherit; height: inherit;
+}
+ul.user-list-vert li a.pic img {
+  border: 0;
+  width: inherit; height: inherit;
+}
+ul.user-list-vert li span.info {
+  display: block;
+  font-size: 1rem; line-height: 1.5em;
+  margin: 0; padding: 8px;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background-color: rgba(255,255,255,0.56);
+}
+ul.user-list-vert li span.info a.username {
+  display: block;
+  font-size: 2rem; line-height: 2rem;
+  margin: 0; padding: 0;
+  padding-bottom: 0.25rem
+}
+ul.user-list-vert li span.info span.asl {
+  display: block;
+  font-size: 1rem; line-height: 1.25rem;
+}
+ul.user-list-vert li span.info span.asl.short {
+  display: none;
+}
+ul.user-list-vert li .matched {
+  color: gray;
+  margin: 8px 0 0 0;
+}
+ul.user-list-vert li .mainbtn {
+  margin: 8px;
+}
+
+
+
+/*
+
+list of user profiles by profile picture, with some basic info onmouseover.
+also, two selection buttons are shown onmouseover, to "connect" with the user
+or to "hide" them.
+
+ */
+ul.user-list {
+  display: block;
+  font-size: 0;
+  list-style: none;
+  margin: 0; padding: 0;
+}
+ul.user-list li {
+  display: inline-block;
+  margin: 8px; padding: 0;
+  position: relative;
+  vertical-align: middle;
+}
+ul.user-list li a.pic {
+  display: block;
+  margin: 0; padding: 0;
+}
+ul.user-list li a.pic img {
+  border: 8px solid #FFFFFF;
+  box-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+  display: block;
+  box-sizing: border-box;
+  width: 95vw; height: auto;
+  max-height: 800px;
+  margin: 0; padding: 0;
+}
+ul.user-list li .info {
+  background-color: rgba(0,0,0,0.6);
+  display: block;
+  font-size: 1rem; line-height: 1.5em;
+  margin: 0; padding: 0;
+  opacity: 1;
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  transition: 0.3s ease-out;
+}
+ul.user-list li .info .username {
+  display: block;
+  color: white;
+  font-size: 20px; line-height: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 111px;
+}
+ul.user-list li .info .asl {
+  color: white;
+  display: block;
+  font-size: 16px; line-height: 16px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+ul.user-list li .like-nope-btns {
+  display: none;
+  margin: 0; padding: 0;
+  opacity: 0;
+  transition: 0.3s ease-out;
+}
+ul.user-list li:hover .like-nope-btns {
+  opacity: 1;
+  transition: 0.3s ease-out;
+}
+ul.user-list li .like-nope-btns > .opt > input[type="submit"] {
+  margin: 0; padding: 0; border: 0; outline: 0;
+  position: absolute; left: calc(50% - 42px);
+  width: 84px; height: 73px;
+}
+ul.user-list li .like-nope-btns > .opt.like > input[type="submit"] {
+  background: transparent url(/static/up-arrows-2.gif) center center no-repeat;
+  top: 16px;
+}
+ul.user-list li .like-nope-btns > .opt.nope > input[type="submit"] {
+  background: transparent url(/static/down-arrows-2.gif) center center no-repeat;
+  bottom: 16px;
+}
+
