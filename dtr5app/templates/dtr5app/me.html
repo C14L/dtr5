@@ -7,7 +7,7 @@
 {% block main %}
 
 <article>
-  <div class="card section-search" id="id_search">
+  <div class="card nopadd section-search" id="id_search">
     <h2>search settings</h2>
     <form class="item" method="POST" action="{% url 'me_search_page' %}">
       {% csrf_token %}
@@ -38,7 +38,7 @@
         </label>
       </p>
 
-      <section class="toggle-section">
+      <section class="nopadd toggle-section">
         <label for="id_984hfhe">
           <h3>more search settings</h3>
         </label>
@@ -109,7 +109,7 @@
     <form class="item manual" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
 
-      <section class="herefor">
+      <section class="nopadd herefor">
         <p class="key-col">I am here for:</p>
         <p class="val-col">
           {% for x in settings.HEREFOR %}
@@ -121,7 +121,7 @@
         </p>
       </section>
 
-      <section>
+      <section class="nopadd">
         <p class="key-col">my gender:</p>
         <p class="val-col">
           <label class="sex">
@@ -134,7 +134,7 @@
         </p>
       </section>
 
-      <section>
+      <section class="nopadd">
         <p class="key-col">my birthday:</p>
         <p class="val-col">
           <label class="dob">
@@ -144,7 +144,7 @@
         <span class="help">never publicly shown! only used to show your age and zodiacs.</span>
       </section>
 
-      <section>
+      <section class="nopadd">
         <span class="key-col">looking for:</span>
         <div class="val-col lookingfor-list">
           <ul>

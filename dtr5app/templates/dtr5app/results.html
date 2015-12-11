@@ -40,21 +40,20 @@
               {{v.profile.get_distance|prefdist:user}} away
             </span>
           </a>
-
+          <!-- ## remove: onmouseover overlay may cause accidental clicks ##
           <div class="like-nope-btns">
             <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' v.username %}" title="nope">
               {% csrf_token %}
               <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
-              <!-- <span class="fa fa-meh-o"></span> -->
               <input type="submit" value="">
             </form>
             <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' v.username %}" title="upvote">
               {% csrf_token %}
               <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
-              <!-- <span class="fa fa-smile-o"></span> -->
               <input type="submit" value="">
             </form>
           </div>
+          -->
 
         </li>
       {% endfor %}
