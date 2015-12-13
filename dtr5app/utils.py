@@ -90,7 +90,7 @@ def update_list_of_subscribed_subreddits(user, subscribed):
             # TODO: fix all doubles, then fix db schema (unique_together).
             sub_created = False  # no new subreddit added
             Subscribed.objects.filter(user=user, sr=sr).delete()
-            Subscribed.objects.create(user=user, sr=sr, defaults=default)
+            Subscribed.objects.create(user=user, sr=sr, **default)
 
         # If the user was newly added to the subreddit, count it as
         # a local user for that subreddit. (a user of the sr who is
