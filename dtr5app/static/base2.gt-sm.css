@@ -298,10 +298,12 @@ header .site-links .item:hover {
   transition: 0.1s ease-out;
 }
 header .site-links .item .number {
-  background-color: red;
+  background-color: rgab(0,0,0,0.56);
+  border-radius: 50%;
   color: white;
-  display: block; min-width: 1.5rem; height: 1.5rem;
+  display: block;
   font-size: 1rem; line-height: 1.5rem;
+  min-width: 1.5rem; height: 1.5rem;
   position: absolute; top: 0; right: 0;
   text-align: center;
   text-shadow: 1px 1px 1px black;
