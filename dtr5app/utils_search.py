@@ -1,6 +1,7 @@
 """
 All profile search-realted functions.
 """
+import random
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -144,7 +145,23 @@ def search_users_by_options_queryset(user, include_flagged=False):
 #    return list(li[:BUFFER_LEN].values_list('username', flat=True))
 
 
-def search_users(request, usernames_only=True):
+def set_search_results_order(request, order_by=None):
+    # set a search results order. default is to randomly switch between all
+    # available options. options are: 'sr_count', 'accessed', '-accessed',
+    # 'views_count', '-views_count'.
+    opts = ['sr_count',
+            # 'accessed',
+            'views_count',
+            '-accessed',
+            '-views_count']
+
+    if order_by not in opts:
+        order_by = random.choice(opts)
+
+    request.session['search_results_order'] = order_by
+
+
+def search_users(request, usernames_only=True, order_by=None):
     """
     Return a list of usernames that are matches for auth user's selected
     search options and also are subscribes to one or more of the same
@@ -181,7 +198,10 @@ def search_users(request, usernames_only=True):
     # part 1
     query_params += []
     query_string += '''
-        SELECT au.id, au.username, COUNT(r1.user_id) AS sr_count
+        SELECT
+            au.id, au.username, ap.accessed, ap.accessed, ap.views_count,
+            COUNT(r1.user_id) AS sr_count
+
         FROM dtr5app_subscribed r1
 
         INNER JOIN dtr5app_subscribed r2
@@ -192,6 +212,9 @@ def search_users(request, usernames_only=True):
 
         INNER JOIN dtr5app_sr sr
             ON r1.sr_id = sr.id
+
+        INNER JOIN dtr5app_profile ap
+            ON au.id = ap.user_id
 
         WHERE au.is_active IS TRUE AND last_login IS NOT NULL '''
 
@@ -279,18 +302,25 @@ def search_users(request, usernames_only=True):
 
     # finish up
     query_params += [BUFFER_LEN]
-    query_string += ''' ) GROUP BY r1.user_id, au.id
+    query_string += ''' ) GROUP BY r1.user_id, au.id, ap.user_id
                           ORDER BY sr_count DESC LIMIT %s '''
 
     # execute the query with the collected params
     users = User.objects.raw(query_string, query_params)
 
-    # print('='*50)
-    # print(repr(users))
-    # print('='*50)
-    # for u in users:
-    #   print('share {} subs with {}:{}'.format(u.sr_count, u.id, u.username))
-    # print('='*50)
+    # re-order the results
+    set_search_results_order(request, order_by)
+    order_by = request.session['search_results_order']
+    if order_by == '-accessed':  # most recently accessed first
+        users = sorted(users, key=lambda u: u.accessed, reverse=True)
+    elif order_by == 'accessed':  # most recently accessed last
+        users = sorted(users, key=lambda u: u.accessed, reverse=False)
+    elif order_by == '-views_count':  # most views first
+        users = sorted(users, key=lambda u: u.views_count, reverse=True)
+    elif order_by == 'views_count':  # most views last
+        users = sorted(users, key=lambda u: u.views_count, reverse=False)
+    else:  # sr_count (default): most subs in common first
+        users = sorted(users, key=lambda u: u.sr_count, reverse=True)
 
     # default return a list of only usernames
     if usernames_only:
@@ -306,17 +336,21 @@ def search_results_buffer(request, force=False):
     the buffer.
     """
     bt = request.session.get('search_results_buffer_time', None)
+
     if (not bt or from_iso8601(bt) + timedelta(minutes=1) < from_iso8601()):
         if settings.DEBUG:
             print('search_results_buffer() --> Cache timeout, new search!')
         force = True  # if buffer is old, force refresh
+
     if request.session.get('search_results_buffer', None) is None:
         if settings.DEBUG:
             print('search_results_buffer() --> No buffer, fill first time!')
         force = True  # no buffer ever set, then do a search
+
     if force:
         if settings.DEBUG:
             print('search_results_buffer() --> "force" is true, do search!')
+
         request.session['search_results_buffer'] = search_users(request)
         request.session['search_results_buffer_time'] = to_iso8601()
         request.session.modified = True

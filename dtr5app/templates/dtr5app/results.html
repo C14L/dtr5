@@ -38,6 +38,7 @@
               {{v.profile.get_age}}
               {{v.profile.get_sex_symbol}}
               {{v.profile.get_distance|prefdist:user}} away
+              <br/>last active: {{v.profile.accessed|timesince}}
             </span>
           </a>
           <!-- ## remove: onmouseover overlay may cause accidental clicks ##

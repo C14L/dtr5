@@ -1,8 +1,8 @@
 import toolbox
-from django.test import TestCase
+from django.test import SimpleTestCase
 
 
-class ToolboxTestCase(TestCase):
+class ToolboxTestCase(SimpleTestCase):
 
     def test_sr_str_to_list(self):
         a = 'AskReddit, IamA , t:1990 ,Reddit.com dragonsfuckingcars'
