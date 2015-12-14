@@ -535,8 +535,8 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     # Count the profile view, unless auth user is viewing their own profile.
     if request.user.pk != view_user.pk:
         # count the view in view_user's profile
-        view_user.profile.views_count = F('views_count') + 1
-        view_user.profile.new_views_count = F('new_views_count') + 1
+        view_user.profile.views_count += 1
+        view_user.profile.new_views_count += 1
         view_user.profile.save()
         # remember the view for visitor history
         Visit.add_visitor_host(request.user, view_user)
@@ -635,17 +635,16 @@ def me_flag_view(request, action, flag, username):
             Flag.set_flag(request.user, view_user, flag)
 
             if flag == 'like':
-                x = 'new_likes_count'
-                view_user.profile.new_likes_count = F(x) + 1
+                view_user.profile.new_likes_count += 1
                 view_user.profile.save()
 
                 if request.user.profile.match_with(view_user):
                     # a match? then count the new match on both users'
                     # profiles.
                     x = 'new_matches_count'
-                    request.user.profile.new_matches_count = F(x) + 1
+                    request.user.profile.new_matches_count += 1
                     request.user.profile.save()
-                    view_user.profile.new_matches_count = F(x) + 1
+                    view_user.profile.new_matches_count += 1
                     view_user.profile.save()
                     # if authuser set a like flag, and we have a match, then
                     # show the newly matched profile again, so authuser can
