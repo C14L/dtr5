@@ -534,11 +534,19 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
 
     # Count the profile view, unless auth user is viewing their own profile.
     if request.user.pk != view_user.pk:
-        # count the view in view_user's profile
-        view_user.profile.views_count += 1
-        view_user.profile.new_views_count += 1
-        view_user.profile.save(update_fields=['views_count',
-                                              'new_views_count'])
+        # to minimize repeated counting (in case of page relaod etc) remember
+        # the last 10 profiles authuser visited and don't count them again.
+        if 'last_viewed_users' not in request.session.keys():
+            request.session['last_viewed_users'] = []
+        try:
+            request.session['last_viewed_users'].remove(view_user.pk)
+        except ValueError:
+            view_user.profile.views_count += 1
+            view_user.profile.new_views_count += 1
+            view_user.profile.save(update_fields=['views_count',
+                                                  'new_views_count'])
+        request.session['last_viewed_users'].append(view_user.pk)
+
         # remember the view for visitor history
         Visit.add_visitor_host(request.user, view_user)
 
