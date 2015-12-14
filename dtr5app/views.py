@@ -537,7 +537,8 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
         # count the view in view_user's profile
         view_user.profile.views_count += 1
         view_user.profile.new_views_count += 1
-        view_user.profile.save()
+        view_user.profile.save(update_fields=['views_count',
+                                              'new_views_count'])
         # remember the view for visitor history
         Visit.add_visitor_host(request.user, view_user)
 
@@ -636,12 +637,11 @@ def me_flag_view(request, action, flag, username):
 
             if flag == 'like':
                 view_user.profile.new_likes_count += 1
-                view_user.profile.save()
+                view_user.profile.save(update_fields=['new_likes_count'])
 
                 if request.user.profile.match_with(view_user):
                     # a match? then count the new match on both users'
                     # profiles.
-                    x = 'new_matches_count'
                     request.user.profile.new_matches_count += 1
                     request.user.profile.save()
                     view_user.profile.new_matches_count += 1
@@ -678,32 +678,10 @@ def me_flag_view(request, action, flag, username):
         # after changing a flag, always recount, because setting a flag may
         # delete another in the same process, there is no way to simply add
         # one to the match count cache.
-        #
-        # BUG: TODO: occasionally, this does not count correctly. no idea
-        # why, comes incorrect from count_matches().
-        #
-        if settings.DEBUG:
-            print('-----> SET/DELETE FLAG -----> RECOUNT MATCHED -----')
-            print('before: request.user.profile.matches_count: ',
-                  request.user.profile.matches_count)
-
         request.user.profile.matches_count = count_matches(request.user)
         request.user.profile.save(update_fields=['matches_count'])
-
-        if settings.DEBUG:
-            print('after: request.user.profile.matches_count: ',
-                  request.user.profile.matches_count)
-            print('---------------------------------------------------')
-            print('before: view_user.profile.matches_count: ',
-                  view_user.profile.matches_count)
-
         view_user.profile.matches_count = count_matches(view_user)
         view_user.profile.save(update_fields=['matches_count'])
-
-        if settings.DEBUG:
-            print('after: view_user.profile.matches_count: ',
-                  view_user.profile.matches_count)
-            print('---------------------------------------------------')
 
         # Redirect the user, either to the "next profile" if there is any
         # in the search results buffer, or to the same profile if they were
@@ -773,7 +751,7 @@ def me_viewed_me_view(request):
 
     # Reset the new_views_count value
     request.user.profile.new_views_count = 0
-    request.user.profile.save()
+    request.user.profile.save(update_fields=['new_views_count'])
 
     ctx = {'user_list': sorted(ul, key=lambda x: x.visit_created,
                                reverse=True)}
@@ -824,7 +802,7 @@ def me_recv_like_view(request):
 
     # Reset the new_likes_count value
     request.user.profile.new_likes_count = 0
-    request.user.profile.save()
+    request.user.profile.save(update_fields=['new_likes_count'])
 
     ctx = {'user_list': ul}
     return render_to_response(template_name, ctx,
@@ -853,8 +831,8 @@ def matches_view(request):
     request.user.profile.matches_count = count_matches(request.user)
     # Reset the new_matches_count value
     request.user.profile.new_matches_count = 0
-    request.user.profile.save()
-
+    request.user.profile.save(update_fields=['matches_count',
+                                             'new_matches_count'])
     ctx = {'user_list': user_list}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
