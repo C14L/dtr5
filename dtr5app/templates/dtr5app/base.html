@@ -60,17 +60,29 @@
       </div>
       <div class="site-links">
 
-        <a class="item matches" href="{% url 'matches_page' %}">
-          <span class="text">upvote&nbsp;matches</span>
-          <span class="icon fa fa-bullseye"></span>
-          {% if user.profile.matches_count %}
-            <span class="number">{{user.profile.matches_count}}</span>
+        <a class="item likes" href="{% url 'me_recv_like_page' %}">
+          <span class="text">upvotes inbox</span>
+          <!-- <span class="cst-arrow-up"></span> -->
+          <span class="icon fa fa-arrow-up"></span>
+          {% if user.profile.new_likes_count %}
+            <span class="number">{{user.profile.new_likes_count}}</span>
           {% endif %}
         </a>
 
-        <a class="item reddit-mailbox" href="https://www.reddit.com/message/messages/" title="reddit mailbox">
-          <span class="text">reddit mailbox</span>
-          <span class="icon fa fa-envelope"></span>
+        <a class="item matches" href="{% url 'matches_page' %}">
+          <span class="text">upvote&nbsp;matches</span>
+          <span class="icon fa fa-bullseye"></span>
+          {% if user.profile.new_matches_count %}
+            <span class="number">{{user.profile.new_matches_count}}</span>
+          {% endif %}
+        </a>
+
+        <a class="item visits" href="{% url 'me_viewed_me_page' %}">
+          <span class="text">visited you</span>
+          <span class="icon fa fa-users"></span>
+          {% if user.profile.new_views_count %}
+            <span class="number">{{user.profile.new_views_count}}</span>
+          {% endif %}
         </a>
 
         <a class="item settings" href="{% url 'me_page' %}">
@@ -89,19 +101,14 @@
                 <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a>
               </li>
 
-              <li class="">
-                <span class="cst-arrow-up"></span>
-                <a href="{% url 'me_recv_like_page' %}">upvotes inbox</a>
+              <li>
+                <span class="icon fa fa-envelope"></span>
+                <a href="https://www.reddit.com/message/messages/" title="reddit mailbox">reddit mailbox</a>
               </li>
 
               <li class="">
                 <span class="cst-arrow-up gray"></span>
                 <a href="{% url 'me_like_page' %}">upvotes you sent</a>
-              </li>
-
-              <li class="">
-                <span class="fa fa-users"></span>
-                <a href="{% url 'me_viewed_me_page' %}">visited you</a>
               </li>
 
               <li class="secondary">

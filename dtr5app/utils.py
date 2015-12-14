@@ -201,6 +201,7 @@ def count_matches(user):
 
 
 def get_matches_user_queryset(user):
+    """Return a queryset that finds all matches for user."""
     return User.objects.filter(
         flags_sent__receiver=user, flags_sent__flag=Flag.LIKE_FLAG,
         flags_received__sender=user, flags_received__flag=Flag.LIKE_FLAG)
@@ -215,6 +216,20 @@ def get_matches_user_list(user):
         c2 = user.flags_sent.get(receiver=x.pk).created
         setattr(x, 'matched', c1 if c1 > c2 else c2)
     user_list.sort(key=lambda row: row.matched, reverse=True)
+    return user_list
+
+
+def add_matches_to_user_list(user_list, user):
+    """
+    Add a "is_match" attribut to all users in user_list who are a match (mutual
+    like) with user and return the user_list.
+    """
+    li = [x.username for x in user_list]
+    li = [x.username for x in
+          get_matches_user_queryset(user).filter(username__in=li)]
+    for x in user_list:
+        setattr(x, 'is_match', x.username in li)
+
     return user_list
 
 

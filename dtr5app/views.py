@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
+from django.db.models import F
 from django.http import (HttpResponse,
                          HttpResponseNotFound,
                          HttpResponseBadRequest,
@@ -31,7 +32,7 @@ from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
                     get_prevnext_user, get_user_and_related_or_404,
                     get_user_list_after, update_list_of_subscribed_subreddits,
                     get_paginated_user_list, prepare_paginated_user_list,
-                    get_user_list_from_username_list,
+                    add_matches_to_user_list, get_user_list_from_username_list,
                     get_matches_user_queryset, normalize_sr_names,
                     PictureInaccessibleError, assert_pic_accessible)
 
@@ -534,7 +535,8 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     # Count the profile view, unless auth user is viewing their own profile.
     if request.user.pk != view_user.pk:
         # count the view in view_user's profile
-        view_user.profile.views_count += 1
+        view_user.profile.views_count = F('views_count') + 1
+        view_user.profile.new_views_count = F('new_views_count') + 1
         view_user.profile.save()
         # remember the view for visitor history
         Visit.add_visitor_host(request.user, view_user)
@@ -632,11 +634,23 @@ def me_flag_view(request, action, flag, username):
         if action == 'set' and flag in flags.keys():
             Flag.set_flag(request.user, view_user, flag)
 
-            if flag == 'like' and request.user.profile.match_with(view_user):
-                # if authuser set a like flag, and we have a match, then show
-                # the newly matched profile again, so authuser can write them
-                # a message!
-                _next = reverse('profile_page', args={view_user.username})
+            if flag == 'like':
+                x = 'new_likes_count'
+                view_user.profile.new_likes_count = F(x) + 1
+                view_user.profile.save()
+
+                if request.user.profile.match_with(view_user):
+                    # a match? then count the new match on both users'
+                    # profiles.
+                    x = 'new_matches_count'
+                    request.user.profile.new_matches_count = F(x) + 1
+                    request.user.profile.save()
+                    view_user.profile.new_matches_count = F(x) + 1
+                    view_user.profile.save()
+                    # if authuser set a like flag, and we have a match, then
+                    # show the newly matched profile again, so authuser can
+                    # write them a message!
+                    _next = reverse('profile_page', args={view_user.username})
 
             if flag == 'report':
                 # also create an entry in Report for the moderator
@@ -651,6 +665,8 @@ def me_flag_view(request, action, flag, username):
                               .format(view_user.username))
 
         elif action == 'delete' and flag in flags.keys():
+            # delete any flag, because a user can only ever set one flag on
+            # another user at the same time.
             Flag.delete_flag(request.user, view_user)
             # if this was a "remove like" or "remove nope" then display the
             # same profile again, because most likely the auth user wants to
@@ -756,6 +772,10 @@ def me_viewed_me_view(request):
         except IndexError:
             setattr(u, 'visit_created', None)
 
+    # Reset the new_views_count value
+    request.user.profile.new_views_count = 0
+    request.user.profile.save()
+
     ctx = {'user_list': sorted(ul, key=lambda x: x.visit_created,
                                reverse=True)}
     return render_to_response(template_name, ctx,
@@ -766,22 +786,20 @@ def me_viewed_me_view(request):
 @require_http_methods(["GET", "HEAD"])
 def me_like_view(request):
     """
-    A list of connect requests sent by auth user to other users, and
+    A list of likes sent by auth user to other users, and
     not /confirmed/ by them.
     """
     template_name = 'dtr5app/likes_sent.html'
     pg = int(request.GET.get('page', 1))
-    # this will hide all profiles that are "upvote matches" already
-    matches_qs = get_matches_user_queryset(request.user)
-    # these are sent upvotes, so we only filter out those that are already
-    # mutual upvote matches. if the other party clicked "ignore", it will
-    # not appear here and authuser will never know... *sniff*
-    ul = User.objects.filter(flags_received__sender=request.user,
-                             flags_received__flag=Flag.LIKE_FLAG)\
-                     .exclude(pk__in=matches_qs)\
-                     .prefetch_related('profile')
 
-    ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
+    # these are sent upvotes, including those that are "matches" (mutual)
+    ul = User.objects.filter(
+        flags_received__sender=request.user,
+        flags_received__flag=Flag.LIKE_FLAG).prefetch_related('profile')
+    ul = get_paginated_user_list(ul, pg, request.user)
+    ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
+
+    ctx = {'user_list': ul}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
@@ -789,23 +807,27 @@ def me_like_view(request):
 @login_required
 @require_http_methods(["GET", "HEAD"])
 def me_recv_like_view(request):
-    """Show connect requests by other users in auth user's "inbox"."""
+    """Show likes sent by other users in auth user's "inbox"."""
     template_name = 'dtr5app/likes_recv.html'
     pg = int(request.GET.get('page', 1))
-    # this will hide all profiles that are "upvote matches" already
-    matches_qs = get_matches_user_queryset(request.user)
+
     # get a queryset with all profiles that are "ignored" by authuser
     nopes_qs = User.objects.filter(flags_received__sender=request.user,
                                    flags_received__flag=Flag.NOPE_FLAG)
-    # fetch all users that sent an upvote to authuser and did not yet receive
-    # a reaction from authuser, either upvote or downvote.
+    # fetch all users that sent an upvote to authuser and did not receive
+    # a downvote (hide) from authuser.
     ul = User.objects.filter(flags_sent__receiver=request.user,
                              flags_sent__flag=Flag.LIKE_FLAG)\
-                     .exclude(pk__in=matches_qs)\
                      .exclude(pk__in=nopes_qs)\
                      .prefetch_related('profile')
+    ul = get_paginated_user_list(ul, pg, request.user)
+    ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
 
-    ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
+    # Reset the new_likes_count value
+    request.user.profile.new_likes_count = 0
+    request.user.profile.save()
+
+    ctx = {'user_list': ul}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
@@ -823,11 +845,17 @@ def matches_view(request):
     # pg = int(request.GET.get('page', 1))
     user_list = get_matches_user_list(request.user)
     user_list = add_auth_user_latlng(request.user, user_list)
+
     #
     # TODO: pagination!!!
     #
+
+    # Recount the total matches number to correct for countring errors.
     request.user.profile.matches_count = count_matches(request.user)
+    # Reset the new_matches_count value
+    request.user.profile.new_matches_count = 0
     request.user.profile.save()
+
     ctx = {'user_list': user_list}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
