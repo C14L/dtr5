@@ -116,7 +116,7 @@ header .site-links .item {
   transition: 0.1s ease-out;
   vertical-align: middle;
   white-space: nowrap;
-  width: 3.5rem; height: 50px;
+  width: 3rem; height: 50px;
 }
 header .site-links .item.settings:last-of-type {
   margin-right: 64px;
