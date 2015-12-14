@@ -82,6 +82,18 @@ class Profile(models.Model):
     # Some numbers
     views_count = models.PositiveSmallIntegerField(default=0)
     matches_count = models.PositiveSmallIntegerField(default=0)
+
+    # All "new_*_count" values are set to 0 every time they are displayed,
+    # like its done on Reddit with "new messages".
+    new_matches_count = models.PositiveSmallIntegerField(default=0)
+    new_likes_count = models.PositiveSmallIntegerField(default=0)
+    new_views_count = models.PositiveSmallIntegerField(default=0)
+
+    # Send notification when upvote received via Reddit PM.
+    upvote_notif_now = models.BooleanField(default=False)  # for every upvote
+    upvote_notif_weekly = models.BooleanField(default=True)  # digest once week
+
+    # more counters, currently unused.
     like_sent_count = models.PositiveSmallIntegerField(default=0)   # unused
     like_recv_count = models.PositiveSmallIntegerField(default=0)   # unused
     nope_sent_count = models.PositiveSmallIntegerField(default=0)   # unused
