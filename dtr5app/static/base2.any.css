@@ -655,3 +655,40 @@ footer a {
 
 
 
+/* Three Dots*/
+.loading {
+  display:inline-block;
+  font-size:0px;
+  padding:0px;
+}
+.loading span {
+  vertical-align:middle;
+  border-radius:100%;
+  background:#999;
+  display:inline-block;
+  width:10px;
+  height:10px;
+  margin:3px 2px;
+  -webkit-animation:kf-loading 0.8s linear infinite alternate;
+  animation:kf-loading 0.8s linear infinite alternate;
+}
+.loading span:nth-child(1) {
+  -webkit-animation-delay:-0.8;
+  animation-delay:-0.8s;
+}
+.loading span:nth-child(2) {
+  -webkit-animation-delay:-0.53333s;
+  animation-delay:-0.53333s;
+}
+.loading span:nth-child(3) {
+  -webkit-animation-delay:-0.26666s;
+  animation-delay:-0.26666s;
+}
+@keyframes kf-loading {
+  from {transform: scale(0, 0);}
+  to {transform: scale(1, 1);}
+}
+@-webkit-keyframes kf-loading {
+  from {-webkit-transform: scale(0, 0);}
+  to {-webkit-transform: scale(1, 1);}
+}

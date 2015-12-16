@@ -1,0 +1,173 @@
+{% extends 'dtr5app/base.html' %}
+{% load static %}
+{% load dtr5tags %}
+
+{% block title %}usermap{% endblock %}
+
+{% block head %}
+
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"><style>
+
+#id_usermap { height: 80vh; background-color: silver; }
+
+</style>
+{% endblock %}
+
+{% block body_classes %}usermap{% endblock %}
+
+{% block main %}
+
+<article>
+  <div class="card nopadd">
+    <h2>mapping redditors<span class="loading" style="float: right; margin-right: 16px; display: none;"><span></span><span></span><span></span></span></h2>
+    <section class="nopadd">
+      <div id="id_usermap"></div>
+    </section>
+    <section class="help">
+      all locations are fuzzied by a couple of miles, no marker shows the exact location of anybody
+    </section>
+  </div>
+</article>
+
+{% endblock %}
+
+{% block foot %}
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+
+
+// Lefalet shortcuts for common tile providers
+// https://gist.github.com/mcechini/a814f36c7d1612e84c18
+/*
+
+var cloudmade      = new L.TileLayer.CloudMade({key: 'API-KEY', styleId: 997}),
+    openStreetMap  = new L.TileLayer.OpenStreetMap(),
+    openCycleMap   = new L.TileLayer.OpenCycleMap(),
+    mapquestOsm    = new L.TileLayer.MapQuestOpen.OSM(),
+    mapquestAerial = new L.TileLayer.MapQuestOpen.Aerial(),
+    mapbox         = new L.TileLayer.MapBox({user: 'kkaefer', map: 'island'});
+    nasagibs       = new L.TileLayer.NasaGibs({layer: 'MODIS_Terra_CorrectedReflectance_TrueColor', tilematrixset: 'GoogleMapsCompatible_Level9'});
+
+*/
+
+L.TileLayer.Common = L.TileLayer.extend({
+  initialize: function (options) {
+    L.TileLayer.prototype.initialize.call(this, this.url, options);
+  }
+});
+
+(function () {
+
+  var osmAttr = '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
+
+  L.TileLayer.CloudMade = L.TileLayer.Common.extend({
+    url: 'http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png',
+    options: {
+      attribution: 'Map data ' + osmAttr + ', Imagery &copy; <a href="http://cloudmade.com">CloudMade</a>',
+      styleId: 997
+    }
+  });
+
+  L.TileLayer.OpenStreetMap = L.TileLayer.Common.extend({
+    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    options: {attribution: osmAttr}
+  });
+
+  L.TileLayer.OpenCycleMap = L.TileLayer.Common.extend({
+    url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+    options: {
+      attribution: '&copy; OpenCycleMap, ' + 'Map data ' + osmAttr
+    }
+  });
+
+
+  var mqTilesAttr = 'Tiles &copy; <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png" />';
+
+/*  L.TileLayer.MapQuestOpen.OSM = L.TileLayer.Common.extend({
+    url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png',
+    options: {
+      subdomains: '1234',
+      type: 'osm',
+      attribution: 'Map data ' + L.TileLayer.OSM_ATTR + ', ' + mqTilesAttr
+    }
+  });
+
+  L.TileLayer.MapQuestOpen.Aerial = L.TileLayer.MapQuestOpen.OSM.extend({
+    options: {
+      type: 'sat',
+      attribution: 'Imagery &copy; NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency, ' + mqTilesAttr
+    }
+  }); */
+
+
+  L.TileLayer.MapBox = L.TileLayer.Common.extend({
+    url: 'http://{s}.tiles.mapbox.com/v3/{user}.{map}/{z}/{x}/{y}.png'
+  });
+
+  L.TileLayer.NasaGibs = L.TileLayer.Common.extend({
+    url: 'http://map1.vis.earthdata.nasa.gov/wmts-webmerc/{layer}/default//{tilematrixset}/{z}/{y}/{x}.{format}',
+    options: {
+      attribution: 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (ESDIS, https://earthdata.nasa.gov) with funding provided by NASA/HQ.'
+    }
+  });
+
+}());
+
+// -----------------------------------------------------
+
+var map = L.map('id_usermap').setView([41.505, -0.01], 2);
+var requestSent = false;
+var requestZoom = 0;
+var requestCenterLat = 0;
+var requestCenterLng = 0;
+var marker = [];
+
+new L.TileLayer.OpenStreetMap({maxZoom: 13}).addTo(map);
+//new L.TileLayer.MapQuestOpen.OSM({maxZoom: 14}).addTo(map);
+//new L.TileLayer.OpenCycleMap({maxZoom: 14}).addTo(map);
+//L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>', maxZoom: 14, id: 'redddate.oee2oi55', accessToken: 'pk.eyJ1IjoicmVkZGRhdGUiLCJhIjoiY2lpN3h0bmozMDAwenR1bTNzbzVneWN3bSJ9.JgG77wkGWzVGYc4e2swEQQ'}).addTo(map);
+
+map.on('zoomend', onMapBoxChange);
+map.on('moveend', onMapBoxChange);
+onMapBoxChange();
+
+function onMapBoxChange(e) {
+  // fires when the user's viewable area changes. check the zoom level
+  // and fetch from server new user items for the viewable area.
+  if (requestSent) return;
+
+  var currZoom = map.getZoom();
+  var currCenterLat = map.getCenter()[0];
+  var currCenterLng = map.getCenter()[1];
+  var changed = false;
+  // Compare current view with past view.
+  // Only load new data if there was significant change.
+  if (Math.abs(currZoom - requestZoom) > 1){ changed = true }
+  if (Math.abs(currCenterLat - requestCenterLat) > 1.0){ changed = true }
+  if (Math.abs(currCenterLng - requestCenterLng) > 1.0){ changed = true }
+
+  if (!changed) return;
+  // all okay, send request. set lock and remove old markers.
+  requestSent = true;
+  $('.loading').show();
+  for (var i=0; i<marker.length; i++) map.removeLayer(marker[i]);
+  var b = map.getBounds();
+  var params = {'west': b.getWest()+1.0-1.0, 'north': b.getNorth()+1.0-1.0,
+                'east': b.getEast()+1.0-1.0, 'south': b.getSouth()+1.0-1.0};
+  $.get('/map/', params, function(data){
+    for (var i=0; i<data.users.length; i++) {
+      var username = data.users[i][0];
+      var lat = data.users[i][1];
+      var lng = data.users[i][2];
+      marker[i] = L.marker([lat,lng]).addTo(map);
+      marker[i].bindPopup('<a href="/u/'+username+'/">'+username+'</a>');
+    }
+    $('.loading').hide();
+    setTimeout(function(){ requestSent = false }, 3000);
+  });
+}
+
+
+</script>
+{% endblock %}

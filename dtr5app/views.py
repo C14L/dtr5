@@ -9,8 +9,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
-from django.db.models import F
-from django.http import (HttpResponse,
+from django.db.models import Q
+from django.http import (JsonResponse,
+                         HttpResponse,
                          HttpResponseNotFound,
                          HttpResponseBadRequest,
                          Http404)
@@ -943,4 +944,31 @@ def stats(request, template_name='dtr5app/stats.html'):
     }
 
     return render_to_response(template_name, ctx,
+                              context_instance=RequestContext(request))
+
+
+@login_required
+@require_http_methods(["GET"])
+def usermap(request, tpl='dtr5app/usermap.html', ctx={}):
+    if request.is_ajax():
+        west = request.GET.get('west', None)
+        south = request.GET.get('south', None)
+        east = request.GET.get('east', None)
+        north = request.GET.get('north', None)
+
+        print(west, north, east, south)
+
+        users = User.objects.exclude(
+            profile__lat__gte=-0.1, profile__lng__gte=-0.1,
+            profile__lat__lte=1.1, profile__lng__lte=1.1,
+        ).filter(
+            profile__lat__gte=south, profile__lng__gte=west,
+            profile__lat__lte=north, profile__lng__lte=east,
+            is_active=True, last_login__isnull=False
+        ).prefetch_related('profile')[:250]
+
+        users = [[u.username, u.profile.lat, u.profile.lng] for u in users]
+        return JsonResponse({'users': users})
+
+    return render_to_response(tpl, ctx,
                               context_instance=RequestContext(request))

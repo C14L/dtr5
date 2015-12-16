@@ -74,4 +74,6 @@ urlpatterns = [
         name="mod_report_item_page"),
 
     url(r'^stats/$', views.stats, name="stats"),
+
+    url(r'^map/$', views.usermap, name="usermap"),
 ]
