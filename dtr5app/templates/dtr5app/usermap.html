@@ -200,7 +200,7 @@ function onMapBoxChange(e) {
       var lat = data.users[i][1];
       var lng = data.users[i][2];
       marker[i] = L.marker([lat,lng]).addTo(map);
-      marker[i].bindPopup('<a href="/u/'+username+'/">'+username+'</a>');
+      marker[i].bindPopup('<a target="_blank" href="/u/'+username+'/">'+username+'</a>');
     }
     $('.loading').hide();
     setTimeout(function(){ requestSent = false }, 3000);
