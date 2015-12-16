@@ -116,14 +116,15 @@ L.TileLayer.Common = L.TileLayer.extend({
 
 // -----------------------------------------------------
 
-var map = L.map('id_usermap').setView([41.505, -0.01], 2);
+var h = getHash();
+var map = L.map('id_usermap').setView([h[0], h[1]], h[2]); //[lat,lng],zoom
 var requestSent = false;
 var requestZoom = 0;
 var requestCenterLat = 0;
 var requestCenterLng = 0;
 var marker = [];
 
-new L.TileLayer.OpenStreetMap({maxZoom: 13}).addTo(map);
+new L.TileLayer.OpenStreetMap({maxZoom: 12}).addTo(map);
 //new L.TileLayer.MapQuestOpen.OSM({maxZoom: 14}).addTo(map);
 //new L.TileLayer.OpenCycleMap({maxZoom: 14}).addTo(map);
 //L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>', maxZoom: 14, id: 'redddate.oee2oi55', accessToken: 'pk.eyJ1IjoicmVkZGRhdGUiLCJhIjoiY2lpN3h0bmozMDAwenR1bTNzbzVneWN3bSJ9.JgG77wkGWzVGYc4e2swEQQ'}).addTo(map);
@@ -132,22 +133,37 @@ map.on('zoomend', onMapBoxChange);
 map.on('moveend', onMapBoxChange);
 onMapBoxChange();
 
+function setHash() {
+  var zoom = map.getZoom();
+  var lat = map.getCenter().lat;
+  var lng = map.getCenter().lng;
+  location.hash = '#' + lat + ',' + lng + ',' + zoom + 'z';
+}
+function getHash(){
+  var h = location.hash.replace('#','').replace('z','');
+  h = h.split(',');
+  h[0] = parseFloat(h[0]);
+  h[1] = parseFloat(h[1]);
+  h[2] = parseInt(h[2]);
+  return (h[0] && h[1] && h[2]) ? h : [41.505, -0.01, 2];
+}
+
 function onMapBoxChange(e) {
   // fires when the user's viewable area changes. check the zoom level
   // and fetch from server new user items for the viewable area.
-  if (requestSent) return;
 
-  var currZoom = map.getZoom();
-  var currCenterLat = map.getCenter()[0];
-  var currCenterLng = map.getCenter()[1];
+  var h = getHash();
+  var currZoom = h[0], currCenterLat = h[1], currCenterLng = h[2];
   var changed = false;
+  setHash();
+
   // Compare current view with past view.
   // Only load new data if there was significant change.
   if (Math.abs(currZoom - requestZoom) > 1){ changed = true }
   if (Math.abs(currCenterLat - requestCenterLat) > 1.0){ changed = true }
   if (Math.abs(currCenterLng - requestCenterLng) > 1.0){ changed = true }
+  if (requestSent || !changed) return;
 
-  if (!changed) return;
   // all okay, send request. set lock and remove old markers.
   requestSent = true;
   $('.loading').show();
