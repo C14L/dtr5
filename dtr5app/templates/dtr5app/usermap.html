@@ -116,6 +116,16 @@ L.TileLayer.Common = L.TileLayer.extend({
 
 // -----------------------------------------------------
 
+var defaultlat = 41.505,
+    defaultlng = -0.1,
+    defaultzoom = 2;
+var userlat = {{user.profile.lat|default:0}},
+    userlng = {{user.profile.lng|default:0}},
+    userzoom = 8;
+if (!(userlat&&userlng)) {
+  userlat = defaultlat; userlng = defaultlng; userzoom = defaultzoom;
+}
+
 var h = getHash();
 var map = L.map('id_usermap').setView([h[0], h[1]], h[2]); //[lat,lng],zoom
 var requestSent = false;
@@ -145,7 +155,7 @@ function getHash(){
   h[0] = parseFloat(h[0]);
   h[1] = parseFloat(h[1]);
   h[2] = parseInt(h[2]);
-  return (h[0] && h[1] && h[2]) ? h : [41.505, -0.01, 2];
+  return (h[0] && h[1] && h[2]) ? h : [userlat, userlng, userzoom];
 }
 
 function onMapBoxChange(e) {
