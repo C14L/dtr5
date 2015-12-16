@@ -955,19 +955,25 @@ def usermap(request, tpl='dtr5app/usermap.html', ctx={}):
         south = request.GET.get('south', None)
         east = request.GET.get('east', None)
         north = request.GET.get('north', None)
+        t = force_int(request.GET.get('t', 0))
 
-        print(west, north, east, south)
+        if settings.DEBUG:
+            print(west, north, east, south, t)
 
         users = User.objects.exclude(
             profile__lat__gte=-0.1, profile__lng__gte=-0.1,
-            profile__lat__lte=1.1, profile__lng__lte=1.1,
-        ).filter(
+            profile__lat__lte=1.1, profile__lng__lte=1.1
+            ).filter(
             profile__lat__gte=south, profile__lng__gte=west,
             profile__lat__lte=north, profile__lng__lte=east,
-            is_active=True, last_login__isnull=False
-        ).prefetch_related('profile')[:250]
+            is_active=True, last_login__isnull=False)
 
-        users = [[u.username, u.profile.lat, u.profile.lng] for u in users]
+        if t > 0:
+            tmin = datetime.now().replace(tzinfo=pytz.utc)-timedelta(minutes=t)
+            users = users.filter(profile__accessed__gte=tmin)
+
+        users = [[u.username, u.profile.lat, u.profile.lng]
+                 for u in users.prefetch_related('profile')[:250]]
         return JsonResponse({'users': users})
 
     return render_to_response(tpl, ctx,

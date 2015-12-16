@@ -18,8 +18,17 @@
 {% block main %}
 
 <article>
-  <div class="card nopadd">
-    <h2>mapping redditors<span class="loading" style="float: right; margin-right: 16px; display: none;"><span></span><span></span><span></span></span></h2>
+  <div class="card nopadd" style="position:relative;">
+    <select name="t" id="id_t" style="position:absolute; top:12px; left:12px;">
+      <option value="0">all</option>
+      <option value="525600">1 year</option>
+      <option value="10080">1 week</option>
+      <option value="1440">1 day</option>
+      <option value="60">1 hour</option>
+      <option value="5">5 mins</option>
+    </select>
+    <span class="loading" style="position:absolute; top:20px; right:16px; display:none;"><span></span><span></span><span></span></span>
+    <h2>mapping redditors</h2>
     <section class="nopadd">
       <div id="id_usermap"></div>
     </section>
@@ -118,20 +127,22 @@ L.TileLayer.Common = L.TileLayer.extend({
 
 var defaultlat = 41.505,
     defaultlng = -0.1,
-    defaultzoom = 2;
+    defaultzoom = 2,
+    defaultmins = 0;
 var userlat = {{user.profile.lat|default:0}},
     userlng = {{user.profile.lng|default:0}},
-    userzoom = 8;
+    userzoom = 8,
+    usermins = 0;
 if (!(userlat&&userlng)) {
-  userlat = defaultlat; userlng = defaultlng; userzoom = defaultzoom;
+  userlat = defaultlat;
+  userlng = defaultlng;
+  userzoom = defaultzoom;
+  usermins = defaultmins;
 }
 
 var h = getHash();
 var map = L.map('id_usermap').setView([h[0], h[1]], h[2]); //[lat,lng],zoom
 var requestSent = false;
-var requestZoom = 0;
-var requestCenterLat = 0;
-var requestCenterLng = 0;
 var marker = [];
 
 new L.TileLayer.OpenStreetMap({maxZoom: 12}).addTo(map);
@@ -141,46 +152,48 @@ new L.TileLayer.OpenStreetMap({maxZoom: 12}).addTo(map);
 
 map.on('zoomend', onMapBoxChange);
 map.on('moveend', onMapBoxChange);
+$('#id_t').on('change', onMapBoxChange);
 onMapBoxChange();
 
 function setHash() {
   var zoom = map.getZoom();
   var lat = map.getCenter().lat;
   var lng = map.getCenter().lng;
-  location.hash = '#' + lat + ',' + lng + ',' + zoom + 'z';
+  var t = $('#id_t').val();
+  location.hash = '#' + lat + ',' + lng + ',' + zoom + 'z,' + t;
 }
 function getHash(){
-  var h = location.hash.replace('#','').replace('z','');
+  var h = location.hash.replace('#', '').replace('z', '');
   h = h.split(',');
-  h[0] = parseFloat(h[0]);
-  h[1] = parseFloat(h[1]);
-  h[2] = parseInt(h[2]);
-  return (h[0] && h[1] && h[2]) ? h : [userlat, userlng, userzoom];
+  h[0] = parseFloat( h[0] );
+  h[1] = parseFloat( h[1] );
+  h[2] = parseInt( h[2] );
+  h[3] = parseInt( h[3] );
+
+  if (h[0] && h[1] && h[2] && h[3]) {
+    return h;
+  } else {
+    return [userlat, userlng, userzoom, 0];
+  }
 }
 
 function onMapBoxChange(e) {
   // fires when the user's viewable area changes. check the zoom level
   // and fetch from server new user items for the viewable area.
-
-  var h = getHash();
-  var currZoom = h[0], currCenterLat = h[1], currCenterLng = h[2];
-  var changed = false;
-  setHash();
-
-  // Compare current view with past view.
-  // Only load new data if there was significant change.
-  if (Math.abs(currZoom - requestZoom) > 1){ changed = true }
-  if (Math.abs(currCenterLat - requestCenterLat) > 1.0){ changed = true }
-  if (Math.abs(currCenterLng - requestCenterLng) > 1.0){ changed = true }
-  if (requestSent || !changed) return;
+  if (requestSent) return; else setHash();
 
   // all okay, send request. set lock and remove old markers.
   requestSent = true;
+  var h = getHash();
   $('.loading').show();
   for (var i=0; i<marker.length; i++) map.removeLayer(marker[i]);
+
   var b = map.getBounds();
   var params = {'west': b.getWest()+1.0-1.0, 'north': b.getNorth()+1.0-1.0,
-                'east': b.getEast()+1.0-1.0, 'south': b.getSouth()+1.0-1.0};
+                'east': b.getEast()+1.0-1.0, 'south': b.getSouth()+1.0-1.0,
+                't': h[3]};
+  console.log('---> params: ', params);
+
   $.get('/map/', params, function(data){
     for (var i=0; i<data.users.length; i++) {
       var username = data.users[i][0];
