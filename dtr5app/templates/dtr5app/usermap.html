@@ -167,10 +167,10 @@ function getHash(){
   h = h.split(',');
   h[0] = parseFloat( h[0] );
   h[1] = parseFloat( h[1] );
-  h[2] = parseInt( h[2] );
-  h[3] = parseInt( h[3] );
+  h[2] = parseInt( h[2] ) || 8;
+  h[3] = parseInt( h[3] ) || 0;
 
-  if (h[0] && h[1] && h[2] && h[3]) {
+  if (h[0] && h[1]) {
     return h;
   } else {
     return [userlat, userlng, userzoom, 0];
