@@ -112,10 +112,11 @@ def me_view(request, template_name='dtr5app/me.html'):
         template_name = 'dtr5app/step_5.html'
         request.session['view_post_signup'] = True
 
-    elif not request.user.profile.f_distance:
-        # no search settings found, ask user to chose search settings
-        template_name = 'dtr5app/step_6.html'
-        request.session['view_post_signup'] = True
+    # Show "all everywhere" search results.
+    # elif not request.user.profile.f_distance:
+    #     # no search settings found, ask user to chose search settings
+    #     template_name = 'dtr5app/step_6.html'
+    #     request.session['view_post_signup'] = True
 
     elif (request.session.get('view_post_signup', False)):
         # user just set at least one required item. now show them the "all
