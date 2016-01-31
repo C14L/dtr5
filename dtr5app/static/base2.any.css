@@ -245,6 +245,29 @@ on the <h3/> title of the section. similar to .dotmenu
   margin: 0; padding: 0;
 }
 
+/* Search results page top search bar. */
+body.results .search-bar {
+    position: relative;
+}
+body.results .search-bar .mainopts {
+    display: inline-block;
+}
+body.results .search-bar .toggle-section {
+    border: 0;
+}
+body.results .search-bar .toggle-section > label {
+    position: absolute; top: 0rem; right: 1rem;
+}
+body.results .search-bar .toggle-section > .opts {
+    margin-top: 1.5rem;
+}
+body.results .search-bar .toggle-section > .opts > section {
+  padding: 24px 32px;
+  border-top: 1px solid rgba(0,0,0,0.12);
+}
+body.results .search-bar .toggle-section > .opts > section p {
+  margin: 0; padding: 0;
+}
 
 
 /*
@@ -264,17 +287,23 @@ with and without "checkbox" selectors.
 .lookingfor-list ul li {
   background-color: orange;
   border: 2px solid orange;
-  color: white;
   display: inline-block;
   font-size: 1rem; line-height: 1em;
   margin: 1px; padding: 8px 12px;
   vertical-align: middle;
+}
+.lookingfor-list ul li .tx {
+  color: rgba(255,255,255,0.78);
 }
 .lookingfor-list ul li input[type="checkbox"] {
   margin: 0 0.25rem 0 0; padding: 0;
   opacity: 0.2;
   vertical-align: middle;
   width: 1rem; height: 1rem;
+}
+.lookingfor-list ul li input[type="checkbox"]:checked + .tx {
+  color: rgba(255,255,255,1);
+  font-weight: bold;
 }
 .lookingfor-list ul li input[type="checkbox"]:checked {
   opacity: 0.9;

@@ -163,16 +163,15 @@ body.me .section-profile .herefor .val-col .item input {
   display: none;
 }
 body.me .section-profile .herefor .val-col .item .tx {
-  border: 1px solid transparent;
-  color: white;
+  border: 2px solid transparent;
+  color: rgba(255,255,255,0.58);
   display: block;
-  opacity: 0.82;
   font-size: 1rem; line-height: 1em;
   margin: 0; padding: 7px;
 }
 body.me .section-profile .herefor .val-col .item input:checked + .tx {
   border-color: white;
-  opacity: 1;
+  color: rgba(255,255,255,1);
 }
 body.me .section-profile .herefor .val-col .item:nth-child(1) { background-color: #FF0000; }
 body.me .section-profile .herefor .val-col .item:nth-child(2) { background-color: #bd0042; }

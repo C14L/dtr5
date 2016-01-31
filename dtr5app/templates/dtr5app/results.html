@@ -9,6 +9,7 @@
 {% block main %}
 
 <section class="subheader">
+  <!--
   <span class="info">
     found <strong>{% if user_list.paginator.count >= RESULTS_BUFFER_LEN %}{{RESULTS_BUFFER_LEN}}+{% else %}{{user_list.paginator.count}}{% endif %} new redditors</strong>{% if user.profile.f_hide_no_pic %}&nbsp;<a href="{% url 'me_page' %}">with picture</a>{% endif %} between&nbsp;<a href="{% url 'me_page' %}">{{user.profile.f_minage}} and {{user.profile.f_maxage}}</a> years old{% if user.profile.f_distance > 5 %} and&nbsp;<a href="{% url 'me_page' %}">within {{user.profile.f_distance|prefdist_km:user}}</a> of you{% endif %}.
 
@@ -16,7 +17,119 @@
       <a style="float:right" href="{% url 'profile_page' user_list.0.username %}">browse profiles one by one</a>
     {% endif %}
   </span>
+  -->
+  <div class="search-bar" id="id_search">
+    <form method="POST" action="{% url 'me_search_page' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'me_page' %}">
+
+      <div class="mainopts">
+        <span>Show</span>&nbsp;
+        <label>
+          <select name="f_sex" size="1">
+            <option value="">everybody</option>
+            {% for sex in settings.SEX_PLURAL %}
+              {% if sex.0 > 0 %}
+                <option{% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </label>&nbsp;
+        <span>within</span>&nbsp;
+        <label>
+          <select name="f_distance" size="1">
+            {% for x in DISTANCE %}
+              <option{% if user.profile.f_distance == x.0 %} selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+            {% endfor %}
+          </select>
+        </label>&nbsp;
+        <label class="submit">
+          <input type="submit" value="search">
+        </label>&nbsp;
+      </div>
+
+      <section class="toggle-section">
+        <label for="id_984hfde">
+          <h3>more search settings</h3>
+        </label>
+        <input id="id_984hfde" type="checkbox" style="display: none;">
+        <div class="opts">
+          <section>
+            <label>
+              <input type="checkbox" name="f_hide_no_pic" value="yep"{% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;only show profiles with picture
+            </label>&nbsp;
+          </section>
+          <!--
+          <section>
+            <label class="item">
+              <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_FRIENDS %} checked{% endif %}>
+              <span class="tx">show redditors here for friends only</span>
+            </label>
+            <label class="item">
+              <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_DATING %} checked{% endif %}>
+              <span class="tx">show redditors here only for dating</span>
+            </label>
+          </section>
+          -->
+          <section>
+            <label>
+              <span><b>ignore</b> these subreddits:</span>&nbsp;
+              <input type="text" name="f_ignore_sr_li" value="{{user.profile.f_ignore_sr_li|join:', '}}" maxlength="800" size="50" placeholder="AskReddit, news, Pics, Funny">
+            </label>
+            <p class="help">these subreddits will be treated as if you were <b>not</b> subscribed to them. <a href="#" id="id_auto_add_default_subs"></a></p>
+          </section>
+
+          <section>
+            <label>
+              <span><b>ignore</b> all subreddits larger than:</span>&nbsp;
+              <input type="number" min="0" max="123456789" name="f_ignore_sr_max" value="{{user.profile.f_ignore_sr_max}}" maxlength="10" size="10" placeholder="5,000,000">&nbsp;
+              <span>subscribers</span>
+            </label>
+            <p class="help">all subreddits larger than this will be treated as if you were <b>not</b> subscribed to them.</p>
+          </section>
+<!--
+          <section>
+            <label>
+              <span><b>exclude</b> everybody subscribed to any of these subreddits:</span>
+              <input type="text" name="f_exclude_sr_li" value="{{user.profile.f_exclude_sr_li|join:', '}}" maxlength="250" size="50" placeholder="shitredditsays, dragonsfuckingcars, sexyabortions, coontown">
+            </label>
+            <p class="help"><strong>use carefully!</strong> anybody subscribed to any of these subreddits will be <strong>removed</strong> from your search results!</p>
+          </section>
+-->
+          <section>
+            <span><b>age range</b>: between&nbsp;
+            <input type="number" min="18" max="98" name="f_minage" value="{{user.profile.f_minage}}">&nbsp;and&nbsp;
+            <input type="number" min="19" max="100" name="f_maxage" value="{{user.profile.f_maxage}}">&nbsp;
+            years old</span>
+          </section>
+          <section style="text-align:center">
+            <input type="submit" value="search">
+          </section>
+        </div>
+      </section>
+    </form>
+  </div>
+
 </section>
+
+<script>
+
+(function(){
+  var elLnk = document.getElementById('id_auto_add_default_subs');
+
+  var defaultSRs = 'announcements Art AskReddit askscience aww blog books creepy dataisbeautiful DIY Documentaries EarthPorn explainlikeimfive Fitness food funny Futurology gadgets gaming GetMotivated gifs history IAmA InternetIsBeautiful Jokes LifeProTips listentothis mildlyinteresting movies Music news nosleep nottheonion OldSchoolCool personalfinance philosophy photoshopbattles pics science Showerthoughts space sports television tifu todayilearned TwoXChromosomes UpliftingNews videos worldnews WritingPrompts';
+
+  var commonSRs = 'bestof';
+
+  elLnk.innerHTML = 'ignore common and default subreddits';
+  elLnk.addEventListener('click', function(e){
+    e.preventDefault();
+    var elInp = document.querySelector('input[name="f_ignore_sr_li"]');
+    elInp.value = commonSRs + ' ' + defaultSRs;
+  }, false);
+})();
+
+</script>
 
 {% if user_list %}
   <article>

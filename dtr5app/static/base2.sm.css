@@ -293,30 +293,35 @@ body.me .section-profile .herefor .val-col .item {
   border: 1px solid rgba(0,0,0,0.12);
   border-collapse: collapse;
   color: white;
-  display: inline-block;
-  margin: 0; padding: 16px 8px;
+  display: block;
+  margin: 0; padding: 4px;
   position: relative;
+  width: 300px;
 }
 body.me .section-profile .herefor .val-col .item input {
   display: none;
 }
 body.me .section-profile .herefor .val-col .item .tx {
-  border: 1px solid transparent;
-  color: white;
+  border: 2px solid transparent;
+  color: rgba(255,255,255,0.58);
   display: block;
-  opacity: 0.82;
   font-size: 1rem; line-height: 1em;
   margin: 0; padding: 7px;
 }
 body.me .section-profile .herefor .val-col .item input:checked + .tx {
   border-color: white;
-  opacity: 1;
+  color: rgba(255,255,255,1);
 }
 body.me .section-profile .herefor .val-col .item:nth-child(1) { background-color: #FF0000; }
 body.me .section-profile .herefor .val-col .item:nth-child(2) { background-color: #bd0042; }
 body.me .section-profile .herefor .val-col .item:nth-child(3) { background-color: #94006d; }
 body.me .section-profile .herefor .val-col .item:nth-child(4) { background-color: #65009d; }
 body.me .section-profile .herefor .val-col .item:nth-child(5) { background-color: #0000FF; }
+
+body.me .lookingfor-list ul li {
+    display: block;
+    width: 300px;
+}
 
 body.me .card.section-geolocation .help {
   margin: 16px 0 0 0; padding: 8px;

@@ -208,6 +208,18 @@ SEX = (
     (8, 'queer who likes men'),
     (9, 'queer who likes queer'),
 )
+SEX_PLURAL = (
+    (0, 'other'),
+    (1, 'women who like men'),
+    (2, 'women who like women'),
+    (3, 'women who like queer'),
+    (4, 'men who like women'),
+    (5, 'men who like men'),
+    (6, 'men who like queer'),
+    (7, 'queer who like women'),
+    (8, 'queer who like men'),
+    (9, 'queer who like queer'),
+)
 SEX_SYMBOL = (  # ♀♂⚥⚢⚣⚤⚪★☆⮕♥
     (0, '⚪'),
     (1, '♀♥♂'),
