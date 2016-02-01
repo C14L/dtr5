@@ -243,7 +243,6 @@ class Profile(models.Model):
         """
         return set_imgur_url(self.background_pic, size='l')
 
-
     def get_sex_symbol(self):
         """Returns the symbol for the user's sex."""
         try:
