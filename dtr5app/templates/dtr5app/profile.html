@@ -27,8 +27,8 @@
           </div>
         </div>
         <div class="action">
-          <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
-          <a class="later" href="{% url 'me_search_page' %}">not now</a>
+          <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}" onclick="ga.trackEvent('profile', 'click', 'match-sent-message');">Send a message</a>
+          <a class="later" href="{% url 'me_search_page' %}" onclick="ga.trackEvent('profile', 'click', 'match-message-not-now');">not now</a>
         </div>
       </div>
 
@@ -129,19 +129,19 @@
 
     <div class="intro">
       <div class="top">
-        <a href="https://www.reddit.com/user/{{view_user.username}}/submitted/" class="karma">link karma: {{view_user.profile.link_karma}}</a>
-        <a href="https://www.reddit.com/user/{{view_user.username}}/comments/" class="karma">comment karma: {{view_user.profile.comment_karma}}</a>
+        <a href="https://www.reddit.com/user/{{view_user.username}}/submitted/" class="karma" onclick="ga.trackEvent('profile', 'click', 'ext-link-karma');">link karma: {{view_user.profile.link_karma}}</a>
+        <a href="https://www.reddit.com/user/{{view_user.username}}/comments/" class="karma" onclick="ga.trackEvent('profile', 'click', 'ext-comment-karma');">comment karma: {{view_user.profile.comment_karma}}</a>
       </div>
       <div class="textline">
-        Meet <a class="username" href="https://www.reddit.com/u/{{view_user.username}}">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {% if view_user.profile.relstatus > 1 %}{{view_user.profile.get_relstatus_display|default:"single"}}{% endif %} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.get_herefor_display|default:"friends or dating"}} and
+        Meet <a class="username" href="https://www.reddit.com/u/{{view_user.username}}" onclick="ga.trackEvent('profile', 'click', 'ext-reddit-profile-username');">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {% if view_user.profile.relstatus > 1 %}{{view_user.profile.get_relstatus_display|default:"single"}}{% endif %} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.get_herefor_display|default:"friends or dating"}} and
         <!-- <a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}}</a> -->
-        <a href="/map/#{{view_user.profile.lat}},{{view_user.profile.lng}},8z" title="view approximate location">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if view_user.profile.common_subs|length > 0 %}you have <a href="#id_matches">{{view_user.profile.common_subs|length}} subreddits</a> in common{% endif %}
+        <a href="/map/#{{view_user.profile.lat}},{{view_user.profile.lng}},8z" title="view approximate location" onclick="ga.trackEvent('profile', 'click', 'view-map-location');">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if view_user.profile.common_subs|length > 0 %}you have <a href="#id_matches" onclick="ga.trackEvent('profile', 'click', 'jump-shared-subs');">{{view_user.profile.common_subs|length}} subreddits</a> in common{% endif %}
       </div>
       <div class="meta">
         <span>last active {{view_user.profile.accessed|timesince}} ago</span>
         {% if show_created %}
           &nbsp;&middot;&nbsp;
-          <span><a href="https://www.reddit.com/user/{{view_user.username}}/" class="reddage">a redditor for {{view_user.profile.created|timesince}}</a></span>
+          <span><a href="https://www.reddit.com/user/{{view_user.username}}/" class="reddage" onclick="ga.trackEvent('profile', 'click', 'ext-reddit-profile-account-age');">a redditor for {{view_user.profile.created|timesince}}</a></span>
         {% endif %}
         <!-- <span>on redddate {{view_user.date_joined|timesince}}</span> -->
       </div>
