@@ -349,7 +349,7 @@ PREFERENCE = (  # bitmap  # unused
 ORDER_BY = (
     ('-sr_count', 'best matches'),
     ('-accessed', 'recently active'),
-    ('reddit_joined', 'reddit oldest'),
+    # ('reddit_joined', 'reddit oldest'), --> no, b/c "created" data bug.
     ('-date_joined', 'newest members'),
     ('-views_count', 'most viewed'),
 

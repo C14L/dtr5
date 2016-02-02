@@ -31,8 +31,8 @@ class Profile(models.Model):
                                 related_name="profile")
     # static Reddit user account data:
     name = models.CharField(default="", max_length=20)
-    created = models.DateField(null=True, default=None)  # created_utc
-    updated = models.DateTimeField(null=True, default=None)
+    created = models.DateField(null=True, default=None)  # REDDIT accunt created
+    updated = models.DateTimeField(null=True, default=None)  # profile updated
     accessed = models.DateTimeField(null=True, default=None)  # last activity
 
     # changeable Reddit user account data:

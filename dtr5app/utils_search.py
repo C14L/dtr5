@@ -167,8 +167,6 @@ def search_users(request, usernames_only=True, order_by=None):
     # SR_MIN_SUBS = getattr(settings, 'SR_MIN_SUBS', 100)
     # SR_MAX_SUBS = getattr(settings, 'SR_MAX_SUBS', 5000000)
 
-    # f_ignore_sr_li
-    # f_ignore_sr_max
     # f_exclude_sr_li
 
     # fetch users and number of same subscribed subreddits for all users
@@ -182,7 +180,7 @@ def search_users(request, usernames_only=True, order_by=None):
     query_params += []
     query_string += '''
         SELECT
-            au.id, au.username, ap.accessed, ap.views_count,
+            au.id, au.username, ap.created, ap.accessed, ap.views_count,
             COUNT(r1.user_id) AS sr_count
 
         FROM dtr5app_subscribed r1
@@ -297,17 +295,22 @@ def search_users(request, usernames_only=True, order_by=None):
         users = sorted(users, key=lambda u: u.accessed, reverse=True)
     elif order_by == 'accessed':  # most recently accessed last
         users = sorted(users, key=lambda u: u.accessed, reverse=False)
-
-    #elif order_by == '-date_joined':  #
-    #    users = sorted(users, key=lambda u: u......., reverse=True)
-    #elif order_by == '-reddit_joined':  #
-    #    users = sorted(users, key=lambda u: u......., reverse=True)
-
+    elif order_by == 'date_joined':  # oldest redddate account
+        users = sorted(users, key=lambda u: u.date_joined, reverse=True)
+    elif order_by == '-date_joined':  # most recent redddate acccount
+        users = sorted(users, key=lambda u: u.date_joined, reverse=True)
+    # Not posstible because of the "created" bug when it fetched a unixtime of
+    # "0" from reddit. There are still many accounts that have a "created" date
+    # set to "1970-01-01T00:00:00".
+    #
+    # elif order_by == 'reddit_joined':  # oldest REDDIT account
+    #     users = sorted(users, key=lambda u: u.created, reverse=False)
+    # elif order_by == '-reddit_joined':  # most recent REDDIT account
+    #     users = sorted(users, key=lambda u: u.created, reverse=True)
     elif order_by == '-views_count':  # most views first
         users = sorted(users, key=lambda u: u.views_count, reverse=True)
     elif order_by == 'views_count':  # most views last
         users = sorted(users, key=lambda u: u.views_count, reverse=False)
-
     else:  # -sr_count (default): most subs in common first
         users = sorted(users, key=lambda u: u.sr_count, reverse=True)
 
