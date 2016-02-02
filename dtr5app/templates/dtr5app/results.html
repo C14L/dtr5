@@ -19,7 +19,8 @@
   </span>
   -->
   <div class="search-bar" id="id_search">
-    <form method="POST" action="{% url 'me_search_page' %}">
+    <div id="id_search_loading" class="loading" style="display:none; text-align:center; border: 0.75rem solid transparent;"><span></span><span></span><span></span></div>
+    <form id="id_search_form" method="POST" action="{% url 'me_search_page' %}">
       {% csrf_token %}
       <input type="hidden" name="next" value="{% url 'me_results_page' %}">
 
@@ -121,27 +122,8 @@
 
 </section>
 
-<script>
-
-(function(){
-  var elLnk = document.getElementById('id_auto_add_default_subs');
-
-  var defaultSRs = 'announcements Art AskReddit askscience aww blog books creepy dataisbeautiful DIY Documentaries EarthPorn explainlikeimfive Fitness food funny Futurology gadgets gaming GetMotivated gifs history IAmA InternetIsBeautiful Jokes LifeProTips listentothis mildlyinteresting movies Music news nosleep nottheonion OldSchoolCool personalfinance philosophy photoshopbattles pics science Showerthoughts space sports television tifu todayilearned TwoXChromosomes UpliftingNews videos worldnews WritingPrompts';
-
-  var commonSRs = 'bestof';
-
-  elLnk.innerHTML = 'ignore common and default subreddits';
-  elLnk.addEventListener('click', function(e){
-    e.preventDefault();
-    var elInp = document.querySelector('input[name="f_ignore_sr_li"]');
-    elInp.value = commonSRs + ' ' + defaultSRs;
-  }, false);
-})();
-
-</script>
-
 {% if user_list %}
-  <article>
+  <article id="id_article_results">
 
     <ul class="user-list">
       {% for v in user_list %}
@@ -198,5 +180,35 @@
 {% else %}
   <div style="text-align:center; margin-top: 100px;">there is nobody</div>
 {% endif %}
+
+<script>
+
+(function(){
+  var elForm = document.getElementById('id_search_form');
+  var elLoading = document.getElementById('id_search_loading');
+  var elResults = document.getElementById('id_article_results');
+  elForm.addEventListener('submit', function(e){
+    elForm.style.display = 'none';
+    elLoading.style.display = 'block';
+    elResults.style.opacity = '0.25';
+  });
+})();
+
+(function(){
+  var elLnk = document.getElementById('id_auto_add_default_subs');
+
+  var defaultSRs = 'announcements Art AskReddit askscience aww blog books creepy dataisbeautiful DIY Documentaries EarthPorn explainlikeimfive Fitness food funny Futurology gadgets gaming GetMotivated gifs history IAmA InternetIsBeautiful Jokes LifeProTips listentothis mildlyinteresting movies Music news nosleep nottheonion OldSchoolCool personalfinance philosophy photoshopbattles pics science Showerthoughts space sports television tifu todayilearned TwoXChromosomes UpliftingNews videos worldnews WritingPrompts';
+
+  var commonSRs = 'bestof';
+
+  elLnk.innerHTML = 'ignore common and default subreddits';
+  elLnk.addEventListener('click', function(e){
+    e.preventDefault();
+    var elInp = document.querySelector('input[name="f_ignore_sr_li"]');
+    elInp.value = commonSRs + ' ' + defaultSRs;
+  }, false);
+})();
+
+</script>
 
 {% endblock %}
