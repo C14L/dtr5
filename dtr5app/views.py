@@ -418,8 +418,10 @@ def me_search_view(request):
     if request.POST.get('f_distance', None):
         p.f_distance = force_int(request.POST.get('f_distance'),
                                  min=0, max=21000)
+
     if request.POST.get('f_minage', None):
         p.f_minage = force_int(request.POST.get('f_minage'), min=18, max=99)
+
     if request.POST.get('f_maxage', None):
         p.f_maxage = force_int(request.POST.get('f_maxage'), min=19, max=100)
 
@@ -431,6 +433,7 @@ def me_search_view(request):
 
     if request.POST.get('f_over_18', None):  # unused
         p.f_over_18 = bool(request.POST.get('f_over_18'))
+
     if request.POST.get('f_has_verified_email', None):  # unused
         p.f_has_verified_email = bool(request.POST.get('f_has_verified_email'))
 
@@ -442,34 +445,37 @@ def me_search_view(request):
         li = sr_str_to_list(request.POST['f_ignore_sr_li'])
         p.f_ignore_sr_li = normalize_sr_names(li)
     except MultiValueDictKeyError:
-        pass  # don't change the search vaue if not POSTed.
+        pass  # don't change the search value if not POSTed.
+
     try:
         p.f_ignore_sr_max = force_int(request.POST['f_ignore_sr_max'],
                                       min=100, max=123456789)
     except MultiValueDictKeyError:
         pass  # don't change the search vaue if not POSTed.
+
     try:
         li = sr_str_to_list(request.POST['f_exclude_sr_li'])
         p.f_exclude_sr_li = normalize_sr_names(li)
     except MultiValueDictKeyError:
-        pass  # don't change the search vaue if not POSTed.
+        pass  # don't change the search value if not POSTed.
 
     request.user.profile = p
+
     #
     # TODO: check if model is dirty and only force a search results
     # buffer refresh if the search parameters actually changed. To
     # avoid too many searches.
     #
     request.user.profile.save()
-    search_results_buffer(request, force=True)
+    search_results_buffer(request, force=True)  # refresh search buffer items
 
     if len(request.session['search_results_buffer']) < 1:
         messages.warning(request, txt_not_found)
-        return redirect(request.POST.get('next', reverse('me_page')))
+        return redirect(request.POST.get('next', reverse('me_results_page')))
 
     # messages.success(request, 'Search options updated.')
-    if (request.session.get('view_post_signup', False)):
-        return redirect(request.POST.get('next', reverse('me_page')))
+    if request.session.get('view_post_signup', False):
+        return redirect(request.POST.get('next', reverse('me_results_page')))
     else:
         # x = {'username': request.session['search_results_buffer'][0]}
         # return redirect(reverse('profile_page', kwargs=x))

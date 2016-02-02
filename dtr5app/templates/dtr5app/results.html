@@ -21,7 +21,7 @@
   <div class="search-bar" id="id_search">
     <form method="POST" action="{% url 'me_search_page' %}">
       {% csrf_token %}
-      <input type="hidden" name="next" value="{% url 'me_page' %}">
+      <input type="hidden" name="next" value="{% url 'me_results_page' %}">
 
       <div class="mainopts">
         <span>Find</span>&nbsp;
