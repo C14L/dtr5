@@ -145,22 +145,6 @@ def search_users_by_options_queryset(user, include_flagged=False):
 #    return list(li[:BUFFER_LEN].values_list('username', flat=True))
 
 
-def set_search_results_order(request, order_by=None):
-    # set a search results order. default is to randomly switch between all
-    # available options. options are: 'sr_count', 'accessed', '-accessed',
-    # 'views_count', '-views_count'.
-    opts = ['sr_count',
-            # 'accessed',
-            'views_count',
-            '-accessed',
-            '-views_count']
-
-    if order_by not in opts:
-        order_by = random.choice(opts)
-
-    request.session['search_results_order'] = order_by
-
-
 def search_users(request, usernames_only=True, order_by=None):
     """
     Return a list of usernames that are matches for auth user's selected
@@ -179,7 +163,6 @@ def search_users(request, usernames_only=True, order_by=None):
     (see https://code.djangoproject.com/ticket/17741), the entire query is
     build in SQL.
     """
-    BUFFER_LEN = getattr(settings, 'RESULTS_BUFFER_LEN', 500)
     # SR_LIMIT = getattr(settings, 'SR_LIMIT', 50)
     # SR_MIN_SUBS = getattr(settings, 'SR_MIN_SUBS', 100)
     # SR_MAX_SUBS = getattr(settings, 'SR_MAX_SUBS', 5000000)
@@ -199,7 +182,7 @@ def search_users(request, usernames_only=True, order_by=None):
     query_params += []
     query_string += '''
         SELECT
-            au.id, au.username, ap.accessed, ap.accessed, ap.views_count,
+            au.id, au.username, ap.accessed, ap.views_count,
             COUNT(r1.user_id) AS sr_count
 
         FROM dtr5app_subscribed r1
@@ -300,26 +283,32 @@ def search_users(request, usernames_only=True, order_by=None):
         query_params += []
         query_string += ''' AND p._pics NOT IN ('', '[]') '''
 
-    # finish up
-    query_params += [BUFFER_LEN]
+    # finish up: fetch 1000 matches with most subs in common
+    query_params += [getattr(settings, 'RESULTS_BUFFER_LEN', 1000)]
     query_string += ''' ) GROUP BY r1.user_id, au.id, ap.user_id
                           ORDER BY sr_count DESC LIMIT %s '''
-
-    # execute the query with the collected params
     users = User.objects.raw(query_string, query_params)
 
-    # re-order the results
-    set_search_results_order(request, order_by)
-    order_by = request.session['search_results_order']
+    # re-order the results: re-order the 1000 matches by the value stored in the
+    # user's session, so they can see seemingly different kinds of lists.
+    order_by = request.session.get('search_results_order', '')
+
     if order_by == '-accessed':  # most recently accessed first
         users = sorted(users, key=lambda u: u.accessed, reverse=True)
     elif order_by == 'accessed':  # most recently accessed last
         users = sorted(users, key=lambda u: u.accessed, reverse=False)
+
+    #elif order_by == '-date_joined':  #
+    #    users = sorted(users, key=lambda u: u......., reverse=True)
+    #elif order_by == '-reddit_joined':  #
+    #    users = sorted(users, key=lambda u: u......., reverse=True)
+
     elif order_by == '-views_count':  # most views first
         users = sorted(users, key=lambda u: u.views_count, reverse=True)
     elif order_by == 'views_count':  # most views last
         users = sorted(users, key=lambda u: u.views_count, reverse=False)
-    else:  # sr_count (default): most subs in common first
+
+    else:  # -sr_count (default): most subs in common first
         users = sorted(users, key=lambda u: u.sr_count, reverse=True)
 
     # default return a list of only usernames
@@ -336,8 +325,9 @@ def search_results_buffer(request, force=False):
     the buffer.
     """
     bt = request.session.get('search_results_buffer_time', None)
+    mt = getattr(settings, 'RESULTS_BUFFER_TIMEOUT', 5)
 
-    if (not bt or from_iso8601(bt) + timedelta(minutes=1) < from_iso8601()):
+    if not bt or from_iso8601(bt) + timedelta(minutes=mt) < from_iso8601():
         if settings.DEBUG:
             print('search_results_buffer() --> Cache timeout, new search!')
         force = True  # if buffer is old, force refresh

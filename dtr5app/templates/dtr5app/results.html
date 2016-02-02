@@ -30,7 +30,7 @@
             <option value="">everybody</option>
             {% for sex in settings.SEX_PLURAL %}
               {% if sex.0 > 0 %}
-                <option{% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+                <option {% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
               {% endif %}
             {% endfor %}
           </select>
@@ -39,12 +39,21 @@
         <label>
           <select name="f_distance" size="1">
             {% for x in DISTANCE %}
-              <option{% if user.profile.f_distance == x.0 %} selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+              <option {% if user.profile.f_distance == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
             {% endfor %}
           </select>
         </label>&nbsp;
         <label class="submit">
           <input type="submit" value="search">
+        </label>&nbsp;
+
+        <label style="font-size: 0.8rem;">
+          <span>sort by:</span>
+          <select name="order_by" size="1" style="font-size: inherit; background: transparent; border: none; outline: none;">
+            {% for x in settings.ORDER_BY %}
+              <option {% if order_by == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+            {% endfor %}
+          </select>
         </label>&nbsp;
       </div>
 
@@ -56,7 +65,7 @@
         <div class="opts">
           <section>
             <label>
-              <input type="checkbox" name="f_hide_no_pic" value="yep"{% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;only show profiles with picture
+              <input type="checkbox" name="f_hide_no_pic" value="yep" {% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;only show profiles with picture
             </label>&nbsp;
           </section>
           <!--

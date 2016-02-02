@@ -140,7 +140,9 @@ USER_MIN_COMMENT_KARMA = 0           # OR xy comment karma.
 
 # Number of user IDs to load into session cache.
 SEARCH_RESULTS_BUFFER_SIZE = 100  # unused?
+
 LINKS_IN_PROFILE_HEADER = 5
+RESULTS_BUFFER_TIMEOUT = 10  # minutes until search result cache refresh
 RESULTS_BUFFER_LEN = 1000  # usernames in search result cache
 USER_MAX_PICS_COUNT = 10  # max number of linked pics in user profile
 
@@ -344,3 +346,14 @@ PREFERENCE = (  # bitmap  # unused
     (65536, ""),
 )
 
+ORDER_BY = (
+    ('-sr_count', 'best matches'),
+    ('-accessed', 'recently active'),
+    ('reddit_joined', 'reddit oldest'),
+    ('-date_joined', 'newest members'),
+    ('-views_count', 'most viewed'),
+
+    # ('accessed', ''),
+    # ('date_joined', ''),
+    # ('views_count', ''),
+)

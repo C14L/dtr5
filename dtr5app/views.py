@@ -412,6 +412,9 @@ def me_search_view(request):
 
         return redirect(_next)
 
+    # Set search options.
+    request.session['search_results_order'] = request.POST.get('order_by', '')
+
     p = request.user.profile
     p.f_sex = force_int(request.POST.get('f_sex', ''))
 
@@ -495,7 +498,8 @@ def me_results_view(request, template_name='dtr5app/results.html'):
     li.object_list = get_user_list_from_username_list(li.object_list)
     li.object_list = add_auth_user_latlng(request.user, li.object_list)
 
-    ctx = {'user_list': li}
+    ctx = {'user_list': li,
+           'order_by': request.session.get('search_results_order', '')}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
