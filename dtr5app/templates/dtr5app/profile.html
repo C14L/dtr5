@@ -74,8 +74,8 @@
             <li>
               <form class="delete-nope-form" method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
                 {% csrf_token %}
-                <span class="fa fa-ban"></span>
-                <input type="submit" class="del-nope opt" value="show again in search">
+                <span class="fa fa-arrow-down"></span>
+                <input type="submit" class="del-nope opt" value="unhide">
               </form>
             </li>
           {% endif %}
@@ -87,16 +87,15 @@
                 <input type="submit" class="like opt" value="upvote">
               </form>
             </li>
-            <li>
+            <li class="secondary">
               <form class="set-nope-form" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
                 {% csrf_token %}
                 <span class="fa fa-arrow-down"></span>
-                <input type="submit" class="nope opt" value="nope">
+                <input type="submit" class="nope opt" value="hide">
               </form>
             </li>
           {% endif %}
           <li class="secondary">
-            <!-- <span class="fa fa-flag-o"></span> -->
             <span class="fa fa-frown-o"></span>
             <a href="{% url 'me_flag_page' 'set' 'report' view_user.username %}">report this profile</a>
           </li>
