@@ -66,8 +66,16 @@
         <div class="opts">
           <section>
             <label>
-              <input type="checkbox" name="f_hide_no_pic" value="yep" {% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;only show profiles with picture
+              <input type="checkbox" name="f_hide_no_pic" value="1" {% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
+            </label>&nbsp;&middot;&nbsp;
+            <label>
+              <input type="checkbox" name="f_has_verified_email" value="1" {% if user.profile.f_has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
             </label>&nbsp;
+            <!--
+            <label>
+              <input type="checkbox" name="f_is_stable" value="1">&nbsp;<span title="Ignore very new and low karma accounts.">only established redditors</span>
+            </label>&nbsp;
+            -->
           </section>
           <!--
           <section>

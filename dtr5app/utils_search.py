@@ -77,16 +77,6 @@ def search_users_by_options_queryset(user, include_flagged=False):
     if settings.DEBUG:
         print('search_users_by_options_queryset --> distance: ', li.count())
 
-    # x only show SFW profiles?
-    if user.profile.f_over_18:  # unused
-        pass
-        # li = li.filter(profile__over_18=True)
-
-    # x only users with a verified email on reddit?
-    if user.profile.f_has_verified_email:  # unused
-        pass
-        # li = li.filter(profile__has_verified_email=True)
-
     # 5 exclude auth user themself.
     li = li.exclude(pk=user.pk)
     if settings.DEBUG:
@@ -125,6 +115,17 @@ def search_users_by_options_queryset(user, include_flagged=False):
         li = li.exclude(profile___pics__in=('', '[]', ))
     if settings.DEBUG:
         print('search_users_by_options_queryset --> pics: ', li.count())
+
+    # 9 only users with a verified email on reddit?
+    if user.profile.f_has_verified_email:
+        li = li.filter(profile__has_verified_email=True)
+    if settings.DEBUG:
+        print('search_users_by_options_queryset --> email: ', li.count())
+
+    # xx only show SFW profiles?
+    if user.profile.f_over_18:  # unused
+        pass
+        # li = li.filter(profile__over_18=True)
 
     if settings.DEBUG:
         print('--> li.query', li.query)
@@ -280,6 +281,12 @@ def search_users(request, usernames_only=True, order_by=None):
     if request.user.profile.f_hide_no_pic:
         query_params += []
         query_string += ''' AND p._pics NOT IN ('', '[]') '''
+
+    # part 9: only users with a verified email on reddit
+    # li = li.filter(profile__has_verified_email=True)
+    if request.user.profile.f_has_verified_email:
+        query_params += []
+        query_string += ''' AND p.has_verified_email '''
 
     # finish up: fetch 1000 matches with most subs in common
     query_params += [getattr(settings, 'RESULTS_BUFFER_LEN', 1000)]

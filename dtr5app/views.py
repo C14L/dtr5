@@ -428,17 +428,19 @@ def me_search_view(request):
     if request.POST.get('f_maxage', None):
         p.f_maxage = force_int(request.POST.get('f_maxage'), min=19, max=100)
 
-    if request.POST.get('f_hide_no_pic', None):
-        if request.POST.get('f_hide_no_pic') == 'nope':
-            p.f_hide_no_pic = False
-        if request.POST.get('f_hide_no_pic') == 'yep':
-            p.f_hide_no_pic = True
+    p.f_hide_no_pic = \
+        bool(request.POST.get('f_hide_no_pic', None) == "1")
+
+    p.f_has_verified_email = \
+        bool(request.POST.get('f_has_verified_email', None) == "1")
+
+    # TODO: needs Profile model update!
+    if hasattr(p, 'f_is_stable'):
+        setattr(p, 'f_is_stable',
+                bool(request.POST.get('f_is_stable', None) == "1"))
 
     if request.POST.get('f_over_18', None):  # unused
         p.f_over_18 = bool(request.POST.get('f_over_18'))
-
-    if request.POST.get('f_has_verified_email', None):  # unused
-        p.f_has_verified_email = bool(request.POST.get('f_has_verified_email'))
 
     # List of subreddit names. This needs to be cleaned for appropriate
     # letter case, so its useful in raw SQL search. Since Django has no

@@ -109,9 +109,12 @@ class Profile(models.Model):
     f_maxage = models.PositiveSmallIntegerField(default=100)
     # find users with the over_18 profile value set to True or who
     # are subscribed to any "over_18" subreddits?
-    f_over_18 = models.BooleanField(default=True)                   # unused
+    f_over_18 = models.BooleanField(default=True)  # --> unused
     # find only users that have a verified email on reddit?
-    f_has_verified_email = models.BooleanField(default=False)       # unused
+    f_has_verified_email = models.BooleanField(default=False)
+    # find only stable user accounts with a certain age and karma.
+    # TODO: needs model update
+    # f_is_stable = models.BooleanField(default=False)
 
     # space separated list of subreddit names to ignore in search
     _f_ignore_sr_li = models.CharField(default='', max_length=800)
