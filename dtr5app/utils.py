@@ -18,10 +18,10 @@ def prepare_paginated_user_list(user_list, page):
     Receives a list and a page number, and returns the appropriate page. If
     the page doesn't exist, it raises Http404.
     """
-    PER_PAGE = getattr(settings, 'USERS_PER_PAGE', 20)
-    ORPHANS = getattr(settings, 'USERS_ORPHANS', 0)
+    per_page = getattr(settings, 'USERS_PER_PAGE', 20)
+    orphans = getattr(settings, 'USERS_ORPHANS', 0)
 
-    paginated = Paginator(user_list, per_page=PER_PAGE,  orphans=ORPHANS)
+    paginated = Paginator(user_list, per_page=per_page,  orphans=orphans)
     try:
         user_page = paginated.page(page)
     except EmptyPage:  # out of range
