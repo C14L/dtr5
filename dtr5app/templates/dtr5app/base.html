@@ -37,8 +37,7 @@
     <script>
 
 {% if DEBUG %}
-    var ga = function () {}
-    ga.trackEvent = function () {}
+    var ga=function(){}
 {% else %}
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -57,12 +56,12 @@
 
     <header>
       <div class="site-logo">
-        <a class="site-icon" href="/" onclick="ga.trackEvent('header', 'click', 'sitelogo');"><img src="{% static 'logo100.gif' %}" alt=""></a>
-        <a class="site-name" href="/" onclick="ga.trackEvent('header', 'click', 'sitename');">redddate</a>
+        <a class="site-icon" href="/" onclick="ga('send', 'event', 'header', 'click', 'sitelogo');"><img src="{% static 'logo100.gif' %}" alt=""></a>
+        <a class="site-name" href="/" onclick="ga('send', 'event', 'header', 'click', 'sitename');">redddate</a>
       </div>
       <div class="site-links">
 
-        <a class="item likes" href="{% url 'me_recv_like_page' %}" onclick="ga.trackEvent('header', 'click', 'upvotes-inbox');">
+        <a class="item likes" href="{% url 'me_recv_like_page' %}" onclick="ga('send', 'event', 'header', 'click', 'upvotes-inbox');">
           <span class="text">upvotes inbox</span>
           <!-- <span class="cst-arrow-up"></span> -->
           <span class="icon fa fa-arrow-up"></span>
@@ -71,7 +70,7 @@
           {% endif %}
         </a>
 
-        <a class="item matches" href="{% url 'matches_page' %}" onclick="ga.trackEvent('header', 'click', 'upvote-matches');">
+        <a class="item matches" href="{% url 'matches_page' %}" onclick="ga('send', 'event', 'header', 'click', 'upvote-matches');">
           <span class="text">upvote&nbsp;matches</span>
           <span class="icon fa fa-bullseye"></span>
           {% if user.profile.new_matches_count %}
@@ -79,7 +78,7 @@
           {% endif %}
         </a>
 
-        <a class="item visits" href="{% url 'me_viewed_me_page' %}" onclick="ga.trackEvent('header', 'click', 'visited-you');">
+        <a class="item visits" href="{% url 'me_viewed_me_page' %}" onclick="ga('send', 'event', 'header', 'click', 'visited-you');">
           <span class="text">visited you</span>
           <span class="icon fa fa-users"></span>
           {% if user.profile.new_views_count %}
@@ -87,7 +86,7 @@
           {% endif %}
         </a>
 
-        <a class="item settings" href="{% url 'me_page' %}" onclick="ga.trackEvent('header', 'click', 'preferences');">
+        <a class="item settings" href="{% url 'me_page' %}" onclick="ga('send', 'event', 'header', 'click', 'preferences');">
           <span class="text">preferences</span>
           <span class="icon fa fa-cog"></span>
         </a>
@@ -100,38 +99,38 @@
             <ul class="opts">
               <li>
                 <span class="icon fa fa-user"></span>
-                <a class="username" href="{% url 'profile_page' user.username %}" onclick="ga.trackEvent('headmenu', 'click', 'username');">{{user.username}}</a>
+                <a class="username" href="{% url 'profile_page' user.username %}" onclick="ga('send', 'event', 'headmenu', 'click', 'username');">{{user.username}}</a>
               </li>
 
               <li>
                 <span class="icon fa fa-map"></span>
-                <a class="map" href="{% url 'usermap' %}" onclick="ga.trackEvent('headmenu', 'click', 'redditors-map');">redditors map</a>
+                <a class="map" href="{% url 'usermap' %}" onclick="ga('send', 'event', 'headmenu', 'click', 'redditors-map');">redditors map</a>
               </li>
 
               <li>
                 <span class="icon fa fa-envelope"></span>
-                <a href="https://www.reddit.com/message/messages/" title="reddit mailbox" onclick="ga.trackEvent('headmenu', 'click', 'reddit-mailbox');">reddit mailbox</a>
+                <a href="https://www.reddit.com/message/messages/" title="reddit mailbox" onclick="ga('send', 'event', 'headmenu', 'click', 'reddit-mailbox');">reddit mailbox</a>
               </li>
 
               <li class="">
                 <span class="cst-arrow-up gray"></span>
-                <a href="{% url 'me_like_page' %}" onclick="ga.trackEvent('headmenu', 'click', 'upvotes-you-sent');">upvotes you sent</a>
+                <a href="{% url 'me_like_page' %}" onclick="ga('send', 'event', 'headmenu', 'click', 'upvotes-you-sent');">upvotes you sent</a>
               </li>
 
               <li class="secondary">
                 <span class="fa fa-arrow-down"></span>
-                <a href="{% url 'me_nope_page' %}" onclick="ga.trackEvent('headmenu', 'click', 'hidden-profiles');">hidden profiles</a>
+                <a href="{% url 'me_nope_page' %}" onclick="ga('send', 'event', 'headmenu', 'click', 'hidden-profiles');">hidden profiles</a>
               </li>
 
               <li class="secondary">
                 <span class="fa fa-sign-out"></span>
-                <a class="logout" href="{% url 'logout_page' %}" onclick="ga.trackEvent('headmenu', 'click', 'logout');">logout</a>
+                <a class="logout" href="{% url 'logout_page' %}" onclick="ga('send', 'event', 'headmenu', 'click', 'logout');">logout</a>
               </li>
             </ul>
           </nav>
 
         {% else %}
-          <a class="item login" href="/" onclick="ga.trackEvent('header', 'click', 'signup-login');"><span class="text">signup/login</span><span class="icon fa fa-sign-in"></span></a>
+          <a class="item login" href="/" onclick="ga('send', 'event', 'header', 'click', 'signup-login');"><span class="text">signup/login</span><span class="icon fa fa-sign-in"></span></a>
 
         {% endif %}
       </div>
@@ -151,20 +150,20 @@
 
     <footer>
       <p>
-        <a href="/stats/" onclick="ga.trackEvent('footer', 'click', 'stats');">site stats</a>
+        <a href="/stats/" onclick="ga('send', 'event', 'footer', 'click', 'stats');">site stats</a>
         &middot;
-        discuss on <a href="https://www.reddit.com/r/redddate" onclick="ga.trackEvent('footer', 'click', 'ext-r-redddit');">r/redddate</a>
+        discuss on <a href="https://www.reddit.com/r/redddate" onclick="ga('send', 'event', 'footer', 'click', 'ext-r-redddit');">r/redddate</a>
         &middot;
-        view source on <a href="https://github.com/C14L/dtr5" onclick="ga.trackEvent('footer', 'click', 'ext-github');"><span class="fa fa-github"></span> GitHub</a>
+        view source on <a href="https://github.com/C14L/dtr5" onclick="ga('send', 'event', 'footer', 'click', 'ext-github');"><span class="fa fa-github"></span> GitHub</a>
         &middot;
-        tweet on <a href="https://twitter.com/redddate" onclick="ga.trackEvent('footer', 'click', 'ext-twitter');"><span class="fa fa-twitter"></span></a>
+        tweet on <a href="https://twitter.com/redddate" onclick="ga('send', 'event', 'footer', 'click', 'ext-twitter');"><span class="fa fa-twitter"></span></a>
         &middot;
-        pin on <a href="https://www.pinterest.com/redddate/" onclick="ga.trackEvent('footer', 'click', 'ext-pinterest');"><span class="fa fa-pinterest"></span></a>
+        pin on <a href="https://www.pinterest.com/redddate/" onclick="ga('send', 'event', 'footer', 'click', 'ext-pinterest');"><span class="fa fa-pinterest"></span></a>
         &middot;
-        blog on <a href="https://redddate.wordpress.com/"><span class="fa fa-wordpress" onclick="ga.trackEvent('footer', 'click', 'ext-wordpress');"></span></a> and <a href="https://www.tumblr.com/blog/redddate" onclick="ga.trackEvent('footer', 'click', 'ext-tumblr');"><span class="fa fa-tumblr"></span></a>
+        blog on <a href="https://redddate.wordpress.com/"><span class="fa fa-wordpress" onclick="ga('send', 'event', 'footer', 'click', 'ext-wordpress');"></span></a> and <a href="https://www.tumblr.com/blog/redddate" onclick="ga('send', 'event', 'footer', 'click', 'ext-tumblr');"><span class="fa fa-tumblr"></span></a>
       </p>
       <p>
-        &copy; 2016 redddate.com -- use of this site constitutes acceptance of our <a href="{% static 'useragreement.html' %}" onclick="ga.trackEvent('footer', 'click', 'user-agreement');">User Agreement</a> and <a href="{% static 'privacy.html' %}" onclick="ga.trackEvent('footer', 'click', 'privacy-policy');">Privacy Policy</a>.
+        &copy; 2016 redddate.com -- use of this site constitutes acceptance of our <a href="{% static 'useragreement.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'user-agreement');">User Agreement</a> and <a href="{% static 'privacy.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'privacy-policy');">Privacy Policy</a>.
       <p>
 
       {% if DEBUG or user.is_superuser %}
