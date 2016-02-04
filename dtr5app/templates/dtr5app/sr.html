@@ -9,68 +9,130 @@
 {% block main %}
 
 <section class="subheader">
-  <span class="reddit-link"><a href="https://www.reddit.com/r/{{view_sr.display_name}}" class="fa fa-reddit"></a><a href="/r/{{view_sr.display_name}}">/r/{{view_sr.display_name}}</a></span>
 
-  <span class="info">{{view_sr.subscribers}} on reddit, and {{view_sr.subscribers_here}} subscribers here - your <a href="{% url 'me_page' %}">search options</a> found {{user_list.paginator.count}} redditors</span>
+  <!-- <span class="info">{{view_sr.subscribers_here}} members - your <a href="{% url 'me_page' %}">search options</a> found {{user_list.paginator.count}} redditors</span> -->
+
+  <div class="search-bar" id="id_search">
+    <div id="id_search_loading" class="loading" style="display:none; text-align:center; border: 0.75rem solid transparent;"><span></span><span></span><span></span></div>
+
+    <form id="id_search_form" method="POST" action="{% url 'me_search_page' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'sr_page' view_sr.display_name %}">
+
+      <div class="mainopts">
+
+        <span class="reddit-link"><a href="https://www.reddit.com/r/{{view_sr.display_name}}" class="fa fa-reddit"></a><a href="/r/{{view_sr.display_name}}">/r/{{view_sr.display_name}}</a></span>
+
+        <label>
+          <select name="f_sex" size="1">
+            <option value="">everybody</option>
+            {% for sex in settings.SEX_PLURAL %}
+              {% if sex.0 > 0 %}
+                <option {% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </label>&nbsp;
+        <span>within</span>&nbsp;
+        <label>
+          <select name="f_distance" size="1">
+            {% for x in DISTANCE %}
+              <option {% if user.profile.f_distance == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+            {% endfor %}
+          </select>
+        </label>&nbsp;
+        <label class="submit">
+          <input type="submit" value="search">
+        </label>&nbsp;
+
+        <label style="font-size: 0.8rem;">
+          <span>sort by:</span>
+          <select name="order_by" size="1" style="font-size: inherit; background: transparent; border: none; outline: none;">
+            {% for x in settings.ORDER_BY %}
+              <option {% if order_by == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+            {% endfor %}
+          </select>
+        </label>&nbsp;
+      </div>
+
+      <section class="toggle-section">
+        <label for="id_984hfde">
+          <h3>more search settings</h3>
+        </label>
+        <input id="id_984hfde" type="checkbox" style="display: none;">
+        <div class="opts">
+          <section>
+            <label>
+              <input type="checkbox" name="f_hide_no_pic" value="1" {% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
+            </label>&nbsp;&middot;&nbsp;
+            <label>
+              <input type="checkbox" name="f_has_verified_email" value="1" {% if user.profile.f_has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
+            </label>&nbsp;
+            <!--
+            <label>
+              <input type="checkbox" name="f_is_stable" value="1">&nbsp;<span title="Ignore very new and low karma accounts.">only established redditors</span>
+            </label>&nbsp;
+            -->
+          </section>
+          <!--
+          <section>
+            <label class="item">
+              <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_FRIENDS %} checked{% endif %}>
+              <span class="tx">show redditors here for friends only</span>
+            </label>
+            <label class="item">
+              <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_DATING %} checked{% endif %}>
+              <span class="tx">show redditors here only for dating</span>
+            </label>
+          </section>
+          -->
+          <section>
+            <label>
+              <span><b>ignore</b> these subreddits:</span>&nbsp;
+              <input type="text" name="f_ignore_sr_li" value="{{user.profile.f_ignore_sr_li|join:', '}}" maxlength="800" size="50" placeholder="AskReddit, news, Pics, Funny">
+            </label>
+            <p class="help">these subreddits will be treated as if you were <b>not</b> subscribed to them. <a href="#" id="id_auto_add_default_subs"></a></p>
+          </section>
+
+          <section>
+            <label>
+              <span><b>ignore</b> all subreddits larger than:</span>&nbsp;
+              <input type="number" min="0" max="123456789" name="f_ignore_sr_max" value="{{user.profile.f_ignore_sr_max}}" maxlength="10" size="10" placeholder="5,000,000">&nbsp;
+              <span>subscribers</span>
+            </label>
+            <p class="help">all subreddits larger than this will be treated as if you were <b>not</b> subscribed to them.</p>
+          </section>
+<!--
+          <section>
+            <label>
+              <span><b>exclude</b> everybody subscribed to any of these subreddits:</span>
+              <input type="text" name="f_exclude_sr_li" value="{{user.profile.f_exclude_sr_li|join:', '}}" maxlength="250" size="50" placeholder="shitredditsays, dragonsfuckingcars, sexyabortions, coontown">
+            </label>
+            <p class="help"><strong>use carefully!</strong> anybody subscribed to any of these subreddits will be <strong>removed</strong> from your search results!</p>
+          </section>
+-->
+          <section>
+            <span><b>age range</b>: between&nbsp;
+            <input type="number" min="18" max="98" name="f_minage" value="{{user.profile.f_minage}}">&nbsp;and&nbsp;
+            <input type="number" min="19" max="100" name="f_maxage" value="{{user.profile.f_maxage}}">&nbsp;
+            years old</span>
+          </section>
+          <section style="text-align:center">
+            <input type="submit" value="search">
+          </section>
+        </div>
+      </section>
+    </form>
+  </div>
+
+
+
 </section>
 
 {% if user_list %}
   <article>
-    <ul class="user-list">
-      {% for v in user_list %}
-        <li>
-          <a href="{% url 'profile_page' v.username %}" class="pic">
-            {% if v.profile.pics.0 %}
-              <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
-            {% else %}
-              <img src="{% static 'nopic.jpg' %}" alt="{{v.username}}">
-            {% endif %}
-          </a>
-
-          <span class="info">
-            <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
-            <span class="asl">
-              {{v.profile.get_age}}
-              {{v.profile.get_sex_symbol}}
-              {{v.profile.get_distance|prefdist:user}} away
-            </span>
-          </span>
-
-<!--
-
-not here, because they are not removed after being voted on!
-this is a list of /all/ users of this sub, even those that the
-authuser upvoted or ignors.
-
-          <div class="like-nope-btns">
-            <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' v.username %}" title="nope">
-              {% csrf_token %}
-              <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
-              <input type="submit" value="">
-            </form>
-            <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' v.username %}" title="upvote">
-              {% csrf_token %}
-              <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
-              <input type="submit" value="">
-            </form>
-          </div>
--->
-
-        </li>
-      {% endfor %}
-    </ul>
-
-    <div class="pagination">
-      {% if user_list.has_previous %}
-        <a class="prev" href="?page={{user_list.previous_page_number}}"><span class="fa fa-arrow-left"></span></a>
-      {% endif %}
-      {% if user_list.has_next %}
-        <a class="next" href="?page={{user_list.next_page_number}}"><span class="fa fa-arrow-right"></span></a>
-      {% endif %}
-      <span>
-        {{user_list.number}} / {{user_list.paginator.num_pages}}
-      </span>
-    </div>
+    {% include 'dtr5app/user_list_cards.html' %}
+    {% include 'dtr5app/user_list_paginator.html' %}
   </article>
 {% else %}
   <div style="text-align:center; margin-top: 100px;">there is nobody</div>

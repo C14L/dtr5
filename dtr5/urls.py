@@ -52,7 +52,6 @@ urlpatterns = [
     url(r'^matches/$', views.matches_view, name="matches_page"),
 
     # Show all users that subscribe to a specific subreddit.
-    # --> TODO: Maybe not really needed?
     url(r'^r/(?P<sr>' + settings.RSTR_SR_NAME + ')/$',
         views.sr_view, name="sr_page"),
 

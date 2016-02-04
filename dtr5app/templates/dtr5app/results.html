@@ -132,58 +132,8 @@
 
 {% if user_list %}
   <article id="id_article_results">
-
-    <ul class="user-list">
-      {% for v in user_list %}
-        <li>
-          <a href="{% url 'profile_page' v.username %}" class="pic">
-            {% if v.profile.pics.0 %}
-              <img src="{{v.profile.pics.0.url}}" alt="{{v.username}}">
-            {% else %}
-              <img src="{% static 'nopic.jpg' %}" alt="{{v.username}}">
-            {% endif %}
-          </a>
-
-          <a href="{% url 'profile_page' v.username %}" class="info">
-            <span class="username">{{v.username}}</span>
-            <span class="asl">
-              {{v.profile.get_age}}
-              {{v.profile.get_sex_symbol}}
-              {{v.profile.get_distance|prefdist:user}} away
-              <!-- <br/>last active: {{v.profile.accessed|timesince}} -->
-            </span>
-          </a>
-          <!-- ## remove: onmouseover overlay may cause accidental clicks ##
-          <div class="like-nope-btns">
-            <form class="opt nope" method="POST" action="{% url 'me_flag_page' 'set' 'nope' v.username %}" title="nope">
-              {% csrf_token %}
-              <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
-              <input type="submit" value="">
-            </form>
-            <form class="opt like" method="POST" action="{% url 'me_flag_page' 'set' 'like' v.username %}" title="upvote">
-              {% csrf_token %}
-              <input type="hidden" name="next" value="{{ABSOLUTE_URI}}">
-              <input type="submit" value="">
-            </form>
-          </div>
-          -->
-
-        </li>
-      {% endfor %}
-    </ul>
-
-    <div class="pagination">
-      {% if user_list.has_previous %}
-        <a class="prev" href="?page={{user_list.previous_page_number}}"><span class="fa fa-arrow-left"></span></a>
-      {% endif %}
-      {% if user_list.has_next %}
-        <a class="next" href="?page={{user_list.next_page_number}}"><span class="fa fa-arrow-right"></span></a>
-      {% endif %}
-      <span>
-        {{user_list.number}} / {{user_list.paginator.num_pages}}
-      </span>
-    </div>
-
+    {% include 'dtr5app/user_list_cards.html' %}
+    {% include 'dtr5app/user_list_paginator.html' %}
   </article>
 {% else %}
   <div style="text-align:center; margin-top: 100px;">there is nobody</div>

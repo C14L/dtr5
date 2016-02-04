@@ -473,18 +473,20 @@ def me_search_view(request):
     #
     request.user.profile.save()
     search_results_buffer(request, force=True)  # refresh search buffer items
+    _next = request.POST.get('next', reverse('me_results_page'))
 
     if len(request.session['search_results_buffer']) < 1:
         messages.warning(request, txt_not_found)
-        return redirect(request.POST.get('next', reverse('me_results_page')))
+
+    return redirect(_next)
 
     # messages.success(request, 'Search options updated.')
-    if request.session.get('view_post_signup', False):
-        return redirect(request.POST.get('next', reverse('me_results_page')))
-    else:
-        # x = {'username': request.session['search_results_buffer'][0]}
-        # return redirect(reverse('profile_page', kwargs=x))
-        return redirect(reverse('me_results_page'))
+    # if request.session.get('view_post_signup', False):
+    #     return redirect(_next)
+    # else:
+    #     # x = {'username': request.session['search_results_buffer'][0]}
+    #     # return redirect(reverse('profile_page', kwargs=x))
+    #     return redirect(reverse('me_results_page'))
 
 
 @login_required

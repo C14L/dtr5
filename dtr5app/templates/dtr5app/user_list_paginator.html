@@ -1,0 +1,13 @@
+{% load dtr5tags %}
+
+<div class="pagination">
+  {% if user_list.has_previous %}
+    <a class="prev" href="?page={{user_list.previous_page_number}}"><span class="fa fa-arrow-left"></span></a>
+  {% endif %}
+  {% if user_list.has_next %}
+    <a class="next" href="?page={{user_list.next_page_number}}"><span class="fa fa-arrow-right"></span></a>
+  {% endif %}
+  <span>
+    {{user_list.number}} / {{user_list.paginator.num_pages}}
+  </span>
+</div>
