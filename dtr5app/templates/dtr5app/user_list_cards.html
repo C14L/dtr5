@@ -1,0 +1,28 @@
+{% load dtr5tags %}
+
+{% spaceless %}
+<ul class="user-list-cards">
+  {% for v in user_list %}
+    <li>
+      <a href="{% url 'profile_page' v.username %}" class="pic" style="background-image: url({{v.profile.pics.0.url}})"></a>
+      <span class="info">
+
+        {% if v.is_match %}
+          <span class="matched">match</span>
+        {% elif v.visit_created %}
+          <span class="visited">visited you</span>
+        {% endif %}
+
+        <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
+        <span class="age">
+          {{v.profile.get_age}} {{v.profile.get_sex_symbol}}
+          <!-- {{v.profile.accessed|timesince}} -->
+        </span>
+        <span class="loc">
+          {{v.profile.get_distance|prefdist:user}} away
+        </span>
+      </span>
+    </li>
+  {% endfor %}
+</ul>
+{% endspaceless %}

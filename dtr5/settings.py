@@ -157,7 +157,7 @@ SR_LIMIT = 50
 SR_FAVS_COUNT_MAX = 10
 
 # How many users to show per page (subreddit view, match view, likes view, ..)
-USERS_PER_PAGE = 10
+USERS_PER_PAGE = 20
 USERS_ORPHANS = 0
 
 # Limit number of subreddits to fetch

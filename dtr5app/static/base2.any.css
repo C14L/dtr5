@@ -80,21 +80,6 @@ Background colors for "herefor" values.
 
 /*
 
-for lists, arrows left and right for previous and next page.
-
-*/
-.pagination { display: block; font-size: 3.5rem; line-height: 5rem; color: white; overflow: hidden; margin: 24px 0; padding: 16px; }
-.pagination > a { color: inherit; display: block; width: 5rem; height: 5rem; background-color: red; border-radius: 50%; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); box-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
-.pagination > a.prev { float: left; }
-.pagination > a.next { float: right; }
-.pagination > a > span {}
-.pagination > a.prev > span {}
-.pagination > a.next > span {}
-.pagination > span { display: block; margin: 0 6rem; padding: 0; color: black; text-align: center; font-size: 2rem; line-height: 5rem;  }
-
-
-/*
-
 The three-dots-menu, usually found at the top right corner of cards.
 
  */
@@ -545,6 +530,34 @@ List of subreddit matches on profile view.
   font-size: 1rem; line-height: 2rem;
 }
 
+
+/*
+
+List of users as 200x300px cards.
+
+*/
+.user-list-cards { list-style: none; display: flex; flex-wrap: wrap; margin: 0; padding: 8px; overflow: hidden; justify-content: center; align-items: flex-start; }
+.user-list-cards li { width: 200px; height: 300px; background: white; margin: 8px; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.28); }
+.user-list-cards li a.pic { display: block; width: 200px; height: 200px; background-color: white; background-position: center center; background-repeat: no-repeat; background-size: cover; }
+.user-list-cards li .info { display: block; box-sizing: border-box; width: 200px; height: 100px; overflow: hidden; text-align: left; padding: 12px 16px 0 16px; }
+.user-list-cards li .info .username { display: block; }
+.user-list-cards li .info .age { display: block; }
+.user-list-cards li .info .loc { display: block; color: gray; }
+
+
+/*
+
+for lists, arrows left and right for previous and next page.
+
+*/
+.pagination { display: block; font-size: 3.5rem; line-height: 5rem; color: white; overflow: hidden; margin: 24px 0; padding: 16px; }
+.pagination > a { color: inherit; display: block; width: 5rem; height: 5rem; background-color: red; border-radius: 50%; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); box-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
+.pagination > a.prev { float: left; }
+.pagination > a.next { float: right; }
+.pagination > a > span {}
+.pagination > a.prev > span {}
+.pagination > a.next > span {}
+.pagination > span { display: block; margin: 0 6rem; padding: 0; color: black; text-align: center; font-size: 2rem; line-height: 5rem;  }
 
 
 /*
