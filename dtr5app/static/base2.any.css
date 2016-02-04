@@ -231,28 +231,41 @@ on the <h3/> title of the section. similar to .dotmenu
 }
 
 /* Search results page top search bar. */
-body.results .search-bar {
+.search-bar {
     position: relative;
 }
-body.results .search-bar .mainopts {
+.search-bar .mainopts {
     display: inline-block;
 }
-body.results .search-bar .toggle-section {
+.search-bar .toggle-section {
     border: 0;
 }
-body.results .search-bar .toggle-section > label {
+.search-bar .toggle-section > label {
     position: absolute; top: 0rem; right: 1rem;
 }
-body.results .search-bar .toggle-section > .opts {
+.search-bar .toggle-section > .opts {
     margin-top: 1.5rem;
 }
-body.results .search-bar .toggle-section > .opts > section {
+.search-bar .toggle-section > .opts > section {
   padding: 24px 32px;
   border-top: 1px solid rgba(0,0,0,0.12);
 }
-body.results .search-bar .toggle-section > .opts > section p {
+.search-bar .toggle-section > .opts > section p {
   margin: 0; padding: 0;
 }
+.search-bar .reddit-link {
+  display: inline-block;
+  font-size: 1.5rem; line-height: 1.5rem;
+  font-weight: normal;
+  margin: 0; padding: 0 16px 0 0;
+  vertical-align: middle;
+}
+.search-bar .reddit-link > .fa {
+  font-size: 1.5rem;
+  margin-right: 4px;
+  opacity: 0.2;
+}
+
 
 
 /*
@@ -444,18 +457,6 @@ body .subheader {
   box-shadow: 0 1px 3px rgba(0,0,0,0.28);
   margin: 0; padding: 22px 16px 24px 16px;
   text-align: left;
-}
-body .subheader > .reddit-link {
-  display: inline-block;
-  font-size: 1.5rem; line-height: 1.5rem;
-  font-weight: normal;
-  margin: 0; padding: 0 16px;
-  vertical-align: middle;
-}
-body .subheader > .reddit-link > .fa {
-  font-size: 1.5rem;
-  margin-right: 4px;
-  opacity: 0.2;
 }
 body .subheader > .info {
   font-size: 1rem; line-height: 1.5rem;
