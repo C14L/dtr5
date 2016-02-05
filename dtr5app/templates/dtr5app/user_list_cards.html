@@ -4,9 +4,9 @@
 <ul class="user-list-cards">
   {% for v in user_list %}
     <li>
-      <a href="{% url 'profile_page' v.username %}" class="pic" style="background-image: url({{v.profile.pics.0.url}})"></a>
-      <span class="info">
+      <a href="{% url 'profile_page' v.username %}" class="pic" {%if v.profile.pics %} style="background-image: url({{v.profile.pics.0.url}})" {% endif %}></a>
 
+      <span class="info">
         {% if v.is_match %}
           <span class="matched">match</span>
         {% elif v.visit_created %}
@@ -22,6 +22,7 @@
           {{v.profile.get_distance|prefdist:user}} away
         </span>
       </span>
+
     </li>
   {% endfor %}
 </ul>

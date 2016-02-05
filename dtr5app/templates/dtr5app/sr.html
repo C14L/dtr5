@@ -15,14 +15,10 @@
   <div class="search-bar" id="id_search">
     <div id="id_search_loading" class="loading" style="display:none; text-align:center; border: 0.75rem solid transparent;"><span></span><span></span><span></span></div>
 
-    <form id="id_search_form" method="POST" action="{% url 'me_search_page' %}">
+    <form id="id_search_form" method="POST" action="{% url 'sr_page' view_sr.display_name %}">
       {% csrf_token %}
-      <input type="hidden" name="next" value="{% url 'sr_page' view_sr.display_name %}">
-
       <div class="mainopts">
-
         <span class="reddit-link"><a href="https://www.reddit.com/r/{{view_sr.display_name}}" class="fa fa-reddit"></a><a href="/r/{{view_sr.display_name}}">/r/{{view_sr.display_name}}</a></span>
-
         <label>
           <select name="f_sex" size="1">
             <option value="">everybody</option>
@@ -44,12 +40,13 @@
         <label class="submit">
           <input type="submit" value="search">
         </label>&nbsp;
-
         <label style="font-size: 0.8rem;">
           <span>sort by:</span>
           <select name="order_by" size="1" style="font-size: inherit; background: transparent; border: none; outline: none;">
             {% for x in settings.ORDER_BY %}
-              <option {% if order_by == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+              {% if x.0 != "-sr_count" %}
+                <option {% if order_by == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+              {% endif %}
             {% endfor %}
           </select>
         </label>&nbsp;
@@ -63,54 +60,20 @@
         <div class="opts">
           <section>
             <label>
+              <input type="hidden" name="f_hide_no_pic" value="0">
               <input type="checkbox" name="f_hide_no_pic" value="1" {% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
             </label>&nbsp;&middot;&nbsp;
             <label>
+              <input type="hidden" name="f_has_verified_email" value="0">
               <input type="checkbox" name="f_has_verified_email" value="1" {% if user.profile.f_has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
             </label>&nbsp;
             <!--
             <label>
+              <input type="hidden" name="f_is_stable" value="0">
               <input type="checkbox" name="f_is_stable" value="1">&nbsp;<span title="Ignore very new and low karma accounts.">only established redditors</span>
             </label>&nbsp;
             -->
           </section>
-          <!--
-          <section>
-            <label class="item">
-              <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_FRIENDS %} checked{% endif %}>
-              <span class="tx">show redditors here for friends only</span>
-            </label>
-            <label class="item">
-              <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_DATING %} checked{% endif %}>
-              <span class="tx">show redditors here only for dating</span>
-            </label>
-          </section>
-          -->
-          <section>
-            <label>
-              <span><b>ignore</b> these subreddits:</span>&nbsp;
-              <input type="text" name="f_ignore_sr_li" value="{{user.profile.f_ignore_sr_li|join:', '}}" maxlength="800" size="50" placeholder="AskReddit, news, Pics, Funny">
-            </label>
-            <p class="help">these subreddits will be treated as if you were <b>not</b> subscribed to them. <a href="#" id="id_auto_add_default_subs"></a></p>
-          </section>
-
-          <section>
-            <label>
-              <span><b>ignore</b> all subreddits larger than:</span>&nbsp;
-              <input type="number" min="0" max="123456789" name="f_ignore_sr_max" value="{{user.profile.f_ignore_sr_max}}" maxlength="10" size="10" placeholder="5,000,000">&nbsp;
-              <span>subscribers</span>
-            </label>
-            <p class="help">all subreddits larger than this will be treated as if you were <b>not</b> subscribed to them.</p>
-          </section>
-<!--
-          <section>
-            <label>
-              <span><b>exclude</b> everybody subscribed to any of these subreddits:</span>
-              <input type="text" name="f_exclude_sr_li" value="{{user.profile.f_exclude_sr_li|join:', '}}" maxlength="250" size="50" placeholder="shitredditsays, dragonsfuckingcars, sexyabortions, coontown">
-            </label>
-            <p class="help"><strong>use carefully!</strong> anybody subscribed to any of these subreddits will be <strong>removed</strong> from your search results!</p>
-          </section>
--->
           <section>
             <span><b>age range</b>: between&nbsp;
             <input type="number" min="18" max="98" name="f_minage" value="{{user.profile.f_minage}}">&nbsp;and&nbsp;

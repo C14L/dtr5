@@ -8,8 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
-from .models import (Sr, Subscribed, Flag)
-from .utils_search import search_results_buffer
+from .models import Sr, Subscribed, Flag
 from toolbox import force_int
 
 
@@ -116,8 +115,8 @@ def get_user_list_after(request, view_user, n=5):
     """
     From the search buffer, return a list of "n" user objects after view_user.
     """
-    search_results_buffer(request)
     buff = request.session['search_results_buffer']
+
     try:
         idx = buff.index(view_user.username)
     except ValueError:  # view_user is not part of buffer, begin at index 0

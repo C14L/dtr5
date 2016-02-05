@@ -1,14 +1,16 @@
 """
 All profile search-realted functions.
 """
-import random
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils.datastructures import MultiValueDictKeyError
+
+from dtr5app.utils import normalize_sr_names
 from toolbox import (to_iso8601,
                      from_iso8601,
                      get_dob_range,
-                     get_latlng_bounderies)
+                     get_latlng_bounderies, force_int, sr_str_to_list)
 
 
 def search_subreddit_users(user, sr):
@@ -19,7 +21,7 @@ def search_subreddit_users(user, sr):
     :sr: Sr instance.
     """
     return search_users_by_options_queryset(user, include_flagged=True)\
-        .filter(subs__sr=sr).prefetch_related('subs').order_by('last_login')
+        .filter(subs__sr=sr).prefetch_related('subs').order_by('-last_login')
 
 
 def get_blocked_usernames_list():
@@ -146,7 +148,7 @@ def search_users_by_options_queryset(user, include_flagged=False):
 #    return list(li[:BUFFER_LEN].values_list('username', flat=True))
 
 
-def search_users(request, usernames_only=True, order_by=None):
+def search_users(request, usernames_only=True):
     """
     Return a list of usernames that are matches for auth user's selected
     search options and also are subscribes to one or more of the same
@@ -354,3 +356,68 @@ def search_results_buffer(request, force=False):
         request.session['search_results_buffer'] = search_users(request)
         request.session['search_results_buffer_time'] = to_iso8601()
         request.session.modified = True
+
+
+def update_search_settings(request):
+    """Update all posted search uptions in authuser's Profile."""
+    p = request.user.profile
+
+    if 'order_by' in request.POST:
+        request.session['search_results_order'] = request.POST['order_by']
+
+    if 'f_sex' in request.POST:
+        p.f_sex = force_int(request.POST['f_sex'])
+
+    if 'f_distance' in request.POST:
+        p.f_distance = force_int(request.POST['f_distance'], min=0, max=21000)
+
+    if 'f_minage' in request.POST:
+        p.f_minage = force_int(request.POST['f_minage'], min=18, max=99)
+
+    if 'f_maxage' in request.POST:
+        p.f_maxage = force_int(request.POST['f_maxage'], min=19, max=100)
+
+    if 'f_hide_no_pic' in request.POST:
+        j = force_int(request.POST['f_hide_no_pic'])
+        p.f_hide_no_pic = bool(j)
+
+    if 'f_has_verified_email' in request.POST:
+        j = force_int(request.POST['f_has_verified_email'])
+        p.f_has_verified_email = bool(j)
+
+    # TODO: needs Profile model update!
+    # if 'f_is_stable' in request.POST:
+    #     j = force_int(request.POST['f_is_stable'])
+    #     p.f_is_stable = bool(j)
+
+    if 'f_over_18' in request.POST:  # unused
+        p.f_over_18 = bool(request.POST['f_over_18'])
+
+    # List of subreddit names. This needs to be cleaned for appropriate
+    # letter case, so its useful in raw SQL search. Since Django has no
+    # case insensivity support :( we look up the correctly cased subreddit
+    # names here once, and store those as the user's search settings.
+    if 'f_ignore_sr_li' in request.POST:
+        try:
+            li = sr_str_to_list(request.POST['f_ignore_sr_li'])
+            p.f_ignore_sr_li = normalize_sr_names(li)
+        except MultiValueDictKeyError:
+            pass  # don't change the search value if not POSTed.
+
+    if 'f_ignore_sr_max' in request.POST:
+        try:
+            p.f_ignore_sr_max = force_int(request.POST['f_ignore_sr_max'],
+                                          min=100, max=123456789)
+        except MultiValueDictKeyError:
+            pass  # don't change the search vaue if not POSTed.
+
+    if 'f_exclude_sr_li' in request.POST:
+        try:
+            li = sr_str_to_list(request.POST['f_exclude_sr_li'])
+            p.f_exclude_sr_li = normalize_sr_names(li)
+        except MultiValueDictKeyError:
+            pass  # don't change the search value if not POSTed.
+
+    request.user.profile = p
+    request.user.profile.save()
+    return request

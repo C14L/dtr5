@@ -66,13 +66,16 @@
         <div class="opts">
           <section>
             <label>
+              <input type="hidden" name="f_hide_no_pic" value="0">
               <input type="checkbox" name="f_hide_no_pic" value="1" {% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
             </label>&nbsp;&middot;&nbsp;
             <label>
+              <input type="hidden" name="f_has_verified_email" value="0">
               <input type="checkbox" name="f_has_verified_email" value="1" {% if user.profile.f_has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
             </label>&nbsp;
             <!--
             <label>
+              <input type="hidden" name="f_is_stable" value="0">
               <input type="checkbox" name="f_is_stable" value="1">&nbsp;<span title="Ignore very new and low karma accounts.">only established redditors</span>
             </label>&nbsp;
             -->
@@ -80,10 +83,12 @@
           <!--
           <section>
             <label class="item">
-              <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_FRIENDS %} checked{% endif %}>
+              <input type="hidden" name="herefor_hide" value="0">
+              <input type="checkbox" name="herefor_hide" value="1" {% if user.profile.herefor_hide == settings.HEREFOR_ONLY_FRIENDS %} checked{% endif %}>
               <span class="tx">show redditors here for friends only</span>
             </label>
             <label class="item">
+              <input type="hidden" name="herefor_hide" value="0">
               <input type="checkbox" name="herefor_hide" value="1"{% if user.profile.herefor_hide == settings.HEREFOR_ONLY_DATING %} checked{% endif %}>
               <span class="tx">show redditors here only for dating</span>
             </label>

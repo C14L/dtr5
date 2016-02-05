@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
-from django.db.models import Q
+# from django.db.models import Q
 from django.http import (JsonResponse,
                          HttpResponse,
                          HttpResponseNotFound,
@@ -18,14 +18,15 @@ from django.http import (JsonResponse,
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
-from django.utils.datastructures import MultiValueDictKeyError
+# from django.utils.datastructures import MultiValueDictKeyError
 
 from simple_reddit_oauth import api
 
 from .models import (Subscribed, Sr, Flag, Report, Visit)
 
 from toolbox import (force_int, force_float, set_imgur_url, get_age,
-                     sr_str_to_list)
+                     # sr_str_to_list
+                     )
 
 from . import utils_stats
 
@@ -34,10 +35,11 @@ from .utils import (add_auth_user_latlng, count_matches, get_matches_user_list,
                     get_user_list_after, update_list_of_subscribed_subreddits,
                     get_paginated_user_list, prepare_paginated_user_list,
                     add_matches_to_user_list, get_user_list_from_username_list,
-                    get_matches_user_queryset, normalize_sr_names,
+                    get_matches_user_queryset,
                     PictureInaccessibleError, assert_pic_accessible)
 
-from .utils_search import (search_results_buffer, search_subreddit_users)
+from .utils_search import (search_results_buffer, search_subreddit_users,
+                           update_search_settings)
 
 
 @require_http_methods(["GET", "HEAD"])
@@ -409,84 +411,18 @@ def me_search_view(request):
 
         x = {'username': request.session['search_results_buffer'][0]}
         _next = request.POST.get('next', reverse('profile_page', kwargs=x))
+        return redirect(_next)
+    else:
+        update_search_settings(request)
+        # TODO: check if model is dirty and only force a search results
+        # buffer refresh if the search parameters actually changed. To
+        # avoid too many searches.
+        search_results_buffer(request, force=True)
+        _next = request.POST.get('next', reverse('me_results_page'))
+        if len(request.session['search_results_buffer']) < 1:
+            messages.warning(request, txt_not_found)
 
         return redirect(_next)
-
-    # Set search options.
-    request.session['search_results_order'] = request.POST.get('order_by', '')
-
-    p = request.user.profile
-    p.f_sex = force_int(request.POST.get('f_sex', ''))
-
-    if request.POST.get('f_distance', None):
-        p.f_distance = force_int(request.POST.get('f_distance'),
-                                 min=0, max=21000)
-
-    if request.POST.get('f_minage', None):
-        p.f_minage = force_int(request.POST.get('f_minage'), min=18, max=99)
-
-    if request.POST.get('f_maxage', None):
-        p.f_maxage = force_int(request.POST.get('f_maxage'), min=19, max=100)
-
-    p.f_hide_no_pic = \
-        bool(request.POST.get('f_hide_no_pic', None) == "1")
-
-    p.f_has_verified_email = \
-        bool(request.POST.get('f_has_verified_email', None) == "1")
-
-    # TODO: needs Profile model update!
-    if hasattr(p, 'f_is_stable'):
-        setattr(p, 'f_is_stable',
-                bool(request.POST.get('f_is_stable', None) == "1"))
-
-    if request.POST.get('f_over_18', None):  # unused
-        p.f_over_18 = bool(request.POST.get('f_over_18'))
-
-    # List of subreddit names. This needs to be cleaned for appropriate
-    # letter case, so its useful in raw SQL search. Since Django has no
-    # case insensivity support :( we look up the correctly cased subreddit
-    # names here once, and store those as the user's search settings.
-    try:
-        li = sr_str_to_list(request.POST['f_ignore_sr_li'])
-        p.f_ignore_sr_li = normalize_sr_names(li)
-    except MultiValueDictKeyError:
-        pass  # don't change the search value if not POSTed.
-
-    try:
-        p.f_ignore_sr_max = force_int(request.POST['f_ignore_sr_max'],
-                                      min=100, max=123456789)
-    except MultiValueDictKeyError:
-        pass  # don't change the search vaue if not POSTed.
-
-    try:
-        li = sr_str_to_list(request.POST['f_exclude_sr_li'])
-        p.f_exclude_sr_li = normalize_sr_names(li)
-    except MultiValueDictKeyError:
-        pass  # don't change the search value if not POSTed.
-
-    request.user.profile = p
-
-    #
-    # TODO: check if model is dirty and only force a search results
-    # buffer refresh if the search parameters actually changed. To
-    # avoid too many searches.
-    #
-    request.user.profile.save()
-    search_results_buffer(request, force=True)  # refresh search buffer items
-    _next = request.POST.get('next', reverse('me_results_page'))
-
-    if len(request.session['search_results_buffer']) < 1:
-        messages.warning(request, txt_not_found)
-
-    return redirect(_next)
-
-    # messages.success(request, 'Search options updated.')
-    # if request.session.get('view_post_signup', False):
-    #     return redirect(_next)
-    # else:
-    #     # x = {'username': request.session['search_results_buffer'][0]}
-    #     # return redirect(reverse('profile_page', kwargs=x))
-    #     return redirect(reverse('me_results_page'))
 
 
 @login_required
@@ -539,6 +475,7 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
                                       request.user.profile.f_ignore_sr_max)
 
     # Get the next five users to be displayed at the end of the profile page.
+    search_results_buffer(request)
     user_list = get_user_list_after(request, view_user, 5)
 
     # Find previous and next user on the list, relative to view user.
@@ -591,11 +528,22 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """
     pg = int(request.GET.get('page', 1))
     view_sr = get_object_or_404(Sr, display_name__iexact=sr)
+    update_search_settings(request)
     ul = search_subreddit_users(request.user, view_sr)
+
+    order_by = request.POST.get('order_by', '-last_login')
+    print('--> order_by == ', order_by)
+    if order_by == '-accessed':  # most recently accessed first
+        ul = ul.order_by('-profile__accessed')
+    elif order_by == '-date_joined':  # most recent redddate acccount
+        ul = ul.order_by('-date_joined')
+    elif order_by == '-views_count':  # most views first
+        ul = ul.order_by('-profile__views_count')
 
     ctx = {'view_sr': view_sr,
            'user_list': get_paginated_user_list(ul, pg, request.user),
-           'user_subs_all': request.user.subs.all().prefetch_related('sr')}
+           'user_subs_all': request.user.subs.all().prefetch_related('sr'),
+           'order_by': request.session.get('search_results_order', '')}
     return render_to_response(template_name, ctx,
                               context_instance=RequestContext(request))
 
