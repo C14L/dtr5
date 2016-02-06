@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from simple_reddit_oauth import urls as simple_reddit_oauth_urls
-from dtr5app import views
+from dtr5app import views, views_me
 
 
 urlpatterns = [
@@ -26,24 +26,24 @@ urlpatterns = [
     url(r'^$', views.home_view, name="home_page"),
 
     # Users preferences page, and URIs to POST to.
-    url(r'^me/$', views.me_view, name="me_page"),
-    url(r'^me/update/$', views.me_update_view, name="me_update_page"),
-    url(r'^me/locate/$', views.me_locate_view, name="me_locate_page"),
-    url(r'^me/favsr/$', views.me_favsr_view, name="me_favsr_page"),
-    url(r'^me/manual/$', views.me_manual_view, name="me_manual_page"),
-    url(r'^me/pic/$', views.me_picture_view, name="me_picture_page"),
-    url(r'^me/pic/delete$', views.me_pic_del_view, name="me_pic_del_page"),
-    url(r'^me/flag/delete$', views.me_flag_del_view, name="me_flag_del_page"),
+    url(r'^me/$', views_me.me_view, name="me_page"),
+    url(r'^me/update/$', views_me.me_update_view, name="me_update_page"),
+    url(r'^me/locate/$', views_me.me_locate_view, name="me_locate_page"),
+    url(r'^me/favsr/$', views_me.me_favsr_view, name="me_favsr_page"),
+    url(r'^me/manual/$', views_me.me_manual_view, name="me_manual_page"),
+    url(r'^me/pic/$', views_me.me_picture_view, name="me_picture_page"),
+    url(r'^me/pic/delete$', views_me.me_pic_del_view, name="me_pic_del_page"),
+    url(r'^me/flag/delete$', views_me.me_flag_del_view, name="me_flag_del_page"),
     url(r'^me/visitors/$', views.me_viewed_me_view, name="me_viewed_me_page"),
-    url(r'^me/upvotes_inbox$',
-        views.me_recv_like_view, name="me_recv_like_page"),
+    url(r'^me/upvotes_inbox$', views.me_recv_like_view,
+        name="me_recv_like_page"),
     url(r'^me/upvotes_sent$', views.me_like_view, name="me_like_page"),
     url(r'^me/nopes_sent$', views.me_nope_view, name="me_nope_page"),
-    url(r'^me/account/delete$', views.me_account_del_view,
+    url(r'^me/account/delete$', views_me.me_account_del_view,
         name="me_account_del_page"),
 
     # Refill search results buffer if necessary are redirect.
-    url(r'^search/$', views.me_search_view, name="me_search_page"),
+    url(r'^search/$', views_me.me_search_view, name="me_search_page"),
 
     # Search results as paginated list view of user profiles
     url(r'^results/$', views.me_results_view, name="me_results_page"),
@@ -63,7 +63,7 @@ urlpatterns = [
     url(r'^flag/(?P<action>set|delete)/'
         r'(?P<flag>[a-zA-Z0-9_-]{2,30})/'
         r'(?P<username>' + settings.RSTR_USERNAME + r')/$',
-        views.me_flag_view, name="me_flag_page"),
+        views_me.me_flag_view, name="me_flag_page"),
 
     url(r'^mod/deluser/(?P<pk>\d*)/$', views.mod_deluser_view,
         name="mod_deluser_page"),

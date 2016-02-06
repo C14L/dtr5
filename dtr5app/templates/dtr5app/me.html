@@ -32,7 +32,7 @@
         <p class="val-col">
           <label class="sex">
             <select name="sex" size="1">
-              {% for sex in sex_choices %}
+              {% for sex in settings.SEX %}
                 <option {% if user.profile.sex == sex.0 %}selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
               {% endfor %}
             </select>
@@ -54,7 +54,7 @@
         <span class="key-col">looking for:</span>
         <div class="val-col lookingfor-list">
           <ul>
-            {% for x in lookingfor_choices %}
+            {% for x in settings.LOOKINGFOR %}
               <li>
                 <label>
                   <input {% if x.0 in user.profile.lookingfor %}checked{% endif %} type="checkbox" name="lookingfor" value="{{x.0}}"> <span class="tx">{{x.1}}</span>
@@ -84,12 +84,12 @@
         <p>
           fuzzy my location by&nbsp;
           <select name="fuzzy">
-            <option value="2"{% if user.profile.fuzzy == 2 %} selected{% endif %}>2 km / 1.25 miles</option>
-            <option value="5"{% if user.profile.fuzzy == 5 %} selected{% endif %}>5 km / 3 miles</option>
-            <option value="10"{% if user.profile.fuzzy == 10 %} selected{% endif %}>10 km / 6 miles</option>
-            <option value="20"{% if user.profile.fuzzy == 20 %} selected{% endif %}>20 km / 12 miles</option>
-            <option value="50"{% if user.profile.fuzzy == 50 %} selected{% endif %}>50 km / 31 miles</option>
-            <option value="100"{% if user.profile.fuzzy == 100 %} selected{% endif %}>100 km / 62 miles</option>
+            <option value="2" {% if user.profile.fuzzy == 2 %} selected{% endif %} >2 km / 1.25 miles</option>
+            <option value="5" {% if user.profile.fuzzy == 5 %} selected{% endif %} >5 km / 3 miles</option>
+            <option value="10" {% if user.profile.fuzzy == 10 %} selected{% endif %} >10 km / 6 miles</option>
+            <option value="20" {% if user.profile.fuzzy == 20 %} selected{% endif %} >20 km / 12 miles</option>
+            <option value="50" {% if user.profile.fuzzy == 50 %} selected{% endif %} >50 km / 31 miles</option>
+            <option value="100" {% if user.profile.fuzzy == 100 %} selected{% endif %} >100 km / 62 miles</option>
           </select>
           <input type="submit" value="auto-locate">
         </p>
@@ -127,7 +127,7 @@
         {% csrf_token %}
         <input type="text" name="pic_url" value="" placeholder="https://imgur.com/??????">
         <input type="submit" value="add picture">
-        <span class="help">&nbsp;max. {{USER_MAX_PICS_COUNT}} pics</span>
+        <span class="help">&nbsp;max. {{settings.USER_MAX_PICS_COUNT}} pics</span>
       </form>
     </section>
 
@@ -165,6 +165,7 @@
     <h2>about <a href="{% url 'profile_page' username=user.username %}">{{user.username}}</a></h2>
     <form class="item" method="POST" action="{% url 'me_manual_page' %}">
       {% csrf_token %}
+      <input type="hidden" name="next" value="#id_about">
       <textarea name="about" placeholder="write about yourself. or about your favorite subreddits. or about why you like pizza and bacon. or about that bird you saw that just escaped that cat last year.">{{user.profile.about}}</textarea>
       <p><input type="submit" value="submit"></p>
     </form>

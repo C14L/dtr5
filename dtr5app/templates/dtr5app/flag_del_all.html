@@ -14,11 +14,11 @@
     <h1>redddate</h1>
     <form class="mainbtn wide" method="POST" action="{% url 'me_flag_del_page' %}">
       {% csrf_token %}
-      <input type="submit" value="delete all my likes and nopes">
+      <input type="submit" value="delete all my votes">
     </form>
   </div>
   <div class="abouts">
-    <p>Removes all likes and nopes you chose for other user's profiles, so that you will see all profiles again in your search results.</p>
+    <p>Removes all upvotes you sent, and un-hides all users, so that you will see all profiles again in your search results.</p>
   </div>
 </article>
 
