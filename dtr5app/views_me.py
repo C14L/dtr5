@@ -11,8 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 
-from django.http import JsonResponse, HttpResponse, \
-                        HttpResponseBadRequest, Http404
+from django.http import HttpResponse, HttpResponseBadRequest, Http404
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
@@ -38,9 +37,10 @@ def me_view(request, template_name='dtr5app/me.html'):
 
     ctx = {'unixtime': unixtime(),
            'timeleft': request.session['expires'] - unixtime()}
+    kwargs = {'context_instance': RequestContext(request)}
 
-    LK = settings.USER_MIN_LINK_KARMA
-    CK = settings.USER_MIN_COMMENT_KARMA
+    link_karma = settings.USER_MIN_LINK_KARMA
+    comment_karma = settings.USER_MIN_COMMENT_KARMA
 
     # Check if the user has filled in the basics of their profile. If
     # they haven't, show special pages for it.
@@ -55,8 +55,8 @@ def me_view(request, template_name='dtr5app/me.html'):
         template_name = 'dtr5app/step_2.html'
         request.session['view_post_signup'] = True
 
-    elif not (request.user.profile.link_karma >= LK or
-              request.user.profile.comment_karma >= CK):
+    elif not (request.user.profile.link_karma >= link_karma or
+              request.user.profile.comment_karma >= comment_karma):
         # if they don't have sufficient karma, they can't sign up
         template_name = 'dtr5app/step_3_err_karma.html'
         # request.user.is_active = False
@@ -101,8 +101,7 @@ def me_view(request, template_name='dtr5app/me.html'):
         template_name = 'dtr5app/step_7.html'
         request.session['view_post_signup'] = False
 
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
@@ -154,11 +153,14 @@ def me_update_view(request):
         p.has_verified_email = bool(reddit_user['has_verified_email'])
         p.gold_creddits = bool(reddit_user['gold_creddits'])
         p.save()
-
         # messages.success(request, 'Profile data updated.')
     else:
         messages.warning(request, 'Could not find any user profile data.')
+
     # Go back to user's "me" page, the updated data should show up there.
+    if request.is_ajax():
+        return HttpResponse()  # HTTP 200
+
     return redirect(reverse('me_page') + '#id_srlist')
 
 
@@ -172,15 +174,19 @@ def me_locate_view(request, template_name='dtr5app/location_form.html'):
     """
     if request.method == "GET":
         ctx = {}
-        return render_to_response(template_name, ctx,
-                                  context_instance=RequestContext(request))
-    else:
-        request.user.profile.fuzzy = force_float(request.POST.get('fuzzy', 2))
-        request.user.profile.lat = force_float(request.POST.get('lat', 0.0))
-        request.user.profile.lng = force_float(request.POST.get('lng', 0.0))
-        request.user.profile.save()
-        # messages.success(request, 'Location data updated.')
-        return redirect(reverse('me_page') + '#id_geolocation')
+        kwargs = {'context_instance': RequestContext(request)}
+        return render_to_response(template_name, ctx, **kwargs)
+
+    request.user.profile.fuzzy = force_float(request.POST.get('fuzzy', 2))
+    request.user.profile.lat = force_float(request.POST.get('lat', 0.0))
+    request.user.profile.lng = force_float(request.POST.get('lng', 0.0))
+    request.user.profile.save()
+    # messages.success(request, 'Location data updated.')
+
+    if request.is_ajax():
+        return HttpResponse()  # HTTP 200
+
+    return redirect(reverse('me_page') + '#id_geolocation')
 
 
 @login_required
@@ -204,6 +210,9 @@ def me_favsr_view(request):
     if sr_li:
         sr_li.update(is_favorite=True)  # and set favorite on the subset
         # messages.success(request, 'Favorite subreddits updated.')
+
+    if request.is_ajax():
+        return HttpResponse()  # HTTP 200
 
     return redirect(reverse('me_page'))
 
@@ -259,10 +268,13 @@ def me_manual_view(request):
 
     request.user.profile.save()
     # messages.success(request, 'Profile data updated.')
+
+    if request.is_ajax():
+        return HttpResponse()  # HTTP 200
+
     _next = request.POST.get('next', '#id_profile')
     if _next.startswith('#'):
         _next = reverse('me_page') + _next
-
     return redirect(_next)
 
 
@@ -308,10 +320,11 @@ def me_picture_view(request):
         messages.info(request, 'background picture updated.')
 
     request.user.profile.save()
+
     if request.is_ajax():
-        return HttpResponse()
-    else:
-        return redirect(reverse('me_page') + '#id_pics')
+        return HttpResponse()  # HTTP 200
+
+    return redirect(reverse('me_page') + '#id_pics')
 
 
 @login_required
@@ -328,6 +341,9 @@ def me_pic_del_view(request):
         messages.info(request, 'Picture removed.')
     except:
         messages.info(request, 'Picture not found.')
+
+    if request.is_ajax():
+        return HttpResponse()  # HTTP 200
 
     return redirect(reverse('me_page') + '#id_pics')
 
@@ -351,17 +367,20 @@ def me_search_view(request):
         x = {'username': request.session['search_results_buffer'][0]}
         _next = request.POST.get('next', reverse('profile_page', kwargs=x))
         return redirect(_next)
-    else:
-        update_search_settings(request)
-        # TODO: check if model is dirty and only force a search results
-        # buffer refresh if the search parameters actually changed. To
-        # avoid too many searches.
-        search_results_buffer(request, force=True)
-        _next = request.POST.get('next', reverse('me_results_page'))
-        if len(request.session['search_results_buffer']) < 1:
-            messages.warning(request, txt_not_found)
 
-        return redirect(_next)
+    update_search_settings(request)
+    # TODO: check if model is dirty and only force a search results
+    # buffer refresh if the search parameters actually changed. To
+    # avoid too many searches.
+    search_results_buffer(request, force=True)
+    _next = request.POST.get('next', reverse('me_results_page'))
+    if len(request.session['search_results_buffer']) < 1:
+        messages.warning(request, txt_not_found)
+
+    if request.is_ajax():
+        return HttpResponse()  # HTTP 200
+
+    return redirect(_next)
 
 
 @login_required
@@ -401,39 +420,43 @@ def me_account_del_view(request, template_name='dtr5app/account_del.html'):
         request.user.save()
         api.delete_token(request)
         messages.success(request, 'All account data was deleted.')
+
+        if request.is_ajax():
+            return HttpResponse()  # HTTP 200
+
         return redirect(request.POST.get('next', settings.LOGIN_URL))
+
     ctx = {}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
 @require_http_methods(["POST", "GET", "HEAD"])
-def me_flag_del_view(request):
+def me_flag_del_view(request, template_name = 'dtr5app/flag_del_all.html'):
     """
     Delete ALL listed flags authuser set on other users.
     """
-    if request.method in ['GET', 'HEAD']:
-        # Return a "are you sure" page.
-        template_name = 'dtr5app/flag_del_all.html'
+    if request.method in ['GET', 'HEAD']:  # Return a "are you sure" page.
         ctx = {}
+        kwargs = {'context_instance': RequestContext(request)}
+        return render_to_response(template_name, ctx, **kwargs)
 
-        return render_to_response(template_name, ctx,
-                                  context_instance=RequestContext(request))
+    flag_str = request.POST.get('flags', 'like,nope')
+    flag_ids = [Flag.FLAG_DICT[x] for x in flag_str.split(',')]
+    q = Flag.objects.filter(flag__in=flag_ids, sender=request.user)
+    # count = q.count()
+    q.delete()
 
-    elif request.method in ['POST']:
-        flag_str = request.POST.get('flags', 'like,nope')
-        flag_ids = [Flag.FLAG_DICT[x] for x in flag_str.split(',')]
-        q = Flag.objects.filter(flag__in=flag_ids, sender=request.user)
-        count = q.count()
-        q.delete()
+    if Flag.FLAG_DICT['like'] in flag_ids:
+        request.user.profile.matches_count = 0
+        request.user.profile.save()
+    # messages.info(request, '{} items deleted.'.format(count))
 
-        if Flag.FLAG_DICT['like'] in flag_ids:
-            request.user.profile.matches_count = 0
-            request.user.profile.save()
-        messages.info(request, '{} items deleted.'.format(count))
+    if request.is_ajax():
+        return HttpResponse()  # HTTP 200
 
-        return redirect(reverse('me_page'))
+    return redirect(reverse('me_page'))
 
 
 @login_required
@@ -448,6 +471,7 @@ def me_flag_view(request, action, flag, username):
     Valid flag values: 'like', 'nope', 'report'.
     """
     _next = None
+    kwargs = {'context_instance': RequestContext(request)}
     view_user = get_user_and_related_or_404(username)
     flags = {x[1]: x[0] for x in Flag.FLAG_CHOICES}
 
@@ -457,85 +481,85 @@ def me_flag_view(request, action, flag, username):
             template_name = 'dtr5app/report_profile_form.html'
             ctx = {'view_user': view_user,
                    'report_reasons': Report.REASON_CHOICES}
-            return render_to_response(template_name, ctx,
-                                      context_instance=RequestContext(request))
+            return render_to_response(template_name, ctx, **kwargs)
+
         raise Http404
 
-    elif request.method in ['POST']:
+    if action == 'set' and flag in flags.keys():
+        Flag.set_flag(request.user, view_user, flag)
 
-        if action == 'set' and flag in flags.keys():
-            Flag.set_flag(request.user, view_user, flag)
+        if flag == 'like':
+            view_user.profile.new_likes_count += 1
+            view_user.profile.save(update_fields=['new_likes_count'])
 
-            if flag == 'like':
-                view_user.profile.new_likes_count += 1
-                view_user.profile.save(update_fields=['new_likes_count'])
+            if request.user.profile.match_with(view_user):
+                # a match? then count the new match on both users'
+                # profiles.
+                request.user.profile.new_matches_count += 1
+                request.user.profile.save()
+                view_user.profile.new_matches_count += 1
+                view_user.profile.save()
+                # if authuser set a like flag, and we have a match, then
+                # show the newly matched profile again, so authuser can
+                # write them a message!
+                _next = reverse('profile_page', args={view_user.username})
 
-                if request.user.profile.match_with(view_user):
-                    # a match? then count the new match on both users'
-                    # profiles.
-                    request.user.profile.new_matches_count += 1
-                    request.user.profile.save()
-                    view_user.profile.new_matches_count += 1
-                    view_user.profile.save()
-                    # if authuser set a like flag, and we have a match, then
-                    # show the newly matched profile again, so authuser can
-                    # write them a message!
-                    _next = reverse('profile_page', args={view_user.username})
+        if flag == 'report':
+            # also create an entry in Report for the moderator
+            reason = request.POST.get('reason', None)
+            details = request.POST.get('details', None)
+            if not reason:
+                return HttpResponseBadRequest('please select a reason for '
+                                              'reporting this profile.')
+            Report.objects.create(sender=request.user, receiver=view_user,
+                                  reason=reason, details=details)
+            messages.info(request, '{} was reported to the moderators.'
+                          .format(view_user.username))
 
-            if flag == 'report':
-                # also create an entry in Report for the moderator
-                reason = request.POST.get('reason', None)
-                details = request.POST.get('details', None)
-                if not reason:
-                    return HttpResponseBadRequest('please select a reason for '
-                                                  'reporting this profile.')
-                Report.objects.create(sender=request.user, receiver=view_user,
-                                      reason=reason, details=details)
-                messages.info(request, '{} was reported to the moderators.'
-                              .format(view_user.username))
+    elif action == 'delete' and flag in flags.keys():
+        # delete any flag, because a user can only ever set one flag on
+        # another user at the same time.
+        Flag.delete_flag(request.user, view_user)
+        # if this was a "remove like" or "remove nope" then display the
+        # same profile again, because most likely the auth user wants to
+        # change their flag.
+        _next = reverse('profile_page', args={view_user.username})
 
-        elif action == 'delete' and flag in flags.keys():
-            # delete any flag, because a user can only ever set one flag on
-            # another user at the same time.
-            Flag.delete_flag(request.user, view_user)
-            # if this was a "remove like" or "remove nope" then display the
-            # same profile again, because most likely the auth user wants to
-            # change their flag.
-            _next = reverse('profile_page', args={view_user.username})
+    else:
+        raise Http404
 
+    # after changing a flag, always recount, because setting a flag may
+    # delete another in the same process, there is no way to simply add
+    # one to the match count cache.
+    request.user.profile.matches_count = count_matches(request.user)
+    request.user.profile.save(update_fields=['matches_count'])
+    view_user.profile.matches_count = count_matches(view_user)
+    view_user.profile.save(update_fields=['matches_count'])
+
+    # Redirect the user, either to the "next profile" if there is any
+    # in the search results buffer, or to the same profile if they were
+    # just looking at a single profile that's maybe not in the results
+    # buffer list. Or, if they ran out of results in the results buffer
+    # then redirect them to the preferences page, so they can run the
+    # search again and maybe fill new profiles into the results buffer.
+    if _next:
+        return redirect(_next)
+
+    if len(request.session['search_results_buffer']) > 0:
+        # if there are more profiles, show them.
+        if view_user.username in request.session['search_results_buffer']:
+            prev_user, next_user = get_prevnext_user(request, view_user)
+            _next = reverse('profile_page', args={next_user.username})
+            username = view_user.username
+            request.session['search_results_buffer'].remove(username)
+            request.session.modified = True
         else:
-            raise Http404
+            username = request.session['search_results_buffer'][0]
+            _next = reverse('profile_page', args={username})
 
-        # after changing a flag, always recount, because setting a flag may
-        # delete another in the same process, there is no way to simply add
-        # one to the match count cache.
-        request.user.profile.matches_count = count_matches(request.user)
-        request.user.profile.save(update_fields=['matches_count'])
-        view_user.profile.matches_count = count_matches(view_user)
-        view_user.profile.save(update_fields=['matches_count'])
+    elif len(request.session['search_results_buffer']) < 1:
+        messages.warning(request, 'nobody found :(')
 
-        # Redirect the user, either to the "next profile" if there is any
-        # in the search results buffer, or to the same profile if they were
-        # just looking at a single profile that's maybe not in the results
-        # buffer list. Or, if they ran out of results in the results buffer
-        # then redirect them to the preferences page, so they can run the
-        # search again and maybe fill new profiles into the results buffer.
-        if _next:
-            return redirect(_next)
+        return redirect(reverse('me_page'))
 
-        if len(request.session['search_results_buffer']) > 0:
-            # if there are more profiles, show them.
-            if view_user.username in request.session['search_results_buffer']:
-                prev_user, next_user = get_prevnext_user(request, view_user)
-                _next = reverse('profile_page', args={next_user.username})
-                username = view_user.username
-                request.session['search_results_buffer'].remove(username)
-                request.session.modified = True
-            else:
-                username = request.session['search_results_buffer'][0]
-                _next = reverse('profile_page', args={username})
-        elif len(request.session['search_results_buffer']) < 1:
-            messages.warning(request, 'nobody found :(')
-            return redirect(reverse('me_page'))
-
-        return redirect(request.POST.get('next', _next))
+    return redirect(request.POST.get('next', _next))
