@@ -58,11 +58,8 @@ def me_view(request, template_name='dtr5app/me.html'):
     if not request.user.is_authenticated():
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
 
-    ctx = {'sex_choices': settings.SEX,
-           'lookingfor_choices': settings.LOOKINGFOR,
-           'unixtime': unixtime(),
-           'timeleft': request.session['expires'] - unixtime(),
-           'USER_MAX_PICS_COUNT': settings.USER_MAX_PICS_COUNT}
+    ctx = {'unixtime': unixtime(),
+           'timeleft': request.session['expires'] - unixtime()}
 
     LK = settings.USER_MIN_LINK_KARMA
     CK = settings.USER_MIN_COMMENT_KARMA
@@ -120,7 +117,7 @@ def me_view(request, template_name='dtr5app/me.html'):
     #     template_name = 'dtr5app/step_6.html'
     #     request.session['view_post_signup'] = True
 
-    elif (request.session.get('view_post_signup', False)):
+    elif request.session.get('view_post_signup', False):
         # user just set at least one required item. now show them the "all
         # done" page to make display of the first search result less abrupt
         template_name = 'dtr5app/step_7.html'
@@ -185,8 +182,9 @@ def me_update_view(request):
         update_list_of_subscribed_subreddits(request.user, subscribed)
 
         if len(subscribed) > settings.USER_MIN_SUBSCRIBED_SUBREDDITS:
-            messages.success(request, 'Subreddit list updated with {} items.'
-                             .format(len(subscribed)))
+            pass
+            # messages.success(request, 'Subreddit list updated with {} items.'
+            #                  .format(len(subscribed)))
         else:
             messages.success(request, 'Subreddit list updated, but you are '
                              'only subscribed to {} subreddits. Find some '
@@ -220,7 +218,7 @@ def me_update_view(request):
         p.gold_creddits = bool(reddit_user['gold_creddits'])
         p.save()
 
-        messages.success(request, 'Profile data updated.')
+        # messages.success(request, 'Profile data updated.')
     else:
         messages.warning(request, 'Could not find any user profile data.')
     # Go back to user's "me" page, the updated data should show up there.
@@ -244,7 +242,7 @@ def me_locate_view(request, template_name='dtr5app/location_form.html'):
         request.user.profile.lat = force_float(request.POST.get('lat', 0.0))
         request.user.profile.lng = force_float(request.POST.get('lng', 0.0))
         request.user.profile.save()
-        messages.success(request, 'Location data updated.')
+        # messages.success(request, 'Location data updated.')
         return redirect(reverse('me_page') + '#id_geolocation')
 
 
@@ -323,7 +321,7 @@ def me_manual_view(request):
         request.user.profile.fitness = request.POST.get('fitness')
 
     request.user.profile.save()
-    messages.success(request, 'Profile data updated.')
+    # messages.success(request, 'Profile data updated.')
     _next = request.POST.get('next', '#id_profile')
     if _next.startswith('#'):
         _next = reverse('me_page') + _next
@@ -379,7 +377,8 @@ def me_picture_view(request):
             messages.info(request, 'oldest picture was deleted to make room '
                           'for the picture you added.')
         else:
-            messages.info(request, 'picture added.')
+            # messages.info(request, 'picture added.')
+            pass
 
         # prepend the new pic to make it the new "profile pic"
         request.user.profile.pics = \

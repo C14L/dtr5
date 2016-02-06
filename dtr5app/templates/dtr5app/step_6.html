@@ -22,7 +22,7 @@
         <label>
           <select name="f_sex" size="1">
             <option value="">everybody</option>
-            {% for sex in sex_choices %}
+            {% for sex in settings.SEX_PLURAL %}
               {% if sex.0 > 0 %}
                 <option{% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
               {% endif %}
@@ -32,7 +32,7 @@
         &nbsp;
         <label>
           <select name="f_distance" size="1">
-            {% for x in DISTANCE %}
+            {% for x in settings.DISTANCE %}
               <option{% if user.profile.f_distance == x.0 %} selected{% endif %} value="{{x.0}}">{{x.1}}</option>
             {% endfor %}
           </select>

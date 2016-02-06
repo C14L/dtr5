@@ -134,9 +134,9 @@ SITE_TEMPORARILY_UNAVAILABLE = False
 # minimum limits for new users: must be older that X days AND have
 # either Y link or Z comment karma.
 USER_MIN_SUBSCRIBED_SUBREDDITS = 10    # show warning only if less subs
-USER_MIN_DAYS_REDDIT_ACCOUNT_AGE = 0  # days of being a reddit member
-USER_MIN_LINK_KARMA = 0              # AND either xy link karma
-USER_MIN_COMMENT_KARMA = 0           # OR xy comment karma.
+USER_MIN_DAYS_REDDIT_ACCOUNT_AGE = 0   # days of being a reddit member
+USER_MIN_LINK_KARMA = 0                # AND either xy link karma
+USER_MIN_COMMENT_KARMA = 0             # OR xy comment karma.
 
 # Number of user IDs to load into session cache.
 SEARCH_RESULTS_BUFFER_SIZE = 100  # unused?

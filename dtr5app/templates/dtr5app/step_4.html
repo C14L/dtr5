@@ -21,7 +21,7 @@
         <label class="sex">
           <span>Sex:</span>&nbsp;
           <select name="sex" size="1">
-            {% for sex in sex_choices %}
+            {% for sex in settings.SEX %}
             <option{% if user.profile.sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
             {% endfor %}
           </select>
@@ -47,7 +47,7 @@
     </form>
   </div>
   <div class="abouts">
-    <p>Your <strong>birthday</strong> is <u>never</u> shown. Only your age, and your zodiacs signs appear on your profile page.</p>
+    <p>Your <strong>birthday</strong> is <u>never</u> shown. Only your age, and your zodiac signs appear on your profile page.</p>
   </div>
 </article>
 <script>
