@@ -21,7 +21,8 @@ from .utils import add_auth_user_latlng, count_matches, get_matches_user_list, \
                    get_prevnext_user, get_user_and_related_or_404, \
                    get_user_list_after, \
                    get_paginated_user_list, prepare_paginated_user_list, \
-                   add_matches_to_user_list, get_user_list_from_username_list
+                   add_matches_to_user_list, get_user_list_from_username_list, \
+    add_likes_sent, add_likes_recv
 from .utils_search import search_results_buffer, search_subreddit_users, \
                           update_search_settings
 
@@ -138,12 +139,14 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     Display a list of users who are subscribed to a subreddit.
     """
     pg = int(request.GET.get('page', 1))
-    view_sr = get_object_or_404(Sr, display_name__iexact=sr)
-    update_search_settings(request)
-    ul = search_subreddit_users(request.user, view_sr)
-
     order_by = request.POST.get('order_by', '-last_login')
-    print('--> order_by == ', order_by)
+    view_sr = get_object_or_404(Sr, display_name__iexact=sr)
+
+    # TODO: remove this and display User subset by GET parameters, to not mis
+    # TODO: it up with the regular search settings in /results/ here.
+    update_search_settings(request)
+
+    ul = search_subreddit_users(request.user, view_sr)
     if order_by == '-accessed':  # most recently accessed first
         ul = ul.order_by('-profile__accessed')
     elif order_by == '-date_joined':  # most recent redddate acccount
@@ -151,8 +154,13 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     elif order_by == '-views_count':  # most views first
         ul = ul.order_by('-profile__views_count')
 
+    # Paginate and add "is_like_recv" and "is_like"sent"
+    ul = get_paginated_user_list(ul, pg, request.user)
+    ul.object_list = add_likes_sent(ul.object_list, request.user)
+    ul.object_list = add_likes_recv(ul.object_list, request.user)
+
     ctx = {'view_sr': view_sr,
-           'user_list': get_paginated_user_list(ul, pg, request.user),
+           'user_list': ul,
            'user_subs_all': request.user.subs.all().prefetch_related('sr'),
            'order_by': request.session.get('search_results_order', '')}
     return render_to_response(template_name, ctx,

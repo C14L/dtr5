@@ -4,15 +4,17 @@
 <ul class="user-list-cards">
   {% for v in user_list %}
     <li>
+      {% if v.is_match %}
+        <span class="has-flag match">match</span>
+      {% elif v.is_like_recv %}
+        <span class="has-flag like-recv">upvoted you!</span>
+      {% elif v.is_like_sent %}
+        <span class="has-flag like-sent">upvoted</span>
+      {% endif %}
+
       <a href="{% url 'profile_page' v.username %}" class="pic" {%if v.profile.pics %} style="background-image: url({{v.profile.pics.0.url}})" {% endif %}></a>
 
       <span class="info">
-        {% if v.is_match %}
-          <span class="matched">match</span>
-        {% elif v.visit_created %}
-          <span class="visited">visited you</span>
-        {% endif %}
-
         <a class="username" href="{% url 'profile_page' v.username %}">{{v.username}}</a>
         <span class="age">
           {{v.profile.get_age}} {{v.profile.get_sex_symbol}}

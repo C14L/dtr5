@@ -135,19 +135,21 @@ def get_user_list_after(request, view_user, n=5):
 
 def get_user_list_from_username_list(username_list):
     """
-    Return a list of user objects with prefetched profiles and subs,
-    from a list of usernames. Important: make sure they are in the
-    same order as the username_list.
+    Return a list of user objects with prefetched profiles and subs, from
+    a list of usernames. Important: must be are in the same order as the
+    username_list.
     """
     # Look up complete info on the users on that list.
     li = User.objects.filter(
         username__in=username_list).prefetch_related('profile', 'subs')
+
     user_list = []
     for x in username_list:
         for y in li:
             if y.username == x:
                 user_list.append(y)
                 break
+
     return user_list
 
 
@@ -188,26 +190,34 @@ def get_prevnext_user(request, view_user):
 
 
 def add_auth_user_latlng(user, user_list):
-    """Set the user's geolocation on each user list row."""
+    """
+    Set the auth user's geolocation on each user list object.
+    """
     for row in user_list:
         row.profile.set_viewer_latlng(user.profile.lat, user.profile.lng)
     return user_list
 
 
 def count_matches(user):
-    """Return the number of matches (mututal likes) of 'user'."""
+    """
+    Return the number of matches (mututal likes) of User :user:.
+    """
     return get_matches_user_queryset(user).distinct().count()
 
 
 def get_matches_user_queryset(user):
-    """Return a queryset that finds all matches for user."""
+    """
+    Return a queryset that finds all matches for user.
+    """
     return User.objects.filter(
         flags_sent__receiver=user, flags_sent__flag=Flag.LIKE_FLAG,
         flags_received__sender=user, flags_received__flag=Flag.LIKE_FLAG)
 
 
 def get_matches_user_list(user):
-    """Return a user_list with all mutual likes for 'user'."""
+    """
+    Return a user_list with all mutual likes for 'user'.
+    """
     user_list = list(get_matches_user_queryset(user))
     for x in user_list:
         # set the datetime they matched
@@ -218,14 +228,52 @@ def get_matches_user_list(user):
     return user_list
 
 
+def add_likes_sent(user_list, user):
+    """
+    Look at it from the perspective of :user: and add a "is_like_sent"
+    attribut to all User objects in the user_list list who
+    received a "like" from :user:.
+
+    :user_list: a list of User objects.
+    :user: a single User object.
+    """
+    li = User.objects.filter(username__in=[x.username for x in user_list],
+                             flags_received__sender=user,
+                             flags_received__flag=Flag.LIKE_FLAG
+                             ).values_list('username', flat=True)
+    for x in user_list:
+        setattr(x, 'is_like_sent', x.username in li)
+
+    return user_list
+
+
+def add_likes_recv(user_list, user):
+    """
+    Look at it from the perspective of :user: and add a "is_like_recv"
+    attribut to all User objects in the user_list list who
+    sent a "like" to :user:.
+
+    :user_list: a list of User objects.
+    :user: a single User object.
+    """
+    li = User.objects.filter(username__in=[x.username for x in user_list],
+                             flags_sent__receiver=user,
+                             flags_sent__flag=Flag.LIKE_FLAG
+                             ).values_list('username', flat=True)
+    for x in user_list:
+        setattr(x, 'is_like_recv', x.username in li)
+
+    return user_list
+
+
 def add_matches_to_user_list(user_list, user):
     """
-    Add a "is_match" attribut to all users in user_list who are a match (mutual
-    like) with user and return the user_list.
+    Add a "is_match" attribut to all User objects in the user_list list
+    who are a match (mutual like) with user and return the user_list.
     """
     li = [x.username for x in user_list]
-    li = [x.username for x in
-          get_matches_user_queryset(user).filter(username__in=li)]
+    qs = get_matches_user_queryset(user).filter(username__in=li)
+    li = [x.username for x in qs]
     for x in user_list:
         setattr(x, 'is_match', x.username in li)
 
@@ -233,7 +281,12 @@ def add_matches_to_user_list(user_list, user):
 
 
 def get_user_and_related_or_404(username, *args):
-    """Like get_user_or_404 but prefetches the givem related items."""
+    """
+    Like Django's get_object_or_404() but for User objects, and it prefetches
+    the related items from the :*args: list.
+
+    :username: either str (User.username) or int (User.id).
+    """
     if isinstance(username, str):
         q = {'username__iexact': username}
     elif isinstance(username, int):

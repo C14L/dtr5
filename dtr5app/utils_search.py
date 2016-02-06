@@ -15,10 +15,10 @@ from toolbox import (to_iso8601,
 
 def search_subreddit_users(user, sr):
     """
-    fetch users subscribed to this subreddit return a queryset that can
+    Fetch users subscribed to this subreddit, and return a QuerySet that can
     be paginated.
 
-    :sr: Sr instance.
+    :sr: Sr object.
     """
     return search_users_by_options_queryset(user, include_flagged=True)\
         .filter(subs__sr=sr).prefetch_related('subs').order_by('-last_login')
@@ -35,7 +35,7 @@ def get_blocked_usernames_list():
 
 def search_users_by_options_queryset(user, include_flagged=False):
     """
-    return a User queryset that filters by search options of the user and
+    Return a User queryset that filters by search options of the user and
     some other basic filters, like globally blocked usernames, etc. this is
     used, for example, for the Sr view user list.
 
