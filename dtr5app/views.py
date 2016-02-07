@@ -1,13 +1,10 @@
 import pytz
 from datetime import datetime, timedelta, date
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse, HttpResponse, \
-                        HttpResponseNotFound, HttpResponseBadRequest, Http404
+from django.http import JsonResponse, HttpResponseNotFound, Http404
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
@@ -16,13 +13,12 @@ from simple_reddit_oauth import api
 from toolbox import force_int
 
 from . import utils_stats
-from .models import Sr, Flag, Report, Visit
+from .models import Sr, Flag, Visit
 from .utils import add_auth_user_latlng, count_matches, get_matches_user_list, \
                    get_prevnext_user, get_user_and_related_or_404, \
-                   get_user_list_after, \
                    get_paginated_user_list, prepare_paginated_user_list, \
                    add_matches_to_user_list, get_user_list_from_username_list, \
-                   add_likes_sent, add_likes_recv
+                   get_user_list_after, add_likes_sent, add_likes_recv
 from .utils_search import search_results_buffer, search_subreddit_users, \
                           update_search_settings
 
@@ -293,80 +289,7 @@ def matches_view(request, template_name='dtr5app/matches.html'):
     return render_to_response(template_name, ctx, **kwargs)
 
 
-@staff_member_required
-@require_http_methods(["GET", "POST"])
-def mod_report_view(request, pk=None):
-    """
-    For staff users to review reported profiles. If a pk is given on a POST,
-    set that report to "resolved".
-    """
-    show = request.POST.get('show', None) or request.GET.get('show', 'open')
-
-    if request.method in ['POST']:
-        # toggle the resove state of the report.
-        report = get_object_or_404(Report, pk=pk)
-        if report.resolved:
-            report.resolved = None
-        else:
-            report.resolved = datetime.now().replace(tzinfo=pytz.utc)
-        report.save()
-        # then show the same list, either "open" or "resolved"
-        return redirect(reverse('mod_report_page') + '?show=' + show)
-
-    template_name = 'dtr5app/reports.html'
-    li = Report.objects.prefetch_related('sender', 'receiver')
-    if show == 'resolved':
-        # show list of old resolved reports
-        li = li.filter(resolved__isnull=False).order_by('-resolved')
-    else:
-        # or a list of fresh open reports
-        li = li.filter(resolved__isnull=True).order_by('-created')
-
-    paginator = Paginator(li, per_page=100)
-    try:
-        reports = paginator.page(int(request.GET.get('page', 1)))
-    except EmptyPage:  # out of range
-        return HttpResponseNotFound()
-    except ValueError:  # not a number
-        return HttpResponseNotFound()
-
-    ctx = {'reports': reports, 'show': show}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
-
-
-@require_http_methods(["GET", "POST"])
-@staff_member_required
-def mod_deluser_view(request, pk):
-    """for moderators to delete a user profile and ban the user"""
-    view_user = get_object_or_404(User, pk=pk)
-
-    if request.method in ["POST"]:
-        view_user.profile.reset_all_and_save()
-        view_user.subs.all().delete()
-        view_user.flags_sent.all().delete()
-        view_user.flags_received.all().delete()
-        # if user's last_login is None means they have not activated their
-        # account or have deleted it. either way, treat it as if it doesn't
-        # exist. ~~view_user.last_login = None~~
-        # view_user.date_joined = None  # can't be None, so leave it
-        #
-        # Setting an account to "is_active = False" will prevent the user from
-        # using the same reddit account to sign up again. If "is_active = True"
-        # then the user will be able to sign up again, using the same reddit
-        # account.
-        view_user.is_active = False
-        view_user.save()
-        kwargs = {'username': view_user.username}
-        return redirect(reverse('profile_page', kwargs=kwargs))
-
-    template_name = 'dtr5app/mod_del_profile.html'
-    ctx = {'view_user': view_user}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
-
-
-def stats(request, template_name='dtr5app/stats.html'):
+def stats_view(request, template_name='dtr5app/stats.html'):
 
     ctx = {
         'users_by_sex': utils_stats.get_users_by_sex(),
@@ -387,15 +310,14 @@ def stats(request, template_name='dtr5app/stats.html'):
 
         'signups_per_day': utils_stats.get_signups_per_day_for_range(
             (date.today() - timedelta(days=30)), date.today())
-    }
-
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+        }
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
 @require_http_methods(["GET"])
-def usermap(request, template_name='dtr5app/usermap.html'):
+def usermap_view(request, template_name='dtr5app/usermap.html'):
     if request.is_ajax():
         west = request.GET.get('west', None)
         south = request.GET.get('south', None)
@@ -420,6 +342,7 @@ def usermap(request, template_name='dtr5app/usermap.html'):
 
         users = [[u.username, u.profile.lat, u.profile.lng]
                  for u in users.prefetch_related('profile')[:250]]
+
         return JsonResponse({'users': users})
 
     ctx = {}

@@ -279,9 +279,11 @@ def search_users(request, usernames_only=True):
 
     # part 8: have at least one picture URL in the JSON string
     # li = li.exclude(profile___pics='[]')
+    #
     # TODO: for now, allow no-picture profiles, to make testing easier
+    #
     # Note: there was an error causing an empty pic list to be written as [] to
-    # the field.
+    #       the field.
     if request.user.profile.f_hide_no_pic:
         query_params += []
         query_string += ''' AND p._pics NOT IN ('', '[]') '''

@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from simple_reddit_oauth import urls as simple_reddit_oauth_urls
-from dtr5app import views, views_me
+from dtr5app import views, views_me, views_mod
 
 
 urlpatterns = [
@@ -33,7 +33,8 @@ urlpatterns = [
     url(r'^me/manual/$', views_me.me_manual_view, name="me_manual_page"),
     url(r'^me/pic/$', views_me.me_picture_view, name="me_picture_page"),
     url(r'^me/pic/delete$', views_me.me_pic_del_view, name="me_pic_del_page"),
-    url(r'^me/flag/delete$', views_me.me_flag_del_view, name="me_flag_del_page"),
+    url(r'^me/flag/delete$', views_me.me_flag_del_view,
+        name="me_flag_del_page"),
     url(r'^me/visitors/$', views.viewed_me_view, name="me_viewed_me_page"),
     url(r'^me/upvotes_inbox$', views.likes_recv_view,
         name="me_recv_like_page"),
@@ -65,14 +66,14 @@ urlpatterns = [
         r'(?P<username>' + settings.RSTR_USERNAME + r')/$',
         views_me.me_flag_view, name="me_flag_page"),
 
-    url(r'^mod/deluser/(?P<pk>\d*)/$', views.mod_deluser_view,
+    url(r'^mod/deluser/(?P<pk>\d*)/$', views_mod.mod_deluser_view,
         name="mod_deluser_page"),
-    url(r'^mod/reports/$', views.mod_report_view,
+    url(r'^mod/reports/$', views_mod.mod_report_view,
         name="mod_report_page"),
-    url(r'^mod/reports/(?P<pk>\d*)/$', views.mod_report_view,
+    url(r'^mod/reports/(?P<pk>\d*)/$', views_mod.mod_report_view,
         name="mod_report_item_page"),
 
-    url(r'^stats/$', views.stats, name="stats"),
+    url(r'^stats/$', views.stats_view, name="stats"),
 
-    url(r'^map/$', views.usermap, name="usermap"),
+    url(r'^map/$', views.usermap_view, name="usermap"),
 ]
