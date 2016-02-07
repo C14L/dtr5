@@ -164,7 +164,7 @@
     {% if view_user.profile.lookingfor %}
       <section class="lookingfor-list nopadd">
         <ul>
-          {% for x in lookingfor_choices %}
+          {% for x in settings.LOOKINGFOR %}
             {% if x.0 in view_user.profile.lookingfor %}
               <li>{{x.1}}</li>
             {% endif %}

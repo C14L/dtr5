@@ -22,7 +22,7 @@ from .utils import add_auth_user_latlng, count_matches, get_matches_user_list, \
                    get_user_list_after, \
                    get_paginated_user_list, prepare_paginated_user_list, \
                    add_matches_to_user_list, get_user_list_from_username_list, \
-    add_likes_sent, add_likes_recv
+                   add_likes_sent, add_likes_recv
 from .utils_search import search_results_buffer, search_subreddit_users, \
                           update_search_settings
 
@@ -33,27 +33,30 @@ def home_view(request, template_name='dtr5app/home_anon.html'):
         return redirect(reverse('me_results_page'))
 
     ctx = {'auth_url': api.make_authorization_url(request)}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
-def me_results_view(request, template_name='dtr5app/results.html'):
+def results_view(request, template_name='dtr5app/results.html'):
     """
     Show a page of search results from auth user's search buffer.
 
     """
     pg = int(request.GET.get('page', 1))
-    search_results_buffer(request)
-    li = request.session['search_results_buffer']
-    li = prepare_paginated_user_list(li, pg)
-    li.object_list = get_user_list_from_username_list(li.object_list)
-    li.object_list = add_auth_user_latlng(request.user, li.object_list)
+    order_by = request.session.get('search_results_order', '')
 
-    ctx = {'user_list': li,
-           'order_by': request.session.get('search_results_order', '')}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    search_results_buffer(request)
+    ul = request.session['search_results_buffer']
+    ul = prepare_paginated_user_list(ul, pg)
+    ul.object_list = get_user_list_from_username_list(ul.object_list)
+    ul.object_list = add_auth_user_latlng(request.user, ul.object_list)
+    ul.object_list = add_likes_sent(ul.object_list, request.user)
+    ul.object_list = add_likes_recv(ul.object_list, request.user)
+
+    ctx = {'user_list': ul, 'order_by': order_by}
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
@@ -65,11 +68,9 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     view_user = get_user_and_related_or_404(username, 'profile', 'subs')
 
     if not view_user.is_active:
-        # user was banned
         return HttpResponseNotFound('user was banned')
     if not view_user.last_login:
-        # user deleted their account
-        raise Http404
+        raise Http404  # user deleted their account
 
     # Add auth user's latlng, so we can query their distance.
     view_user.profile.set_viewer_latlng(request.user.profile.lat,
@@ -121,16 +122,13 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
                     view_user.profile.created > date(1970, 1, 1))
 
     ctx = {'show_created': show_created,
-           'view_user': view_user,
+           'view_user': view_user, 'user_list': user_list,
            'is_match': request.user.profile.match_with(view_user),
            'is_like': request.user.profile.does_like(view_user),
            'is_nope': request.user.profile.does_nope(view_user),
-           'lookingfor_choices': settings.LOOKINGFOR,
-           'user_list': user_list,
-           'prev_user': prev_user,
-           'next_user': next_user}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+           'prev_user': prev_user, 'next_user': next_user}
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
@@ -158,50 +156,50 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     ul = get_paginated_user_list(ul, pg, request.user)
     ul.object_list = add_likes_sent(ul.object_list, request.user)
     ul.object_list = add_likes_recv(ul.object_list, request.user)
+    ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
 
-    ctx = {'view_sr': view_sr,
-           'user_list': ul,
+    ctx = {'view_sr': view_sr, 'user_list': ul,
            'user_subs_all': request.user.subs.all().prefetch_related('sr'),
            'order_by': request.session.get('search_results_order', '')}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
 @require_http_methods(["GET", "HEAD"])
-def me_nope_view(request):
+def nope_view(request, template_name='dtr5app/nopes.html'):
     """
     Display a list of users auth user noped.
     """
-    template_name = 'dtr5app/nopes.html'
     pg = int(request.GET.get('page', 1))
     ul = User.objects.filter(flags_received__sender=request.user,
                              flags_received__flag=Flag.NOPE_FLAG
                              ).prefetch_related('profile')
     ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
 @require_http_methods(["GET", "HEAD"])
-def me_viewed_me_view(request):
+def viewed_me_view(request, template_name='dtr5app/viewed_me.html'):
     """
     Display a list of users who recently viewed auth user's profile.
     """
-    template_name = 'dtr5app/viewed_me.html'
     pg = int(request.GET.get('page', 1))
 
     # fetch last 1000 visitors list
     vl = request.user.was_visited.filter(
-        hidden=False, visitor__last_login__isnull=False,
-        visitor__is_active=True).order_by('-visitor').distinct('visitor')\
-        .prefetch_related('visitor')\
-        .values_list('visitor__username', 'created')[:1000]
+        visitor__last_login__isnull=False, visitor__is_active=True,
+        hidden=False).order_by('-visitor').distinct('visitor').prefetch_related(
+        'visitor').values_list('visitor__username', 'created')[:1000]
 
     # fetch the User qs
     ul = User.objects.filter(username__in=[x[0] for x in vl])
     ul = get_paginated_user_list(ul, pg, request.user)
+    ul.object_list = add_likes_sent(ul.object_list, request.user)
+    ul.object_list = add_likes_recv(ul.object_list, request.user)
+    ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
 
     # attach "visited" property to each user
     for u in ul.object_list:
@@ -215,20 +213,18 @@ def me_viewed_me_view(request):
     request.user.profile.new_views_count = 0
     request.user.profile.save(update_fields=['new_views_count'])
 
-    ctx = {'user_list': sorted(ul, key=lambda x: x.visit_created,
-                               reverse=True)}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    ctx = {'user_list': sorted(ul, key=lambda x: x.visit_created, reverse=True)}
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
 @require_http_methods(["GET", "HEAD"])
-def me_like_view(request):
+def likes_sent_view(request, template_name='dtr5app/likes_sent.html'):
     """
     Display a list of users liked by auth user, i.e. sent upvotes, including
     those that are "matches" (mutual upvotes).
     """
-    template_name = 'dtr5app/likes_sent.html'
     pg = int(request.GET.get('page', 1))
     ul = User.objects.filter(
         flags_received__sender=request.user,
@@ -237,68 +233,64 @@ def me_like_view(request):
     ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
 
     ctx = {'user_list': ul}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
 @require_http_methods(["GET", "HEAD"])
-def me_recv_like_view(request):
+def likes_recv_view(request, template_name='dtr5app/likes_recv.html'):
     """
     Display a list of users who liked auth user's profile.
     This is the 'upvotes inbox' page.
     """
-    template_name = 'dtr5app/likes_recv.html'
     pg = int(request.GET.get('page', 1))
 
     # get a queryset with all profiles that are "ignored" by authuser
     nopes_qs = User.objects.filter(flags_received__sender=request.user,
                                    flags_received__flag=Flag.NOPE_FLAG)
+
     # fetch all users that sent an upvote to authuser and did not receive
     # a downvote (hide) from authuser.
-    ul = User.objects.filter(flags_sent__receiver=request.user,
-                             flags_sent__flag=Flag.LIKE_FLAG)\
-                     .exclude(pk__in=nopes_qs)\
-                     .prefetch_related('profile')
+    ul = User.objects.filter(
+        flags_sent__receiver=request.user, flags_sent__flag=Flag.LIKE_FLAG
+        ).exclude(pk__in=nopes_qs).prefetch_related('profile')
     ul = get_paginated_user_list(ul, pg, request.user)
     ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
 
-    # Reset the new_likes_count value
+    # Reset the "new_likes_count" value
     request.user.profile.new_likes_count = 0
     request.user.profile.save(update_fields=['new_likes_count'])
 
     ctx = {'user_list': ul}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
 @require_http_methods(["GET", "HEAD"])
-def matches_view(request):
+def matches_view(request, template_name='dtr5app/matches.html'):
     """
     Show a page with all matches (i.e. mututal 'like' flags) of auth
     user and all other users.
     """
+    pg = int(request.GET.get('page', 1))
+
     # Get a list user_list ordered by match time, most recent first,
     # including the additional property 'matched' with match timestamp.
-    template_name = 'dtr5app/matches.html'
-    # pg = int(request.GET.get('page', 1))
-    user_list = get_matches_user_list(request.user)
-    user_list = add_auth_user_latlng(request.user, user_list)
-
-    #
-    # TODO: pagination!!!
-    #
+    ul = get_matches_user_list(request.user)
+    ul = get_paginated_user_list(ul, pg, request.user)
 
     # Recount the total matches number to correct for countring errors.
     request.user.profile.matches_count = count_matches(request.user)
+
     # Reset the new_matches_count value
     request.user.profile.new_matches_count = 0
     request.user.profile.save(update_fields=['matches_count',
                                              'new_matches_count'])
-    ctx = {'user_list': user_list}
-    return render_to_response(template_name, ctx,
-                              context_instance=RequestContext(request))
+    ctx = {'user_list': ul}
+    kwargs = {'context_instance': RequestContext(request)}
+    return render_to_response(template_name, ctx, **kwargs)
 
 
 @staff_member_required

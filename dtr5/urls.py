@@ -34,11 +34,11 @@ urlpatterns = [
     url(r'^me/pic/$', views_me.me_picture_view, name="me_picture_page"),
     url(r'^me/pic/delete$', views_me.me_pic_del_view, name="me_pic_del_page"),
     url(r'^me/flag/delete$', views_me.me_flag_del_view, name="me_flag_del_page"),
-    url(r'^me/visitors/$', views.me_viewed_me_view, name="me_viewed_me_page"),
-    url(r'^me/upvotes_inbox$', views.me_recv_like_view,
+    url(r'^me/visitors/$', views.viewed_me_view, name="me_viewed_me_page"),
+    url(r'^me/upvotes_inbox$', views.likes_recv_view,
         name="me_recv_like_page"),
-    url(r'^me/upvotes_sent$', views.me_like_view, name="me_like_page"),
-    url(r'^me/nopes_sent$', views.me_nope_view, name="me_nope_page"),
+    url(r'^me/upvotes_sent$', views.likes_sent_view, name="me_like_page"),
+    url(r'^me/nopes_sent$', views.nope_view, name="me_nope_page"),
     url(r'^me/account/delete$', views_me.me_account_del_view,
         name="me_account_del_page"),
 
@@ -46,7 +46,7 @@ urlpatterns = [
     url(r'^search/$', views_me.me_search_view, name="me_search_page"),
 
     # Search results as paginated list view of user profiles
-    url(r'^results/$', views.me_results_view, name="me_results_page"),
+    url(r'^results/$', views.results_view, name="me_results_page"),
 
     # Show a list of matches (auth user and view user mutual likes).
     url(r'^matches/$', views.matches_view, name="matches_page"),

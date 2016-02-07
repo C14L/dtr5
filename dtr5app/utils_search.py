@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.datastructures import MultiValueDictKeyError
 
+from dtr5app.models import Flag
 from dtr5app.utils import normalize_sr_names
 from toolbox import (to_iso8601,
                      from_iso8601,
@@ -166,16 +167,7 @@ def search_users(request, usernames_only=True):
     (see https://code.djangoproject.com/ticket/17741), the entire query is
     build in SQL.
     """
-    # SR_LIMIT = getattr(settings, 'SR_LIMIT', 50)
-    # SR_MIN_SUBS = getattr(settings, 'SR_MIN_SUBS', 100)
-    # SR_MAX_SUBS = getattr(settings, 'SR_MAX_SUBS', 5000000)
-
-    # f_exclude_sr_li
-
-    # fetch users and number of same subscribed subreddits for all users
-    # that are subscribed to the same subreddits than auth user; fetch a max
-    # of BUFFER_LEN items. This query only touches the dtr5app_subscribed
-    # table and does not requore any join with other tables.
+    is_filter_block_flag_only = True
     query_params = []
     query_string = ''
 
@@ -268,9 +260,17 @@ def search_users(request, usernames_only=True):
 
     # part 6: exclude users who already have a like/nope flag from auth user
     # li = li.exclude(flags_received__sender=request.user)
-    query_params += [request.user.id]
-    query_string += ''' AND NOT (u.id IN (SELECT U1.receiver_id AS Col1
-                        FROM dtr5app_flag U1 WHERE U1.sender_id = %s)) '''
+    if is_filter_block_flag_only:
+        # exclude only users who have a BLOCK_FLAG ("hide") from auth user
+        query_params += [Flag.BLOCK_FLAG, request.user.id]
+        query_string += ''' AND NOT (u.id IN (SELECT U1.receiver_id AS Col1
+                            FROM dtr5app_flag U1
+                            WHERE U1.flag = %s AND U1.sender_id = %s)) '''
+    else:
+        # Exclude all users flagged by auth user: LIKE_FLAG, BLOCK_FLAG, etc.
+        query_params += [request.user.id]
+        query_string += ''' AND NOT (u.id IN (SELECT U1.receiver_id AS Col1
+                            FROM dtr5app_flag U1 WHERE U1.sender_id = %s)) '''
 
     # part 7: exclude globally blocked usernames
     # li = li.exclude(username__in=get_blocked_usernames_list())
@@ -280,6 +280,8 @@ def search_users(request, usernames_only=True):
     # part 8: have at least one picture URL in the JSON string
     # li = li.exclude(profile___pics='[]')
     # TODO: for now, allow no-picture profiles, to make testing easier
+    # Note: there was an error causing an empty pic list to be written as [] to
+    # the field.
     if request.user.profile.f_hide_no_pic:
         query_params += []
         query_string += ''' AND p._pics NOT IN ('', '[]') '''
