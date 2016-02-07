@@ -147,15 +147,13 @@
     </div>
     <div class="pics">
       <ul>
-        {% for pic in view_user.pics_list %}
         <li>
-          {% if pic.url %}
-            <a href="{{pic.src}}" class="pic" style="background-image: url({{pic.url}});"></a>
+          {% if view_user.pics_list.0.url %}
+            <a href="#id_pics" class="pic" style="background-image: url({{view_user.pics_list.0.url}});"></a>
           {% else %}
             <span class="pic" style="background-image: url({% static 'nopic.jpg' %});"></span>
           {% endif %}
         </li>
-        {% endfor %}
       </ul>
     </div>
   </div>
@@ -249,7 +247,7 @@
   </div>
 
   {% if view_user.pics_list|length > 1 %}
-    <div class="card nopadd">
+    <div class="card nopadd" id="id_pics">
       <section class="nopadd fullpics">
         {% for pic in view_user.pics_list %}
           {% if pic.url %}
