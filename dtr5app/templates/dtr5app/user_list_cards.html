@@ -20,9 +20,11 @@
           {{v.profile.get_age}} {{v.profile.get_sex_symbol}}
           <!-- {{v.profile.accessed|timesince}} -->
         </span>
-        <span class="loc">
-          {{v.profile.get_distance|prefdist:user}} away
-        </span>
+        {% if user.is_authenticated %}
+          <span class="loc">{{v.profile.get_distance|prefdist:user}} away</span>
+        {% else %}
+          <span class="loc">{{v.profile.get_sex_display}}</span>
+        {% endif %}
       </span>
 
     </li>

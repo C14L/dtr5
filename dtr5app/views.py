@@ -18,7 +18,8 @@ from .utils import add_auth_user_latlng, count_matches, get_matches_user_list, \
                    get_prevnext_user, get_user_and_related_or_404, \
                    get_paginated_user_list, prepare_paginated_user_list, \
                    add_matches_to_user_list, get_user_list_from_username_list, \
-                   get_user_list_after, add_likes_sent, add_likes_recv
+                   get_user_list_after, add_likes_sent, add_likes_recv, \
+    get_subs_for_user
 from .utils_search import search_results_buffer, search_subreddit_users
 
 
@@ -126,35 +127,41 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     return render_to_response(template_name, ctx, **kwargs)
 
 
-@login_required
 @require_http_methods(["GET", "HEAD"])
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """
     Display a list of users who are subscribed to a subreddit.
     """
     pg = int(request.GET.get('page', 1))
-    order_by = request.GET.get('order', '-last_login')
     view_sr = get_object_or_404(Sr, display_name__iexact=sr)
-    params = {
-        'user_id': request.user.id,
-        'sex': request.GET.get('s', 0),
-        'minage': force_int(request.GET.get('minage', 18)),
-        'maxage': force_int(request.GET.get('maxage', 100)),
-        'distance': force_int(request.GET.get('dist', 0)),
-        'lat': request.user.profile.lat,
-        'lng': request.user.profile.lng,
-        'hide_no_pic': bool(force_int(request.GET.get('hide_no_pic', 0))),
-        'has_verified_email':
-            bool(force_int(request.GET.get('has_verified_email', 0))),
-    }
+
+    params = dict()
+    params['order'] = request.GET.get('order', '-last_login')
+    params['has_verified_email'] = \
+        bool(force_int(request.GET.get('has_verified_email', 0)))
+    params['hide_no_pic'] = bool(force_int(request.GET.get('hide_no_pic', 0)))
+    params['sex'] = force_int(request.GET.get('s', 0))
+    params['distance'] = force_int(request.GET.get('dist', 1))
+
+    params['minage'] = force_int(request.GET.get('minage', 18))
+    if params['minage'] not in range(18, 100):
+        params['minage'] = 18
+    params['maxage'] = force_int(request.GET.get('maxage', 100))
+    if params['maxage'] not in range(params['minage'], 101):
+        params['maxage'] = 100
+
+    if request.user.is_authenticated():
+        params['user_id'] = request.user.id
+        params['lat'] = request.user.profile.lat
+        params['lng'] = request.user.profile.lng
 
     ul = search_subreddit_users(params, view_sr)
 
-    if order_by == '-accessed':  # most recently accessed first
+    if params['order'] == '-accessed':  # most recently accessed first
         ul = ul.order_by('-profile__accessed')
-    elif order_by == '-date_joined':  # most recent redddate acccount
+    elif params['order'] == '-date_joined':  # most recent redddate acccount
         ul = ul.order_by('-date_joined')
-    elif order_by == '-views_count':  # most views first
+    elif params['order'] == '-views_count':  # most views first
         ul = ul.order_by('-profile__views_count')
 
     # Paginate and add "is_like_recv" and "is_like"sent"
@@ -163,9 +170,8 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     ul.object_list = add_likes_recv(ul.object_list, request.user)
     ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
 
-    ctx = {'view_sr': view_sr, 'user_list': ul,
-           'user_subs_all': request.user.subs.all().prefetch_related('sr'),
-           'order_by': request.session.get('search_results_order', '')}
+    ctx = {'view_sr': view_sr, 'user_list': ul, 'params': params,
+           'user_subs_all': get_subs_for_user(request.user)}
     kwargs = {'context_instance': RequestContext(request)}
     return render_to_response(template_name, ctx, **kwargs)
 

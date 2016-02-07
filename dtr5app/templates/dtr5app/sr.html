@@ -24,7 +24,7 @@
             <option value="">everybody</option>
             {% for sex in settings.SEX_PLURAL %}
               {% if sex.0 > 0 %}
-                <option {% if user.profile.f_sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+                <option {% if params.sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
               {% endif %}
             {% endfor %}
           </select>
@@ -33,7 +33,7 @@
         <label>
           <select name="dist" size="1">
             {% for x in DISTANCE %}
-              <option {% if user.profile.f_distance == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+              <option {% if params.distance == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
             {% endfor %}
           </select>
         </label>&nbsp;
@@ -45,7 +45,7 @@
           <select name="order" size="1" style="font-size: inherit; background: transparent; border: none; outline: none;">
             {% for x in settings.ORDER_BY %}
               {% if x.0 != "-sr_count" %}
-                <option {% if order_by == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+                <option {% if params.order == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
               {% endif %}
             {% endfor %}
           </select>
@@ -60,10 +60,10 @@
         <div class="opts">
           <section>
             <label>
-              <input type="checkbox" name="hide_no_pic" value="1" {% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
+              <input type="checkbox" name="hide_no_pic" value="1" {% if params.hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
             </label>&nbsp;&middot;&nbsp;
             <label>
-              <input type="checkbox" name="has_verified_email" value="1" {% if user.profile.f_has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
+              <input type="checkbox" name="has_verified_email" value="1" {% if params.has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
             </label>&nbsp;
             <!--
             <label>
@@ -73,8 +73,8 @@
           </section>
           <section>
             <span><b>age range</b>: between&nbsp;
-            <input type="number" min="18" max="98" name="minage" value="{{user.profile.f_minage}}">&nbsp;and&nbsp;
-            <input type="number" min="19" max="100" name="maxage" value="{{user.profile.f_maxage}}">&nbsp;
+            <input type="number" min="18" max="98" name="minage" value="{{params.minage|default:18}}">&nbsp;and&nbsp;
+            <input type="number" min="19" max="100" name="maxage" value="{{params.maxage|default:100}}">&nbsp;
             years old</span>
           </section>
           <section style="text-align:center">
