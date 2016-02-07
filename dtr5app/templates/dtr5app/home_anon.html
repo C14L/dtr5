@@ -33,6 +33,13 @@
 </p>
 
   </div>
+
 </article>
+
+<div style="margin: 0 auto; width: 500px; line-height: 2em; text-align: center;">
+  {% for x in settings.SR_ANON_ACCESS_ALLOWED %}
+    <a href="/r/{{ x }}/">/r/{{ x }}</a> &nbsp;
+  {% endfor %}
+</div>
 
 {% endblock %}

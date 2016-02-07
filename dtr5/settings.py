@@ -197,6 +197,13 @@ OAUTH_REDDIT_DURATION = "permanent"  # or "temporary"
 OAUTH_REDDIT_BASE_HEADERS = {
     "User-Agent": OAUTH_REDDIT_USER_AGENT, "raw_json": "1", }
 
+# List some subreddits where anonymous users are allowed to view user list of
+# subreddit subscribers.
+SR_ANON_ACCESS_ALLOWED = (
+    'AskReddit', 'bestof', 'CrappyDesign', 'Fitness', 'ProgrammerHumor',
+    'talesfromtechsupport',
+)
+
 # Settings for user profile data.
 SEX = (
     (0, 'other'),

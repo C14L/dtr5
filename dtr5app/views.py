@@ -1,10 +1,14 @@
 import pytz
+
 from datetime import datetime, timedelta, date
+from urllib.parse import urlencode
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse, HttpResponseNotFound, Http404
+from django.http import JsonResponse, HttpResponseNotFound, Http404, \
+    HttpResponseRedirect
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
@@ -135,11 +139,16 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     pg = int(request.GET.get('page', 1))
     view_sr = get_object_or_404(Sr, display_name__iexact=sr)
 
+    if request.user.is_anonymous() and not view_sr.display_name.lower() in \
+            [x.lower() for x in settings.SR_ANON_ACCESS_ALLOWED]:
+        params = ''  # urlencode({'next': request.get_full_path()})
+        return HttpResponseRedirect('{}?{}'.format(settings.LOGIN_URL, params))
+
     params = dict()
     params['order'] = request.GET.get('order', '-last_login')
     params['has_verified_email'] = \
         bool(force_int(request.GET.get('has_verified_email', 0)))
-    params['hide_no_pic'] = bool(force_int(request.GET.get('hide_no_pic', 0)))
+    params['hide_no_pic'] = bool(force_int(request.GET.get('hide_no_pic', 1)))
     params['sex'] = force_int(request.GET.get('s', 0))
     params['distance'] = force_int(request.GET.get('dist', 1))
 
