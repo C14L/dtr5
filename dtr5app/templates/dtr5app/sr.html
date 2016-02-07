@@ -4,23 +4,23 @@
 
 {% block title %}/r/{{view_sr.display_name}}{% endblock %}
 
+{% block head %}
+<link rel=canonical href=“{% url 'sr_page' view_sr.display_name %}”>
+{% endblock %}
+
 {% block body_classes %}sr{% endblock %}
 
 {% block main %}
 
 <section class="subheader">
-
-  <!-- <span class="info">{{view_sr.subscribers_here}} members - your <a href="{% url 'me_page' %}">search options</a> found {{user_list.paginator.count}} redditors</span> -->
-
   <div class="search-bar" id="id_search">
     <div id="id_search_loading" class="loading" style="display:none; text-align:center; border: 0.75rem solid transparent;"><span></span><span></span><span></span></div>
 
-    <form id="id_search_form" method="POST" action="{% url 'sr_page' view_sr.display_name %}">
-      {% csrf_token %}
+    <form id="id_search_form" method="GET" action="{% url 'sr_page' view_sr.display_name %}">
       <div class="mainopts">
         <span class="reddit-link"><a href="https://www.reddit.com/r/{{view_sr.display_name}}" class="fa fa-reddit"></a><a href="/r/{{view_sr.display_name}}">/r/{{view_sr.display_name}}</a></span>
         <label>
-          <select name="f_sex" size="1">
+          <select name="s" size="1"><!-- rename param "sex" to just "s", because it will show in the URL and may trigger blocking by overly P.C. company or uni networks -->
             <option value="">everybody</option>
             {% for sex in settings.SEX_PLURAL %}
               {% if sex.0 > 0 %}
@@ -31,7 +31,7 @@
         </label>&nbsp;
         <span>within</span>&nbsp;
         <label>
-          <select name="f_distance" size="1">
+          <select name="dist" size="1">
             {% for x in DISTANCE %}
               <option {% if user.profile.f_distance == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
             {% endfor %}
@@ -42,7 +42,7 @@
         </label>&nbsp;
         <label style="font-size: 0.8rem;">
           <span>sort by:</span>
-          <select name="order_by" size="1" style="font-size: inherit; background: transparent; border: none; outline: none;">
+          <select name="order" size="1" style="font-size: inherit; background: transparent; border: none; outline: none;">
             {% for x in settings.ORDER_BY %}
               {% if x.0 != "-sr_count" %}
                 <option {% if order_by == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
@@ -60,24 +60,21 @@
         <div class="opts">
           <section>
             <label>
-              <input type="hidden" name="f_hide_no_pic" value="0">
-              <input type="checkbox" name="f_hide_no_pic" value="1" {% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
+              <input type="checkbox" name="hide_no_pic" value="1" {% if user.profile.f_hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
             </label>&nbsp;&middot;&nbsp;
             <label>
-              <input type="hidden" name="f_has_verified_email" value="0">
-              <input type="checkbox" name="f_has_verified_email" value="1" {% if user.profile.f_has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
+              <input type="checkbox" name="has_verified_email" value="1" {% if user.profile.f_has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
             </label>&nbsp;
             <!--
             <label>
-              <input type="hidden" name="f_is_stable" value="0">
               <input type="checkbox" name="f_is_stable" value="1">&nbsp;<span title="Ignore very new and low karma accounts.">only established redditors</span>
             </label>&nbsp;
             -->
           </section>
           <section>
             <span><b>age range</b>: between&nbsp;
-            <input type="number" min="18" max="98" name="f_minage" value="{{user.profile.f_minage}}">&nbsp;and&nbsp;
-            <input type="number" min="19" max="100" name="f_maxage" value="{{user.profile.f_maxage}}">&nbsp;
+            <input type="number" min="18" max="98" name="minage" value="{{user.profile.f_minage}}">&nbsp;and&nbsp;
+            <input type="number" min="19" max="100" name="maxage" value="{{user.profile.f_maxage}}">&nbsp;
             years old</span>
           </section>
           <section style="text-align:center">

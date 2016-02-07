@@ -19,8 +19,7 @@ from .utils import add_auth_user_latlng, count_matches, get_matches_user_list, \
                    get_paginated_user_list, prepare_paginated_user_list, \
                    add_matches_to_user_list, get_user_list_from_username_list, \
                    get_user_list_after, add_likes_sent, add_likes_recv
-from .utils_search import search_results_buffer, search_subreddit_users, \
-                          update_search_settings
+from .utils_search import search_results_buffer, search_subreddit_users
 
 
 @require_http_methods(["GET", "HEAD"])
@@ -128,19 +127,29 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
 
 
 @login_required
+@require_http_methods(["GET", "HEAD"])
 def sr_view(request, sr, template_name='dtr5app/sr.html'):
     """
     Display a list of users who are subscribed to a subreddit.
     """
     pg = int(request.GET.get('page', 1))
-    order_by = request.POST.get('order_by', '-last_login')
+    order_by = request.GET.get('order', '-last_login')
     view_sr = get_object_or_404(Sr, display_name__iexact=sr)
+    params = {
+        'user_id': request.user.id,
+        'sex': request.GET.get('s', 0),
+        'minage': force_int(request.GET.get('minage', 18)),
+        'maxage': force_int(request.GET.get('maxage', 100)),
+        'distance': force_int(request.GET.get('dist', 0)),
+        'lat': request.user.profile.lat,
+        'lng': request.user.profile.lng,
+        'hide_no_pic': bool(force_int(request.GET.get('hide_no_pic', 0))),
+        'has_verified_email':
+            bool(force_int(request.GET.get('has_verified_email', 0))),
+    }
 
-    # TODO: remove this and display User subset by GET parameters, to not mis
-    # TODO: it up with the regular search settings in /results/ here.
-    update_search_settings(request)
+    ul = search_subreddit_users(params, view_sr)
 
-    ul = search_subreddit_users(request.user, view_sr)
     if order_by == '-accessed':  # most recently accessed first
         ul = ul.order_by('-profile__accessed')
     elif order_by == '-date_joined':  # most recent redddate acccount

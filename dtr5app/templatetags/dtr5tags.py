@@ -5,6 +5,23 @@ from toolbox import meters_in_km, meters_in_miles
 register = template.Library()
 
 
+@register.simple_tag
+def url_replace(request, field, value):
+    """
+    Simplefy pagination for URLs with GET parameters, by only replacing (or
+    adding if necessary) only a single parameter's value.
+
+    Usage:
+        <a href="?{% url_replace request 'page' paginator.next_page_number %}">
+
+    Source:
+        http://stackoverflow.com/a/16609498/5520354
+    """
+    dict_ = request.GET.copy()
+    dict_[field] = value
+    return dict_.urlencode()
+
+
 @register.filter(name='prefdist')
 def prefdist(val, arg):
     """

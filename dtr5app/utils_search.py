@@ -14,14 +14,14 @@ from toolbox import (to_iso8601,
                      get_latlng_bounderies, force_int, sr_str_to_list)
 
 
-def search_subreddit_users(user, sr):
+def search_subreddit_users(params, sr):
     """
     Fetch users subscribed to this subreddit, and return a QuerySet that can
     be paginated.
 
     :sr: Sr object.
     """
-    return search_users_by_options_queryset(user, include_flagged=True)\
+    return search_users_by_options_queryset(params, include_flagged=True) \
         .filter(subs__sr=sr).prefetch_related('subs').order_by('-last_login')
 
 
@@ -34,104 +34,73 @@ def get_blocked_usernames_list():
     return []
 
 
-def search_users_by_options_queryset(user, include_flagged=False):
+def search_users_by_options_queryset(params, include_flagged=False):
     """
     Return a User queryset that filters by search options of the user and
     some other basic filters, like globally blocked usernames, etc. this is
     used, for example, for the Sr view user list.
 
-    :user: <User instance> who's search option settings to use. Most likely,
-        this is the request.user instance.
-
+    :params: a dict of search parameters.
+    :user: auth user
     :include_flagged: <bool> default False. Whether to include users that were
         already flagged (like, nope, etc) by user.
     """
     # 1
     li = User.objects.all().prefetch_related('profile')
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> all: ', li.count())
 
     # 2 search option: sex
-    if user.profile.f_sex > 0:
-        li = li.filter(profile__sex=user.profile.f_sex)
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> f_sex: ', li.count())
+    if 'sex' in params and params['sex']:
+        li = li.filter(profile__sex=params['sex'])
 
     # 3 search option: age
-    dob_earliest, dob_latest = get_dob_range(user.profile.f_minage,
-                                             user.profile.f_maxage)
+    if 'minage' not in params:
+        params['minage'] = 18
+    if 'maxage' not in params:
+        params['maxage'] = 100
+    dob_earliest, dob_latest = get_dob_range(params['minage'], params['maxage'])
     li = li.filter(profile__dob__gt=dob_earliest, profile__dob__lt=dob_latest)
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> dob: ', li.count())
 
     # 4 search option: distance
-    #
     # Values too close are inaccurate because of location fuzzying. Also,
-    # f_distance must be at least 1, so that the signup flow doesn't intercept
+    # "distance" must be at least 1, so that the signup flow doesn't intercept
     # it because it has no value set! Leave this to only search distances
     # above 5 km or so, and return "worldwide" for any value below 5 km.
-    #
-    if user.profile.f_distance > 5:
+    if 'distance' in params and 'lat' in params and \
+                    'lng' in params and params['distance'] > 5:
         lat_min, lng_min, lat_max, lng_max = get_latlng_bounderies(
-            user.profile.lat, user.profile.lng,
-            user.profile.f_distance)
+            params['lat'], params['lng'], params['distance'])
         li = li.filter(profile__lat__gte=lat_min, profile__lat__lte=lat_max,
                        profile__lng__gte=lng_min, profile__lng__lte=lng_max)
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> distance: ', li.count())
 
-    # 5 exclude auth user themself.
-    li = li.exclude(pk=user.pk)
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> user.pk: ', li.count())
+    # 5 exclude auth user themself
+    if 'user_id' in params:
+        li = li.exclude(pk=params['user_id'])
 
     # 5a. exclude banned users
     li = li.exclude(is_active=False)
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> is_active: ', li.count())
 
-    # 5b. exclude users who deleted their account (deleted last_login)
+    # 5b. exclude users who deleted their account (i.e. last_login==None)
     li = li.exclude(last_login=None)
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> last_login: ', li.count())
 
     # 5c. exclude users with low karma
     li = li.exclude(
         profile__link_karma__lte=settings.USER_MIN_LINK_KARMA,
         profile__comment_karma__lte=settings.USER_MIN_COMMENT_KARMA)
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> karma: ', li.count())
 
-    # 6 are not already flagged by auth user ('like', 'nope', 'block')
-    if not include_flagged:
-        li = li.exclude(flags_received__sender=user)
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> flagged: ', li.count())
+    # 6 are not noped by auth user ('like', 'nope', 'block')
+    # if not include_flagged:
+    #     li = li.exclude(flags_received__sender=user)
 
     # 7 are not blocked by admin via username blocklist,
     li = li.exclude(username__in=get_blocked_usernames_list())
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> blocklist: ', li.count())
 
     # 8 have at least one picture URL,
-    if user.profile.f_hide_no_pic:
+    if 'hide_no_pic' in params and params['hide_no_pic']:
         li = li.exclude(profile___pics__in=('', '[]', ))
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> pics: ', li.count())
 
     # 9 only users with a verified email on reddit?
-    if user.profile.f_has_verified_email:
+    if 'has_verified_email' in params and params['has_verified_email']:
         li = li.filter(profile__has_verified_email=True)
-    if settings.DEBUG:
-        print('search_users_by_options_queryset --> email: ', li.count())
-
-    # xx only show SFW profiles?
-    if user.profile.f_over_18:  # unused
-        pass
-        # li = li.filter(profile__over_18=True)
-
-    if settings.DEBUG:
-        print('--> li.query', li.query)
 
     return li
 
