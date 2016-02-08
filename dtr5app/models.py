@@ -113,21 +113,24 @@ class Profile(models.Model):
     # find only users that have a verified email on reddit?
     f_has_verified_email = models.BooleanField(default=False)
     # find only stable user accounts with a certain age and karma.
-    # TODO: needs model update
-    # f_is_stable = models.BooleanField(default=False)
+    f_is_stable = models.BooleanField(default=False)
 
     # space separated list of subreddit names to ignore in search
+    # --- DEPRECATED ---
     _f_ignore_sr_li = models.CharField(default='', max_length=800)
     # subreddits with more members than this are ignored in search
+    # --- DEPRECATED ---
     f_ignore_sr_max = models.PositiveIntegerField(default=100000000)
     # space separated list of subreddits whose subscribers will be
     # REMOVED from user's search results.
+    # --- DEPRECATED ---
     _f_exclude_sr_li = models.CharField(default='', max_length=800)
     # hide profiles without picture in search results?
     f_hide_no_pic = models.BooleanField(default=False)
 
     # x_ --> only show my profile listed in another redditor's
     # search results, if the other redditor...
+    # -- CURRENTLY UNUSED --
 
     # ...matches all my above search (f_*) options.
     x_match_search_options = models.BooleanField(default=False)     # unused
@@ -174,20 +177,24 @@ class Profile(models.Model):
 
     @property
     def f_ignore_sr_li(self):
+        # --- DEPRECATED ---
         return sr_str_to_list(self._f_ignore_sr_li)
 
     @f_ignore_sr_li.setter
     def f_ignore_sr_li(self, li):
+        # --- DEPRECATED ---
         if isinstance(li, str):
             li = sr_str_to_list(li)  # if it a string of subreddits, clean it.
         self._f_ignore_sr_li = ' '.join(li)
 
     @property
     def f_exclude_sr_li(self):
+        # --- DEPRECATED ---
         return sr_str_to_list(self._f_exclude_sr_li)
 
     @f_exclude_sr_li.setter
     def f_exclude_sr_li(self, li):
+        # --- DEPRECATED ---
         if isinstance(li, str):
             li = sr_str_to_list(li)  # if it a string of subreddits, clean it.
         self._f_exclude_sr_li = ' '.join(li)
@@ -480,7 +487,7 @@ class Subscribed(models.Model):
     user_is_subscriber = models.BooleanField(default=True)
     user_is_banned = models.BooleanField(default=False)
     user_is_muted = models.BooleanField(default=False)
-    is_favorite = models.BooleanField(default=False)  # user fav'd this sr.
+    is_favorite = models.BooleanField(default=True)  # user fav'd this sr.
 
     class Meta:
         verbose_name = "subreddit subscription"
