@@ -534,6 +534,21 @@ List of subreddit matches on profile view.
 
 /*
 
+Select from subscribed subreddits those that should be considered in search.
+
+*/
+body.results .active-sr-selector .title { margin: 8px 0; }
+body.results .active-sr-selector .title .switch { text-decoration: underline; font-size: 0.85rem; color: blue; cursor: pointer; }
+body.results .active-sr-selector .list { display: flex; flex-wrap: wrap; }
+body.results .active-sr-selector .list .item { display: inline-block; cursor: pointer; flex: 1 0 auto; }
+body.results .active-sr-selector .list .item span { display: block; margin: 1px; padding: 8px 12px; background: #888; color: white; font-size: 1rem; }
+body.results .active-sr-selector .list .item input[type="checkbox"] { display: none; }
+body.results .active-sr-selector .list .item input[type="checkbox"]:not(:checked) + span { opacity: 0.5; text-decoration: line-through; }
+body.results .active-sr-selector .list .item input[type="checkbox"]:checked + span { opacity: 1; }
+
+
+/*
+
 List of users as 200x300px cards.
 
 */

@@ -3,7 +3,9 @@ All profile search-realted functions.
 """
 from datetime import timedelta
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.utils.datastructures import MultiValueDictKeyError
 
 from dtr5app.models import Flag
@@ -167,9 +169,12 @@ def search_users(request, usernames_only=True):
     # if the user has set a maximum size for subreddits to be considered
     # in search. this can be used to filter all the huge default subs that
     # most redditors belong to.
-    if request.user.profile.f_ignore_sr_max:
-        query_params += [request.user.profile.f_ignore_sr_max]
-        query_string += ''' AND sr.subscribers < %s '''
+    #
+    # REMOVED!
+    #
+    # if request.user.profile.f_ignore_sr_max:
+    #     query_params += [request.user.profile.f_ignore_sr_max]
+    #     query_string += ''' AND sr.subscribers < %s '''
 
     # part 1.2
     # a list of Sr.display_name values. these subreddits should NOT be
@@ -177,14 +182,27 @@ def search_users(request, usernames_only=True):
     # Subreddit names should appear as case insensitive! The f_ignore_sr_li
     # list of subreddit names is supposed to be "cleaned up" already, with
     # the appropriate lettercase of a subreddit's name.
-    if request.user.profile.f_ignore_sr_li:
-        query_params += request.user.profile.f_ignore_sr_li
-        x = ', '.join(['%s'] * len(request.user.profile.f_ignore_sr_li))
-        query_string += ''' AND sr.id NOT IN (
-                                SELECT id FROM dtr5app_sr sr2
-                                WHERE sr2.display_name IN (''' + x + ' )) '
+    #
+    # REMOVED!
+    #
+    # if request.user.profile.f_ignore_sr_li:
+    #     query_params += request.user.profile.f_ignore_sr_li
+    #     x = ', '.join(['%s'] * len(request.user.profile.f_ignore_sr_li))
+    #     query_string += ''' AND sr.id NOT IN (
+    #                             SELECT id FROM dtr5app_sr sr2
+    #                             WHERE sr2.display_name IN (''' + x + ' )) '
+
+    # part 1.3
+    # Search only those subs that auth user marked as their favorites. By
+    # default, all subreddits a user is subbed to are their favorites, unless
+    # they have manually de-selected some in the search settings.
+    query_params += []
+    query_string += ''' AND r1.is_favorite '''
 
     # part 1.9
+    # Set r1 to be the auth user, and r2 to be the users we are searching for,
+    # then do a sub-query to join them with their profiles, so we can search
+    # the profile for auth user's search settings.
     query_params += [request.user.id]
     query_string += ''' AND r1.user_id = %s AND au.id IN (
                             SELECT id FROM auth_user u
@@ -370,6 +388,7 @@ def update_search_settings(request):
     # letter case, so its useful in raw SQL search. Since Django has no
     # case insensivity support :( we look up the correctly cased subreddit
     # names here once, and store those as the user's search settings.
+    # --> REMOVE from search, use "fav subreddits" list instead.
     if 'f_ignore_sr_li' in request.POST:
         try:
             li = sr_str_to_list(request.POST['f_ignore_sr_li'])
@@ -377,6 +396,7 @@ def update_search_settings(request):
         except MultiValueDictKeyError:
             pass  # don't change the search value if not POSTed.
 
+    # --> REMOVE from search, use "fav subreddits" list instead.
     if 'f_ignore_sr_max' in request.POST:
         try:
             p.f_ignore_sr_max = force_int(request.POST['f_ignore_sr_max'],
@@ -384,12 +404,25 @@ def update_search_settings(request):
         except MultiValueDictKeyError:
             pass  # don't change the search vaue if not POSTed.
 
+    # Currently unused.
     if 'f_exclude_sr_li' in request.POST:
         try:
             li = sr_str_to_list(request.POST['f_exclude_sr_li'])
             p.f_exclude_sr_li = normalize_sr_names(li)
         except MultiValueDictKeyError:
             pass  # don't change the search value if not POSTed.
+
+    # Find active subreddits: loop through user's subs and those that are in
+    # the POST are active, all others are not.
+    if 'sr-fav' in request.POST:
+        posted = request.POST.getlist('sr-fav')
+        li = request.user.subs.filter(sr__display_name__in=posted)
+        if li:  # ignore empty fav list!
+            with transaction.atomic():
+                request.user.subs.all().update(is_favorite=False)
+                li.update(is_favorite=True)
+        else:
+            messages.warning(request, 'no subreddits selected for search!')
 
     request.user.profile = p
     request.user.profile.save()

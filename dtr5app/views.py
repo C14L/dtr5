@@ -54,7 +54,13 @@ def results_view(request, template_name='dtr5app/results.html'):
     ul.object_list = add_likes_sent(ul.object_list, request.user)
     ul.object_list = add_likes_recv(ul.object_list, request.user)
 
-    ctx = {'user_list': ul, 'order_by': order_by}
+    sr_names = []
+    for row in request.user.subs.all().prefetch_related('sr'):
+        # We need the name of the SR and the status "is_favorite" as "1" or "0".
+        fav = 1 if row.is_favorite else 0
+        sr_names.append({'name': row.sr.display_name, 'fav': fav})
+
+    ctx = {'user_list': ul, 'order_by': order_by, 'sr_names': sr_names}
     kwargs = {'context_instance': RequestContext(request)}
     return render_to_response(template_name, ctx, **kwargs)
 
