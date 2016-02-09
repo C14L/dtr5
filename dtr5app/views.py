@@ -120,6 +120,11 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     show_created = (view_user.profile.created and
                     view_user.profile.created > date(1970, 1, 1))
 
+    # TODO: Fix that we sometimes call a method on view_user's profile with
+    # TODO: request.user as arg, and sometimes we call a method on req.user's
+    # TODO: profile with view_user as arg. :/ Should just set once req.user
+    # TODO: as "partner" on the view_user profile and then have all those
+    # TODO: methods re-use that setting.
     ctx = {'show_created': show_created,
            'view_user': view_user,
            'user_list': user_list,
