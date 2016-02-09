@@ -155,7 +155,6 @@ class Profile(models.Model):
     # Can be set for distance calculation.
     viewer_lat = None
     viewer_lng = None
-    common_subs = []
     pics = []  # helper list, this will be serialized on save.
 
     class Meta:
@@ -278,55 +277,78 @@ class Profile(models.Model):
         except:
             return ''
 
-    def set_subscribed_subs(self):
-        """make sure to fetch and cache all subs the user is subscribed to"""
-        if not hasattr(self, 'subscribed_subs'):
-            qs = self.user.subs.all().prefetch_related('sr')
-            self.subscribed_subs = list(qs)
-
-    def set_common_subs(self, subs_list, f_ignore_sr_li, f_ignore_sr_max):
+    @property
+    def subscribed_subs(self):
         """
-        sets the common_subs and not_common_subs properties on the instance.
-        lists of all subs the instance user is (not) subscribed to and that
-        also appear in the subs_list list. the subs_list list is usually a
-        QuerySet of auth user's subs.
-
-        update: respect authuser's "f_ignore_sr_li" and "f_ignore_sr_max"
-        search values: subs that don't match these search settings must
-        be excluded from the common subs.
-
-        :subs_list: list of auth user's subscribed subreddits.
-        :f_ignore_sr_max: auth user set this limit to exclude larger subs.
-        :f_ignore_sr_li: auth user's list of subreddit names to ignore.
+        Return (and cache) all subs this instance's user is subscribed to.
         """
-        self.common_subs = []  # collect here the common subs
-        self.not_common_subs = []   # and here all the other
+        if not hasattr(self, '_subscribed_subs'):
+            self._subscribed_subs = \
+                list(self.user.subs.all().prefetch_related('sr'))
 
-        # make sure "self.subscribed_subs" contains all subs of view_user.
-        self.set_subscribed_subs()
+        return self._subscribed_subs
 
-        # prefetch all related subreddits, for the below loop
-        subs_list = subs_list.prefetch_related('sr')
+    def _set_common_not_common_subs(self, user, fav_only=True):
+        """
+        Prepares two cached lists: "common_subs" and "not_common_subs" that
+        hold the common and not common subs betweeen the instance user and
+        those in the subs_list list. The subs_list list is a QuerySet
+        of auth user's subs.
+
+        :subs_list: QS or list of auth user's subreddit subscriptions.
+        :fav_only: only consider objects in subs_list where is_favorite=True.
+        """
+        print('_set_common_not_common_subs() called...')
+        self._common_subs = []
+        self._not_common_subs = []
+
+        subs_list = user.subs.all()
+        if fav_only:
+            subs_list = subs_list.filter(is_favorite=True)
 
         # fill the list with only the primary keys of all subs.
-        subs_list_pks = []
-        for sub in subs_list:
-            # either max val.must not be set, or it must be lower than subs-nr.
-            c1 = (not f_ignore_sr_max or sub.sr.subscribers < f_ignore_sr_max)
-            # the sub name should not be in the ignore list.
-            c2 = (sub.sr.display_name not in f_ignore_sr_li)
-
-            if c1 and c2:
-                # if there is a max value, the sub must have LESS subscribers.
-                subs_list_pks.append(sub.sr.pk)
+        subs_list_pks = subs_list.values_list('sr', flat=True)
 
         # now look at all of view_user's subs and spit them between those that
         # exist in auth user's "subs_list_pks" and those that don't.
         for sub in self.subscribed_subs:
             if sub.sr.pk in subs_list_pks:
-                self.common_subs.append(sub)
+                print('YES!', sub.sr.display_name)
+                self._common_subs.append(sub)
             else:
-                self.not_common_subs.append(sub)
+                print('NOO', sub.sr.display_name)
+                self._not_common_subs.append(sub)
+
+    def get_common_subs(self, user, fav_only=True):
+        """
+        Return a list with the "common_subs" the instance user is subscribed to
+        and that also appear in the subs_list list.
+
+        Cached in self._common_subs
+
+        :subs_list: QS or list of auth user's subreddit subscriptions.
+        :fav_only: only consider objects in subs_list where is_favorite=True.
+        """
+        print('common_subs() called...')
+        if not hasattr(self, '_common_subs'):
+            self._set_common_not_common_subs(user, fav_only)
+
+        return self._common_subs
+
+    def get_not_common_subs(self, user, fav_only=True):
+        """
+        Return a list with the "not_common_subs" the instance user subscribed
+        to and that DO NOT appear in the subs_list list.
+
+        Cached in self._not_common_subs
+
+        :subs_list: QS or list of auth user's subreddit subscriptions.
+        :fav_only: only consider objects in subs_list where is_favorite=True.
+        """
+        if not hasattr(self, '_not_common_subs'):
+            self._set_common_not_common_subs(user, fav_only)
+
+        return self._not_common_subs
 
     def set_viewer_latlng(self, vlat, vlng):
         """Retuired to set view_user lat/lng before calling get_distance()."""

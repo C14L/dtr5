@@ -134,7 +134,7 @@
       <div class="textline">
         Meet <a class="username" href="https://www.reddit.com/u/{{view_user.username}}" onclick="ga('send', 'event', 'profile', 'click', 'ext-reddit-profile-username');">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {% if view_user.profile.relstatus > 1 %}{{view_user.profile.get_relstatus_display|default:"single"}}{% endif %} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.get_herefor_display|default:"friends or dating"}} and
         <!-- <a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}}</a> -->
-        <a href="/map/#{{view_user.profile.lat}},{{view_user.profile.lng}},8z" title="view approximate location" onclick="ga('send', 'event', 'profile', 'click', 'view-map-location');">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if view_user.profile.common_subs|length > 0 %}you have <a href="#id_matches" onclick="ga('send', 'event', 'profile', 'click', 'jump-shared-subs');">{{view_user.profile.common_subs|length}} subreddits</a> in common{% endif %}
+        <a href="/map/#{{view_user.profile.lat}},{{view_user.profile.lng}},8z" title="view approximate location" onclick="ga('send', 'event', 'profile', 'click', 'view-map-location');">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if common_subs|length > 0 %}you have <a href="#id_matches" onclick="ga('send', 'event', 'profile', 'click', 'jump-shared-subs');">{{common_subs|length}} subreddits</a> in common{% endif %}
       </div>
       <div class="meta">
         <span>last active {{view_user.profile.accessed|timesince}} ago</span>
@@ -180,13 +180,13 @@
 
   <div class="card nopadd sr-list-inline subreddit-matches" id="id_matches">
     <a href="#" class="fa fa-arrow-up"></a>
-    {% if view_user.profile.common_subs|length == 0 %}
+    {% if common_subs|length == 0 %}
       <h2>No subreddit matches :(</h2>
     {% else %}
-      <h2>{{view_user.profile.common_subs|length}} subreddit matches!</h2>
+      <h2>{{common_subs|length}} subreddit matches!</h2>
       <section>
         <ul class="sr-list">
-          {% for row in view_user.profile.common_subs %}
+          {% for row in common_subs %}
             <li>
               {% if row.user_is_banned %}
                 <span class="banned-tag">banned from</span>
@@ -219,7 +219,7 @@
         <input id="id_sdjsfhd" type="checkbox">
         <div class="opts">
           <ul class="sr-list smaller">
-            {% for row in view_user.profile.not_common_subs %}
+            {% for row in not_common_subs %}
               <li>
                 {% if row.user_is_banned %}
                   <span class="banned-tag">banned from</span>

@@ -86,13 +86,6 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
     setattr(view_user, 'pics_list', view_user.profile.pics[:10])
     view_user.pics_list += [None] * (10 - len(view_user.pics_list))
 
-    # Find the SRs that auth user and view user have in common, EXCLUDING all
-    # SRs that are filtered by auth users "ignore_sr_li" and "ignore_sr_max"
-    # search settings.
-    view_user.profile.set_common_subs(request.user.subs.all(),
-                                      request.user.profile.f_ignore_sr_li,
-                                      request.user.profile.f_ignore_sr_max)
-
     # Get the next five users to be displayed at the end of the profile page.
     search_results_buffer(request)
     user_list = get_user_list_after(request, view_user, 5)
@@ -128,11 +121,15 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
                     view_user.profile.created > date(1970, 1, 1))
 
     ctx = {'show_created': show_created,
-           'view_user': view_user, 'user_list': user_list,
+           'view_user': view_user,
+           'user_list': user_list,
+           'common_subs': view_user.profile.get_common_subs(request.user),
+           'not_common_subs': view_user.profile.get_not_common_subs(request.user),
            'is_match': request.user.profile.match_with(view_user),
            'is_like': request.user.profile.does_like(view_user),
            'is_nope': request.user.profile.does_nope(view_user),
-           'prev_user': prev_user, 'next_user': next_user}
+           'prev_user': prev_user,
+           'next_user': next_user}
     kwargs = {'context_instance': RequestContext(request)}
     return render_to_response(template_name, ctx, **kwargs)
 
