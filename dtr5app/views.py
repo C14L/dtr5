@@ -281,8 +281,10 @@ def likes_recv_view(request, template_name='dtr5app/likes_recv.html'):
     # fetch all users that sent an upvote to authuser and did not receive
     # a downvote (hide) from authuser.
     ul = User.objects.filter(
-        flags_sent__receiver=request.user, flags_sent__flag=Flag.LIKE_FLAG
-        ).exclude(pk__in=nopes_qs).prefetch_related('profile')
+        flags_sent__receiver=request.user, flags_sent__flag=Flag.LIKE_FLAG) \
+        .exclude(pk__in=nopes_qs).order_by('-flags_sent__created') \
+        .prefetch_related('profile')
+
     ul = get_paginated_user_list(ul, pg, request.user)
     ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
 
