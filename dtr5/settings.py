@@ -200,8 +200,17 @@ OAUTH_REDDIT_BASE_HEADERS = {
 # List some subreddits where anonymous users are allowed to view user list of
 # subreddit subscribers.
 SR_ANON_ACCESS_ALLOWED = (
-    'AskReddit', 'bestof', 'CrappyDesign', 'Fitness', 'ProgrammerHumor',
-    'talesfromtechsupport',
+    'bestof', 'CrappyDesign', 'ProgrammerHumor',
+
+    'announcements', 'Art', 'AskReddit', 'askscience', 'aww', 'blog', 'books',
+    'creepy', 'dataisbeautiful', 'DIY', 'Documentaries', 'EarthPorn',
+    'explainlikeimfive', 'Fitness', 'food', 'funny', 'Futurology', 'gadgets',
+    'gaming', 'GetMotivated', 'gifs', 'history', 'IAmA', 'InternetIsBeautiful',
+    'Jokes', 'LifeProTips', 'listentothis', 'mildlyinteresting', 'movies',
+    'Music', 'news', 'nosleep', 'nottheonion', 'OldSchoolCool',
+    'personalfinance', 'philosophy', 'photoshopbattles', 'pics', 'science',
+    'Showerthoughts', 'space', 'sports', 'television', 'tifu', 'todayilearned',
+    'TwoXChromosomes', 'UpliftingNews', 'videos', 'worldnews', 'WritingPrompts'
 )
 
 # Settings for user profile data.
