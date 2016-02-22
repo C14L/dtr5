@@ -11,9 +11,10 @@ def filter_members_view(request):
     if not userlist:
         return JsonResponse([])
 
-    # Verify that userlist only contains valid usernames
-    # and limit it to not more than 100 items.
-    userlist = [x for x in userlist if settings.RE_USERNAME.match(x)][:100]
+    # Verify that userlist only contains valid usernames and limit it to not
+    # more than 200 items (the number of comments shows per thread for users
+    # with no Reddit Gold).
+    userlist = [x for x in userlist if settings.RE_USERNAME.match(x)][:200]
 
     # Fetch a list of all of them and return a list of usernames found with
     # attached additional data (pic, etc).
