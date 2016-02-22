@@ -17,13 +17,17 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from simple_reddit_oauth import urls as simple_reddit_oauth_urls
-from dtr5app import views, views_me, views_mod
+from dtr5app import views, views_me, views_mod, views_api
 
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include(simple_reddit_oauth_urls)),
     url(r'^$', views.home_view, name="home_page"),
+
+    # API URLs
+    url(r'^api/v1/filter-members.json$', views_api.filter_members_view,
+        name="filter_members"),
 
     # Users preferences page, and URIs to POST to.
     url(r'^me/$', views_me.me_view, name="me_page"),

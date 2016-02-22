@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import re
+
 DEBUG = os.path.exists('/islocal.txt')
 print('--> DEBUG: {}'.format(DEBUG))
 
@@ -179,6 +181,8 @@ REQUIRE_PROFILE_PIC = False  # partially implemented
 #
 RSTR_SR_NAME = r'[a-zA-Z0-9:._-]{2,30}'
 RSTR_USERNAME = r'[a-zA-Z0-9_-]{2,30}'
+
+RE_USERNAME = re.compile(RSTR_USERNAME)
 
 # first try user pref, then try user browser ll setting, then this.
 DEFAULT_DISTANCE_UNIT = 'mi'
