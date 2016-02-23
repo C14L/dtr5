@@ -298,7 +298,8 @@ class Profile(models.Model):
         :subs_list: QS or list of auth user's subreddit subscriptions.
         :fav_only: only consider objects in subs_list where is_favorite=True.
         """
-        print('_set_common_not_common_subs() called...')
+        if settings.DEBUG:
+            print('_set_common_not_common_subs() called...')
         self._common_subs = []
         self._not_common_subs = []
 
@@ -313,10 +314,12 @@ class Profile(models.Model):
         # exist in auth user's "subs_list_pks" and those that don't.
         for sub in self.subscribed_subs:
             if sub.sr.pk in subs_list_pks:
-                print('YES!', sub.sr.display_name)
+                if settings.DEBUG:
+                    print('YES!', sub.sr.display_name)
                 self._common_subs.append(sub)
             else:
-                print('NOO', sub.sr.display_name)
+                if settings.DEBUG:
+                    print('NOO', sub.sr.display_name)
                 self._not_common_subs.append(sub)
 
     def get_common_subs(self, user, fav_only=True):
@@ -329,7 +332,8 @@ class Profile(models.Model):
         :subs_list: QS or list of auth user's subreddit subscriptions.
         :fav_only: only consider objects in subs_list where is_favorite=True.
         """
-        print('common_subs() called...')
+        if settings.DEBUG:
+            print('common_subs() called...')
         if not hasattr(self, '_common_subs'):
             self._set_common_not_common_subs(user, fav_only)
 
