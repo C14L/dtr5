@@ -23,13 +23,12 @@ def filter_members_view(request):
     # Fetch a list of all of them and return a list of usernames found with
     # attached additional data (pic, etc).
     ul = User.objects.filter(username__in=usernames)\
-                        .prefetch_related('profile')[:50]
+                     .prefetch_related('profile')[:50]
 
-    if request.user.is_authenticated:
+    if request.user.is_authenticated():
         ul = add_likes_sent(ul, request.user)
         ul = add_likes_recv(ul, request.user)
         ul = add_matches_to_user_list(ul, request.user)
-
         ul = add_auth_user_latlng(request.user, ul)
 
     response_data = []
@@ -40,7 +39,7 @@ def filter_members_view(request):
                 'sex': user.profile.get_sex_display(),
                 'age': user.profile.get_age(), }
 
-        if request.user.is_authenticated:
+        if request.user.is_authenticated():
             item['is_like_sent'] = user.is_like_sent
             item['is_like_recv'] = user.is_like_recv
             item['is_match'] = user.is_match
