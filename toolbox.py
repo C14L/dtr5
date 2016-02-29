@@ -157,8 +157,13 @@ def get_imgur_page_from_picture_url(url):
 def get_dob_range(minage, maxage):
     """Return earliest and latest dob to match a min/max age range."""
     year = date.today().year
-    dob_earliest = date.today().replace(year=(year-maxage))
-    dob_latest = date.today().replace(year=(year-minage))
+    today = date.today()
+    # This will fail with a ValueError "day is out of range for month" on
+    # February 29, every four years.
+    if today.month == 2 and today.day == 29:
+        today = date(today.year, 2, 28)  # good enough for the purpose.
+    dob_earliest = today.replace(year=(year-maxage))
+    dob_latest = today.replace(year=(year-minage))
     return dob_earliest, dob_latest
 
 
