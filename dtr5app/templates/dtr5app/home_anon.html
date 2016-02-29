@@ -1,7 +1,7 @@
 {% extends 'dtr5app/base.html' %}
 {% load static %}
 
-{% block title %}redddate - the redditor dating site{% endblock %}
+{% block title %}reddmeet - the place to meet redditors{% endblock %}
 
 {% block body_classes %}home-anon signup-steps step-1{% endblock %}
 
@@ -9,11 +9,11 @@
 
 {% block main %}
 
-{# include 'dtr5app/announce_first_week_growth.html' #}
+{% include 'dtr5app/announce_move_redddate_reddmeet.html' %}
 
 <article>
   <div class="overlay">
-    <h1><a href="/">redddate</a></h1>
+    <h1><a href="/">reddmeet</a></h1>
     <p><a class="mainbtn" href="{{auth_url}}">login with reddit</a></p>
   </div>
   <div class="abouts">
@@ -22,9 +22,11 @@
 
 <p style="font-weight:bold; padding: 0 16px; font-size: 1.25rem; text-align:center; ">"A Reddit dating site that matches you based on interest in similar subreddits."</p>
 
-<p>So, here it is! <a href="{{auth_url}}">Sign up with your reddit account</a>, setup your profile, and find other redditors from the subreddits you subscribe to. Also, post related opinions, ideas, criticism <a href="https://www.reddit.com/r/redddate/">on r/redddate</a>.</p>
+<p>So, here it is! But, it's not limited only to dating. Reddmeet is the place to meet Redditors.</p>
 
-<p class="help">Privacy and anonymity are important on Reddit, and here too. After signup with your reddit account (oAuth), redddate will only load your public user account data and subreddit list. No other permissions are required. It will ask for your geolocation and "fuzzy" it in the browser, before sending it to the redddate server. So your precise location is never uploaded. Finally, you can manually add links to your picture, and add some other details.</p>
+<p><a href="{{auth_url}}">Sign up with your reddit account</a>, setup your profile, and find other redditors from the subreddits you subscribe to. Also, post related opinions, ideas, criticism <a href="https://www.reddit.com/r/redddate/">on r/redddate</a>.</p>
+
+<p class="help">Privacy and anonymity are important on Reddit, and here too. After signup with your reddit account (oAuth), reddmeet will load only your public user account data and subreddit list. No other permissions are required. It will ask for your geolocation and "fuzzy" it in the browser, before sending it to the reddmeet server. So your real location is never uploaded! On your profile page, you can add links to your picture, and add some other details.</p>
 
 <p>
   <a href="{% static 'privacy.html' %}">privacy policy</a>

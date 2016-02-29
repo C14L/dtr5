@@ -57,7 +57,7 @@
     <header>
       <div class="site-logo">
         <a class="site-icon" href="/" onclick="ga('send', 'event', 'header', 'click', 'sitelogo');"><img src="{% static 'logo100.gif' %}" alt=""></a>
-        <a class="site-name" href="/" onclick="ga('send', 'event', 'header', 'click', 'sitename');">redddate</a>
+        <a class="site-name" href="/" onclick="ga('send', 'event', 'header', 'click', 'sitename');">reddmeet</a>
       </div>
       <div class="site-links">
 
@@ -163,7 +163,7 @@
         blog on <a href="https://redddate.wordpress.com/"><span class="fa fa-wordpress" onclick="ga('send', 'event', 'footer', 'click', 'ext-wordpress');"></span></a> and <a href="https://www.tumblr.com/blog/redddate" onclick="ga('send', 'event', 'footer', 'click', 'ext-tumblr');"><span class="fa fa-tumblr"></span></a>
       </p>
       <p>
-        &copy; 2016 redddate.com -- use of this site constitutes acceptance of our <a href="{% static 'useragreement.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'user-agreement');">User Agreement</a> and <a href="{% static 'privacy.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'privacy-policy');">Privacy Policy</a>.
+        &copy; 2016 redddate/reddmeet.com -- use of this site constitutes acceptance of our <a href="{% static 'useragreement.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'user-agreement');">User Agreement</a> and <a href="{% static 'privacy.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'privacy-policy');">Privacy Policy</a>.
       <p>
 
       {% if DEBUG or user.is_superuser %}

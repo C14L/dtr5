@@ -35,7 +35,7 @@ if DEBUG:
     CANONICAL_HOST = 'http://localhost:8000'
 else:
     ALLOWED_HOSTS = ['redddate.com', 'reddmeet.com']
-    CANONICAL_HOST = 'http://redddate.com'
+    CANONICAL_HOST = 'https://reddmeet.com'
 
 LOGIN_URL = '/'
 
