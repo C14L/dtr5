@@ -6,11 +6,10 @@
 
 {% block head %}
 
-<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"><style>
+<!-- http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css">
+<style>#id_usermap { height: 80vh; background-color: silver; }</style>
 
-#id_usermap { height: 80vh; background-color: silver; }
-
-</style>
 {% endblock %}
 
 {% block body_classes %}usermap{% endblock %}
@@ -41,10 +40,10 @@
 {% endblock %}
 
 {% block foot %}
-<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<!-- http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
-
 
 // Lefalet shortcuts for common tile providers
 // https://gist.github.com/mcechini/a814f36c7d1612e84c18
