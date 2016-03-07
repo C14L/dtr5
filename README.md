@@ -1,10 +1,14 @@
-this app is a simple dating/friends app in Django>=1.8 for reddit users. see it live at http://redddate.com where you will need a reddit account to sign in.
+#reddmeet.com - meet redditors
 
-what it does
+This is a simple friends/meetup/dating app for Reddit users, written in Django.
+
+See it live: https://reddmeet.com (you need a reddit account to sign in)
+
+What it does
 ------------
 
-the site matches redditors according to the subreddits they belong to. additionally, users can be filtered by geolocation and gender.
+The site matches redditors according to the subreddits they belong to. Additionally, users can be filtered by location, gender, etc.
 
-but the main idea is matching people anonymously by the subreddits they are active in. the post history gives a good idea about how a person thinks and acts in an anonymous environment.
+However, the main idea is to *match people anonymously by the subreddits they are active in*. The post history gives a good idea about how a person thinks and acts in an anonymous environment.
 
-redditors can sign up with their reddit account, if it meets some minimum requirements of account age and karma points.
+Redditors can quickly and anonymously sign up with their reddit account.
