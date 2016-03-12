@@ -61,8 +61,14 @@ def results_view(request, template_name='dtr5app/results.html'):
         sr_names.append({'name': row.sr.display_name, 'fav': fav})
 
     ctx = {'user_list': ul, 'order_by': order_by, 'sr_names': sr_names}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    if request.path.endswith('.json'):
+        print('############# AJAX REQUEST @@@@@@@@@@@@@@@')
+
+    else:
+        print('NOPE!!! ############# NORMAL HTML REQUEST @@@@@@@@@@@@@@@')
+        kwargs = {'context_instance': RequestContext(request)}
+        return render_to_response(template_name, ctx, **kwargs)
 
 
 @login_required
@@ -135,8 +141,12 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
            'is_nope': request.user.profile.does_nope(view_user),
            'prev_user': prev_user,
            'next_user': next_user}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    if request.path.endswith('.json'):
+        pass
+    else:
+        kwargs = {'context_instance': RequestContext(request)}
+        return render_to_response(template_name, ctx, **kwargs)
 
 
 @require_http_methods(["GET", "HEAD"])

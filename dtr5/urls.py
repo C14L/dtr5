@@ -80,4 +80,21 @@ urlpatterns = [
     url(r'^stats/$', views.stats_view, name="stats"),
 
     url(r'^map/$', views.usermap_view, name="usermap"),
+
+
+    # Search results as paginated list view of user profiles
+    url(r'^api/v1/results\.json$', views.results_view, name="me_results_json"),
+
+    # Show "view user"'s profile page.
+    url(r'^api/v1/u/(?P<username>' + settings.RSTR_USERNAME + r')\.json$',
+        views.profile_view, name="profile_json"),
 ]
+
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    urlpatterns += staticfiles_urlpatterns()
+    urlpatterns += static('/app/', document_root=
+                          '/home/chris/dev/new/reddmeet-material/app/')
+    urlpatterns += static('/node_modules/', document_root=
+                          '/home/chris/dev/new/reddmeet-material/node_modules/')
