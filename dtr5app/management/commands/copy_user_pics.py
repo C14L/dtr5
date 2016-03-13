@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 from os import path
 from random import randrange
+from requests.exceptions import ConnectionError
 
 
 class Command(BaseCommand):
@@ -63,11 +64,13 @@ class Command(BaseCommand):
                 self._download_file(url, target_file)
                 j += 1
                 print('--> {} ok.'.format(filename), flush=True)
-                sleep(randrange(5, 10))
             except KeyboardInterrupt:
                 print('Interrupted, terminating script...', flush=True)
                 return i, j
+            except ConnectionError:
+                print('Network error.', flush=True)
 
+            sleep(randrange(5, 10))
         return i, j
 
     def _download_file(self, url, target_file):

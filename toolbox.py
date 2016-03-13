@@ -4,7 +4,6 @@ Collection of random simple general-purpose helper functions.
 
 from datetime import date, datetime
 from geopy.distance import great_circle
-
 import dateutil.parser
 import math
 import pytz

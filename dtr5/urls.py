@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from os import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from simple_reddit_oauth import urls as simple_reddit_oauth_urls
@@ -108,3 +109,7 @@ if settings.DEBUG:
                           '/home/chris/dev/new/reddmeet-material/app/')
     urlpatterns += static('/node_modules/', document_root=
                           '/home/chris/dev/new/reddmeet-material/node_modules/')
+    urlpatterns += static('/s/', document_root=
+                          path.join(settings.BASE_DIR, 'avatars/s/'))
+    urlpatterns += static('/m/', document_root=
+                          path.join(settings.BASE_DIR, 'avatars/m/'))
