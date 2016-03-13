@@ -245,6 +245,22 @@ class Profile(models.Model):
         else:
             raise ValueError('pref_distance_unit must be "km" or "mi".')
 
+    @property
+    def western_zodiac(self):
+        return get_western_zodiac(self.dob)
+
+    @property
+    def western_zodiac_symbol(self):
+        return get_western_zodiac_symbol(self.dob)
+
+    @property
+    def eastern_zodiac(self):
+        return eastern_zodiac(self.dob)
+
+    @property
+    def eastern_zodiac_symbol(self):
+        return get_eastern_zodiac_symbol(self.dob)
+
     def display_background_pic(self):
         """
         Return the URL of the background_pic with the correct size Byte in

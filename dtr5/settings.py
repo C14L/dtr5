@@ -66,6 +66,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'corsheaders',
+    'rest_framework',
 
     'simple_reddit_oauth',
     'dtr5app',
@@ -127,6 +128,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 # https://github.com/ottoyiu/django-cors-headers
 # CORS_ORIGIN_ALLOW_ALL = True  # False
 # CORS_ORIGIN_WHITELIST = ('google.com', 'hostname.example.com')
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
+}
 
 # =====================================
 # settings for "dtr5app"

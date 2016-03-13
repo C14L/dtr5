@@ -13,6 +13,7 @@ from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 
+from dtr5app.serializers import UserSerializer
 from simple_reddit_oauth import api
 from toolbox import force_int
 
@@ -143,7 +144,13 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
            'next_user': next_user}
 
     if request.path.endswith('.json'):
-        pass
+        ctx['view_user'] = UserSerializer(view_user).data
+        ctx['user_list'] = {}
+        ctx['common_subs'] = {}
+        ctx['not_common_subs'] = {}
+        ctx['prev_user'] = {}
+        ctx['next_user'] = {}
+        return JsonResponse(ctx)
     else:
         kwargs = {'context_instance': RequestContext(request)}
         return render_to_response(template_name, ctx, **kwargs)
