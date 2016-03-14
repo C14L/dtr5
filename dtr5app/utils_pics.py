@@ -79,6 +79,9 @@ def create_public_pics_for_every_raw_file(base_dir, raw_dir, sizes):
             nfile = join(base_dir, n, fname)
             w, h = sizes[n].split('x', 1)
 
+            if isfile(nfile):  # target size file already exists, skip
+                continue
+
             try:
                 r = resize_copy(rawfile, nfile, 'cover', int(w), int(h), True)
             except OSError:
