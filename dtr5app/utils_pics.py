@@ -83,7 +83,7 @@ def create_public_pics_for_every_raw_file(base_dir, raw_dir, sizes):
                 continue
 
             try:
-                r = resize_copy(rawfile, nfile, 'cover', int(w), int(h), True)
+                r = resize_copy(rawfile, nfile, 'cover', int(w), int(h), False)
             except OSError:
                 r = False
 
