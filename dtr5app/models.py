@@ -294,6 +294,10 @@ class Profile(models.Model):
             return ''
 
     @property
+    def age(self):
+        return get_age(self.dob)
+
+    @property
     def subscribed_subs(self):
         """
         Return (and cache) all subs this instance's user is subscribed to.
@@ -393,6 +397,18 @@ class Profile(models.Model):
     def get_distance_in_miles(self):
         """Returns above distance in miles."""
         return float(self.get_distance_in_km() * 0.621371)
+
+    @property
+    def distance_km(self):
+        return '{} km'.format(int(self.get_distance_in_km() * 100) / 100)
+
+    @property
+    def distance_mi(self):
+        return '{} mi'.format(int(self.get_distance_in_miles() * 100) / 100)
+
+    @property
+    def gender(self):
+        return self.get_sex_display()
 
     def match_with(self, view_user):
         """Return True if user is a match (multual like) with view_user."""

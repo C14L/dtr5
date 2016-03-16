@@ -7,20 +7,27 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from dtr5app.models import Visit
-from dtr5app.serializers import UserSerializer, SubscribedSerializer
+from dtr5app.models import Visit, Sr
+from dtr5app.serializers import SubscribedSerializer, \
+    AuthUserSerializer, BasicUserSerializer, ViewUserSerializer, \
+    ViewSrSerializer
 from dtr5app.templatetags.dtr5tags import prefdist
 from dtr5app.utils import add_likes_sent, add_likes_recv, \
     add_matches_to_user_list, add_auth_user_latlng, \
     get_user_and_related_or_404, get_user_list_from_username_list, \
-    get_user_list_after, get_prevnext_user, prepare_paginated_user_list
-from dtr5app.utils_search import search_results_buffer
+    get_user_list_after, get_prevnext_user, prepare_paginated_user_list, \
+    get_paginated_user_list
+from dtr5app.utils_search import search_results_buffer, update_search_settings, \
+    search_subreddit_users
+from toolbox import force_int
 
 
 @require_http_methods(["GET"])
 def filter_members_view(request):
+    # TODO: use DRF here.
     """
     Receives a list of Reddit usernames and returns a list of Reddmeet users
     with some basic data for each.
@@ -67,16 +74,73 @@ def filter_members_view(request):
     return JsonResponse({'userlist': response_data})
 
 
-@login_required
 @api_view(['GET', ])
+def sr_user_list(request, sr, format=None):
+    """Return a list of users who are member of a subreddit."""
+    pg = int(request.GET.get('page', 1))
+    view_sr = get_object_or_404(Sr, display_name__iexact=sr)
+
+    # Only allow a selected number of Subreddits to be views publicly.
+    if request.user.is_anonymous() and not view_sr.display_name.lower() in \
+            [x.lower() for x in settings.SR_ANON_ACCESS_ALLOWED]:
+        return Response(status.HTTP_401_UNAUTHORIZED)
+
+    # Filter displayed members: normalize search options.
+    params = dict()
+    params['order'] = request.GET.get('order', '-last_login')
+    params['has_verified_email'] = \
+        bool(force_int(request.GET.get('has_verified_email', 0)))
+    params['hide_no_pic'] = bool(force_int(request.GET.get('hide_no_pic', 1)))
+    params['sex'] = force_int(request.GET.get('s', 0))
+    params['distance'] = force_int(request.GET.get('dist', 1))
+    params['minage'] = force_int(request.GET.get('minage', 18))
+    if params['minage'] not in range(18, 100):
+        params['minage'] = 18
+    params['maxage'] = force_int(request.GET.get('maxage', 100))
+    if params['maxage'] not in range(params['minage'], 101):
+        params['maxage'] = 100
+    if request.user.is_authenticated():
+        params['user_id'] = request.user.id
+        params['lat'] = request.user.profile.lat
+        params['lng'] = request.user.profile.lng
+
+    # Fetch users and order them.
+    ul = search_subreddit_users(params, view_sr)
+    if params['order'] == '-accessed':  # most recently accessed first
+        ul = ul.order_by('-profile__accessed')
+    elif params['order'] == '-date_joined':  # most recent redddate acccount
+        ul = ul.order_by('-date_joined')
+    elif params['order'] == '-views_count':  # most views first
+        ul = ul.order_by('-profile__views_count')
+
+    # Paginate and add "is_like_recv" and "is_like"sent"
+    ul = get_paginated_user_list(ul, pg, request.user)
+    ul.object_list = add_likes_sent(ul.object_list, request.user)
+    ul.object_list = add_likes_recv(ul.object_list, request.user)
+    ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
+
+    return Response(data={
+        'user_list': BasicUserSerializer(ul.object_list, many=True).data,
+        'view_sr': ViewSrSerializer(view_sr, many=False).data})
+
+
+@login_required
+@api_view(['GET', 'POST', ])
 def results_list(request, format=None):
     """
-    Show a page of search results from auth user's search buffer.
+    Return a list of search results from auth user's search buffer.
+
+    On POST request, update the search settings before returning the results
+    list.
     """
+    if request.method == 'POST':
+        update_search_settings(request)
+        search_results_buffer(request, force=True)
+    else:
+        search_results_buffer(request)
+
     pg = int(request.GET.get('page', 1))
     order_by = request.session.get('search_results_order', '')
-
-    search_results_buffer(request)
     ul = request.session['search_results_buffer']
     ul = prepare_paginated_user_list(ul, pg)
 
@@ -86,13 +150,12 @@ def results_list(request, format=None):
     ul.object_list = add_likes_recv(ul.object_list, request.user)
 
     sr_names = []
-    for row in request.user.subs.all().prefetch_related('sr'):
-        # We need the name of the SR and the status "is_favorite" as "1" or "0".
-        fav = 1 if row.is_favorite else 0
-        sr_names.append({'name': row.sr.display_name, 'fav': fav})
+    # for row in request.user.subs.all().prefetch_related('sr'):
+    #    fav = 1 if row.is_favorite else 0
+    #    sr_names.append({'name': row.sr.display_name, 'fav': fav})
 
     return Response(data={
-        'user_list': UserSerializer(ul.object_list, many=True).data,
+        'user_list': BasicUserSerializer(ul.object_list, many=True).data,
         'order_by': order_by, 'sr_names': sr_names, })
 
 
@@ -160,10 +223,10 @@ def user_detail(request, username, format=None):
 
     return Response(data={
         'show_created': show_created,
-        'view_user': UserSerializer(view_user).data,
-        'prev_user': UserSerializer(prev_user).data,
-        'next_user': UserSerializer(next_user).data,
-        'user_list': UserSerializer(user_list, many=True).data,
+        'view_user': ViewUserSerializer(view_user).data,
+        'prev_user': BasicUserSerializer(prev_user).data,
+        'next_user': BasicUserSerializer(next_user).data,
+        'user_list': BasicUserSerializer(user_list, many=True).data,
 
         'common_subs': SubscribedSerializer(
             view_user.profile.get_common_subs(request.user), many=True).data,
@@ -174,3 +237,24 @@ def user_detail(request, username, format=None):
         'is_like': request.user.profile.does_like(view_user),
         'is_nope': request.user.profile.does_nope(view_user), })
 
+
+@login_required()
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE', ])
+def authuser_detail(request):
+    if request.method == 'GET':
+        data = AuthUserSerializer(request.user).data
+        return Response(data={'authuser': data})
+
+    if request.method == 'DELETE':
+        # TODO: implement DELETE auth user model.
+        return Response(status=status.HTTP_200_OK)
+
+    elif request.method == 'PUT':
+        serializer = AuthUserSerializer(request.user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'PATCH':
+        pass  # TODO: implement PATCHing auth user model, then remove PUT.

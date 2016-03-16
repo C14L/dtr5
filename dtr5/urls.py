@@ -89,11 +89,19 @@ urlpatterns = [
 api_urlpatterns = [
 
     # Search results as paginated list view of user profiles
-    url(r'^api/v1/results$', views_api.results_list, name="api_results_list"),
+    url(r'^api/v1/results$',
+        views_api.results_list, name="api_results_list"),
 
     # Show "view user"'s profile page.
     url(r'^api/v1/u/(?P<username>' + settings.RSTR_USERNAME + r')$',
         views_api.user_detail, name="api_user_detail"),
+
+    url(r'^api/v1/authuser$',
+        views_api.authuser_detail, name='api_authuser_detail'),
+
+    # Show all users that subscribe to a specific subreddit.
+    url(r'^api/v1/r/(?P<sr>' + settings.RSTR_SR_NAME + r')$',
+        views_api.sr_user_list, name="api_sr_user_list"),
 
 ]
 
