@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 from os import path
 from random import randrange
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, TooManyRedirects
 
 
 class Command(BaseCommand):
@@ -69,6 +69,8 @@ class Command(BaseCommand):
                 return i, j
             except ConnectionError:
                 print('Network error.', flush=True)
+            except TooManyRedirects:
+                print('Too many redirects error.', flush=True)
 
             sleep(randrange(5, 10))
         return i, j
