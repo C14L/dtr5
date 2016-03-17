@@ -49,7 +49,8 @@ class ViewUserProfileSerializer(serializers.ModelSerializer):
                   'link_karma', 'comment_karma', 'has_verified_email',
                   'lat', 'lng', 'sex', 'about', 'herefor', 'tagline',
                   'height', 'weight', 'views_count', 'matches_count',
-                  'age', 'distance_km', 'distance_mi', 'pics', )
+                  'age', 'distance_km', 'distance_mi', 'pics', 'gender',
+                  )
 
         """
         computed_fields = [, 'lookingfor', 'pref_distance_unit',

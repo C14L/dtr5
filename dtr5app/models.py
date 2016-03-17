@@ -408,7 +408,10 @@ class Profile(models.Model):
 
     @property
     def gender(self):
-        return self.get_sex_display()
+        try:
+            return [x[1] for x in settings.SEX if x[0] == self.sex][0]
+        except IndexError:
+            return ''
 
     def match_with(self, view_user):
         """Return True if user is a match (multual like) with view_user."""
