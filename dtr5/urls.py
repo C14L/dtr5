@@ -1,21 +1,8 @@
-"""dtr5 URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.8/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Add an import:  from blog import urls as blog_urls
-    2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
-"""
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from os.path import join
+
 from simple_reddit_oauth import urls as simple_reddit_oauth_urls
 from dtr5app import views, views_me, views_mod, views_api
 
@@ -26,8 +13,12 @@ urlpatterns = [
     url(r'^$', views.home_view, name="home_page"),
 
     # API URLs
-    url(r'^api/v1/filter-members.json$', views_api.filter_members_view,
-        name="filter_members"),
+    url(r'^api/v1/filter-members.json$',
+        views_api.filter_members, name="api_filter_members"),
+    url(r'^api/v1/results.json$',
+        views_api.results, name="api_results"),
+    url(r'^api/v1/u/(?P<username>' + settings.RSTR_USERNAME + r')\.json$',
+        views_api.profile, name="api_profile"),
 
     # Users preferences page, and URIs to POST to.
     url(r'^me/$', views_me.me_view, name="me_page"),
@@ -81,3 +72,19 @@ urlpatterns = [
 
     url(r'^map/$', views.usermap_view, name="usermap"),
 ]
+
+
+if settings.DEBUG:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    from django.conf.urls.static import static
+
+    urlpatterns += staticfiles_urlpatterns()
+    # urlpatterns += static(
+    #     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    urlpatterns += static('/app/', document_root=join(
+        settings.BASE_DIR, '../../reddmeet-material/app/'))
+    urlpatterns += static('/node_modules/', document_root=join(
+        settings.BASE_DIR, '../../reddmeet-material/node_modules/'))
+    urlpatterns += static('/m/', document_root=join(
+        settings.BASE_DIR, 'avatars/m/'))

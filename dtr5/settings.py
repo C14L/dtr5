@@ -65,7 +65,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-
+    'corsheaders',
     'simple_reddit_oauth',
     'dtr5app',
 )
@@ -76,6 +76,7 @@ MIDDLEWARE_CLASSES = (
 
     'django.middleware.common.BrokenLinkEmailsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -117,6 +118,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
+
+# =====================================
+# settings for "django-cors-headers"
+# =====================================
+
+CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_WHITELIST = ['localhost:3333', 'localhost:8000']
 
 # =====================================
 # settings for "dtr5app"
