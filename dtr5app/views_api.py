@@ -1,9 +1,12 @@
 from datetime import date
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import JsonResponse, Http404, HttpResponseNotFound
+from django.http import JsonResponse, Http404, HttpResponseNotFound, \
+    HttpResponse
 from django.views.decorators.http import require_http_methods
+from os.path import join
 
 from dtr5app.models import Visit
 from dtr5app.templatetags.dtr5tags import prefdist
@@ -14,17 +17,50 @@ from dtr5app.utils import add_likes_sent, add_likes_recv, \
 from dtr5app.utils_search import search_results_buffer
 
 
+def serialize_object_property(obj, prop):
+    """
+    For an object with properties like `my_obj.some.prop.here` and props being
+    'some.prop.here', it returns ret['some']['prop']['here']
+
+    Args:
+        obj: Python object
+        prop: Objects property name in dotted notation.
+
+    Returns:
+        A dictionary of dictionaries.
+    """
+    if prop:
+        if '.' in prop:
+            this_prop, child_prop = prop.split('.', 1)
+            this_obj = getattr(obj, this_prop)
+            if isinstance(this_obj, object):
+                return {this_prop: serialize_object_property(this_obj, child_prop)}
+            else:
+                return this_obj
+
+        return {prop: getattr(obj, prop, None)}
+
+
+def serialize_object(obj, props):
+    return [serialize_object_property(obj, prop) for prop in props]
+
+
 def serialize_object_list(obj_list, props):
     """
     Serialize a list of objects into a list of dictionaries.
     """
-    _results = []
-    for obj in obj_list:
-        _result = {}
-        for prop in props:
-            _result[prop] = getattr(obj, prop, None)
-        _results.append(_result)
-    return _results
+    return [serialize_object(obj, props) for obj in obj_list]
+
+
+@require_http_methods(["GET", "HEAD"])
+def app_index_view(request):
+    """
+    For development only. Serve static files from /app/ route. For files
+    that don't exist, always serve app/index.html
+    """
+    f = join(settings.BASE_DIR, '../../reddmeet-material/app/index.html')
+    with open(f, 'r') as fh:
+        return HttpResponse(fh.read())
 
 
 @require_http_methods(["GET"])
@@ -91,7 +127,12 @@ def results(request):
     ul.object_list = add_likes_sent(ul.object_list, request.user)
     ul.object_list = add_likes_recv(ul.object_list, request.user)
 
-    return JsonResponse({'user_list': serialize_object_list(ul, ['username'])})
+    print(ul[0].profile.age)
+    return JsonResponse({
+        'user_list': serialize_object_list(ul, [
+            'username', 'profile.sex', 'profile.age',
+        ])
+    })
 
 
 @login_required

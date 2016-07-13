@@ -78,13 +78,13 @@ if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     from django.conf.urls.static import static
 
-    urlpatterns += staticfiles_urlpatterns()
-    # urlpatterns += static(
-    #     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns.append(url(r'^app/$', views_api.app_index_view))
 
+    urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static('/app/', document_root=join(
         settings.BASE_DIR, '../../reddmeet-material/app/'))
     urlpatterns += static('/node_modules/', document_root=join(
         settings.BASE_DIR, '../../reddmeet-material/node_modules/'))
     urlpatterns += static('/m/', document_root=join(
         settings.BASE_DIR, 'avatars/m/'))
+
