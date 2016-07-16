@@ -3,6 +3,7 @@ from datetime import date
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import F
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from rest_framework import status
@@ -267,7 +268,7 @@ def upvotes_recv_api(request, format=None):
     Display a list of users who liked auth user's profile.
     This is the 'upvotes inbox' page.
     """
-    pg = int(request.GET.get('page', 1))
+    # pg = int(request.GET.get('page', 1))
 
     # get a queryset with all profiles that are "ignored" by authuser
     nopes_qs = User.objects.filter(flags_received__sender=request.user,
@@ -277,12 +278,13 @@ def upvotes_recv_api(request, format=None):
     # a downvote (hide) from authuser.
     user_list = User.objects.filter(
         flags_sent__receiver=request.user, flags_sent__flag=Flag.LIKE_FLAG) \
+        .annotate(flag_created=F('flags_sent__created'))\
         .exclude(pk__in=nopes_qs).order_by('-flags_sent__created') \
-        .prefetch_related('profile')
+        .prefetch_related('profile')[:500]
 
-    user_list = get_paginated_user_list(user_list, pg, request.user)
-    user_list.object_list = add_matches_to_user_list(user_list.object_list,
-                                                     request.user)
+    # user_list = get_paginated_user_list(user_list, pg, request.user)
+    # user_list.object_list = add_matches_to_user_list(user_list.object_list,
+    #                                                  request.user)
     # Reset the "new_likes_count" value
     request.user.profile.new_likes_count = 0
     request.user.profile.save(update_fields=['new_likes_count'])
@@ -299,12 +301,12 @@ def matches_api(request, format=None):
     Show a page with all matches (i.e. mututal 'like' flags) of auth
     user and all other users.
     """
-    pg = int(request.GET.get('page', 1))
+    # pg = int(request.GET.get('page', 1))
 
     # Get a list user_list ordered by match time, most recent first,
     # including the additional property 'matched' with match timestamp.
-    user_list = get_matches_user_list(request.user)
-    user_list = get_paginated_user_list(user_list, pg, request.user)
+    user_list = get_matches_user_list(request.user)[:500]
+    # user_list = get_paginated_user_list(user_list, pg, request.user)
 
     # Recount the total matches number to correct for countring errors.
     request.user.profile.matches_count = count_matches(request.user)
@@ -325,13 +327,15 @@ def upvotes_sent_api(request, format=None):
     Display a list of users liked by auth user, i.e. sent upvotes, including
     those that are "matches" (mutual upvotes).
     """
-    pg = int(request.GET.get('page', 1))
     user_list = User.objects.filter(
         flags_received__sender=request.user,
-        flags_received__flag=Flag.LIKE_FLAG).prefetch_related('profile')
-    user_list = get_paginated_user_list(user_list, pg, request.user)
-    user_list.object_list = add_matches_to_user_list(user_list.object_list,
-                                                     request.user)
+        flags_received__flag=Flag.LIKE_FLAG)\
+        .annotate(flag_created=F('flags_received__created'))\
+        .prefetch_related('profile').order_by('-flags_received__created')[:500]
+
+    # user_list = get_paginated_user_list(user_list, pg, request.user)
+    # user_list.object_list = add_matches_to_user_list(user_list.object_list,
+    #                                                  request.user)
     return JsonResponse(data={
         'user_list': BasicUserSerializer(user_list, many=True).data,
     })
@@ -348,6 +352,56 @@ def downvotes_sent_api(request, format=None):
         flags_received__sender=request.user,
         flags_received__flag=Flag.NOPE_FLAG).prefetch_related('profile')
     user_list = get_paginated_user_list(user_list, pg, request.user)
+
+    return JsonResponse(data={
+        'user_list': BasicUserSerializer(user_list, many=True).data,
+    })
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
+def visits_api(request, format=None):
+    #
+    # TODO
+    #
+    return JsonResponse(data={
+        'user_list': {},
+    })
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
+def visitors_api(request, format=None):
+    """
+    Display a list of users who recently viewed auth user's profile.
+    """
+    pg = int(request.GET.get('page', 1))
+
+    # fetch last 1000 visitors list
+    vl = request.user.was_visited.filter(
+        visitor__last_login__isnull=False, visitor__is_active=True,
+        hidden=False).order_by('-visitor').distinct('visitor').prefetch_related(
+        'visitor').values_list('visitor__username', 'created')[:1000]
+
+    # fetch the User qs
+    user_list = User.objects.filter(username__in=[x[0] for x in vl])
+    user_list = get_paginated_user_list(user_list, pg, request.user)
+    user_list.object_list = add_likes_sent(user_list.object_list, request.user)
+    user_list.object_list = add_likes_recv(user_list.object_list, request.user)
+    user_list.object_list = add_matches_to_user_list(user_list.object_list,
+                                                     request.user)
+    # attach "visited" property to each user
+    for u in user_list.object_list:
+        try:
+            v = [x[1] for x in vl if x[0] == u.username][0]
+            setattr(u, 'visit_created', v)
+        except IndexError:
+            setattr(u, 'visit_created', None)
+    user_list = sorted(user_list, key=lambda x: x.visit_created, reverse=True)
+
+    # Reset the new_views_count value
+    request.user.profile.new_views_count = 0
+    request.user.profile.save(update_fields=['new_views_count'])
 
     return JsonResponse(data={
         'user_list': BasicUserSerializer(user_list, many=True).data,

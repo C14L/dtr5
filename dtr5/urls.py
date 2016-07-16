@@ -111,6 +111,12 @@ api_urlpatterns = [
         views_api.upvotes_sent_api, name="upvotes_sent_api"),
     url(r'^api/v1/downvotes_sent',
         views_api.downvotes_sent_api, name="downvotes_sent_api"),
+
+    url(r'^api/v1/visits',
+        views_api.visits_api, name="visits_api"),
+    url(r'^api/v1/visitors',
+        views_api.visitors_api, name="visitors_api"),
+
 ]
 
 api_urlpatterns = format_suffix_patterns(api_urlpatterns)

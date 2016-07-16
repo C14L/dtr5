@@ -40,10 +40,11 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
 class BasicUserSerializer(serializers.ModelSerializer):
     """Just some very basic user data, for lists or prev-next views."""
     profile = BasicUserProfileSerializer(many=False, read_only=True)
+    flag_created = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'profile', )
+        fields = ('id', 'username', 'profile', 'flag_created', 'flag_created')
 
 
 class ViewUserProfileSerializer(serializers.ModelSerializer):
