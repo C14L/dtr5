@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from dtr5app.models import Visit, Sr
+from dtr5app.models import Visit, Sr, Flag
 from dtr5app.serializers import SubscribedSerializer, \
     AuthUserSerializer, BasicUserSerializer, ViewUserSerializer, \
     ViewSrSerializer
@@ -19,7 +19,7 @@ from dtr5app.utils import add_likes_sent, add_likes_recv, \
     add_matches_to_user_list, add_auth_user_latlng, \
     get_user_and_related_or_404, get_user_list_from_username_list, \
     get_user_list_after, get_prevnext_user, prepare_paginated_user_list, \
-    get_paginated_user_list
+    get_paginated_user_list, get_matches_user_list, count_matches
 from dtr5app.utils_search import search_results_buffer, update_search_settings, \
     search_subreddit_users
 from toolbox import force_int
@@ -221,18 +221,18 @@ def user_detail(request, username, format=None):
     show_created = (view_user.profile.created and
                     view_user.profile.created > date(1970, 1, 1))
 
+    # The relation data between auth_user and view_user should NOT be part
+    # of the User model instance, but should live outside of it.
     return Response(data={
         'show_created': show_created,
         'view_user': ViewUserSerializer(view_user).data,
         'prev_user': BasicUserSerializer(prev_user).data,
         'next_user': BasicUserSerializer(next_user).data,
         'user_list': BasicUserSerializer(user_list, many=True).data,
-
         'common_subs': SubscribedSerializer(
             view_user.profile.get_common_subs(request.user), many=True).data,
         'not_common_subs': SubscribedSerializer(
             view_user.profile.get_not_common_subs(request.user), many=True).data,
-
         'is_match': request.user.profile.match_with(view_user),
         'is_like': request.user.profile.does_like(view_user),
         'is_nope': request.user.profile.does_nope(view_user), })
@@ -240,7 +240,7 @@ def user_detail(request, username, format=None):
 
 @login_required()
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE', ])
-def authuser_detail(request):
+def authuser_detail(request, format=None):
     if request.method == 'GET':
         data = AuthUserSerializer(request.user).data
         return Response(data={'authuser': data})
@@ -258,3 +258,97 @@ def authuser_detail(request):
 
     elif request.method == 'PATCH':
         pass  # TODO: implement PATCHing auth user model, then remove PUT.
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
+def upvotes_recv_api(request, format=None):
+    """
+    Display a list of users who liked auth user's profile.
+    This is the 'upvotes inbox' page.
+    """
+    pg = int(request.GET.get('page', 1))
+
+    # get a queryset with all profiles that are "ignored" by authuser
+    nopes_qs = User.objects.filter(flags_received__sender=request.user,
+                                   flags_received__flag=Flag.NOPE_FLAG)
+
+    # fetch all users that sent an upvote to authuser and did not receive
+    # a downvote (hide) from authuser.
+    user_list = User.objects.filter(
+        flags_sent__receiver=request.user, flags_sent__flag=Flag.LIKE_FLAG) \
+        .exclude(pk__in=nopes_qs).order_by('-flags_sent__created') \
+        .prefetch_related('profile')
+
+    user_list = get_paginated_user_list(user_list, pg, request.user)
+    user_list.object_list = add_matches_to_user_list(user_list.object_list,
+                                                     request.user)
+    # Reset the "new_likes_count" value
+    request.user.profile.new_likes_count = 0
+    request.user.profile.save(update_fields=['new_likes_count'])
+
+    return JsonResponse(data={
+        'user_list': BasicUserSerializer(user_list, many=True).data,
+    })
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
+def matches_api(request, format=None):
+    """
+    Show a page with all matches (i.e. mututal 'like' flags) of auth
+    user and all other users.
+    """
+    pg = int(request.GET.get('page', 1))
+
+    # Get a list user_list ordered by match time, most recent first,
+    # including the additional property 'matched' with match timestamp.
+    user_list = get_matches_user_list(request.user)
+    user_list = get_paginated_user_list(user_list, pg, request.user)
+
+    # Recount the total matches number to correct for countring errors.
+    request.user.profile.matches_count = count_matches(request.user)
+
+    # Reset the new_matches_count value
+    request.user.profile.new_matches_count = 0
+    request.user.profile.save(update_fields=['matches_count',
+                                             'new_matches_count'])
+    return JsonResponse(data={
+        'user_list': BasicUserSerializer(user_list, many=True).data,
+    })
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
+def upvotes_sent_api(request, format=None):
+    """
+    Display a list of users liked by auth user, i.e. sent upvotes, including
+    those that are "matches" (mutual upvotes).
+    """
+    pg = int(request.GET.get('page', 1))
+    user_list = User.objects.filter(
+        flags_received__sender=request.user,
+        flags_received__flag=Flag.LIKE_FLAG).prefetch_related('profile')
+    user_list = get_paginated_user_list(user_list, pg, request.user)
+    user_list.object_list = add_matches_to_user_list(user_list.object_list,
+                                                     request.user)
+    return JsonResponse(data={
+        'user_list': BasicUserSerializer(user_list, many=True).data,
+    })
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
+def downvotes_sent_api(request, format=None):
+    """
+    Display a list of users auth user noped.
+    """
+    pg = int(request.GET.get('page', 1))
+    user_list = User.objects.filter(
+        flags_received__sender=request.user,
+        flags_received__flag=Flag.NOPE_FLAG).prefetch_related('profile')
+    user_list = get_paginated_user_list(user_list, pg, request.user)
+
+    return JsonResponse(data={
+        'user_list': BasicUserSerializer(user_list, many=True).data,
+    })

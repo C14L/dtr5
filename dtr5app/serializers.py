@@ -23,10 +23,18 @@ class SubscribedSerializer(serializers.ModelSerializer):
 
 class BasicUserProfileSerializer(serializers.ModelSerializer):
     """Just some very basic profile data, for lists or prev-next views."""
+    pic = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
         fields = ('accessed', 'link_karma', 'comment_karma', 'lat', 'lng',
-                  'sex', 'age')
+                  'sex', 'age', 'pic')
+
+    def get_pic(self, obj):
+        try:
+            return obj.pics[0]['url']
+        except IndexError:
+            return ''
 
 
 class BasicUserSerializer(serializers.ModelSerializer):
@@ -58,10 +66,6 @@ class ViewUserProfileSerializer(serializers.ModelSerializer):
                            'western_zodiac', 'western_zodiac_symbol',
                            'eastern_zodiac', 'eastern_zodiac_symbol',
                            'subscribed_subs']
-
-        is_match = match_with
-        is_like = does_like
-        is_nope = does_nope
         """
 
 
@@ -89,8 +93,13 @@ class AuthProfileSerializer(serializers.ModelSerializer):
 
 class AuthUserSerializer(serializers.ModelSerializer):
     profile = AuthProfileSerializer(many=False, read_only=False)
+    subs = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ('id', 'username', 'first_name', 'last_name',
-                  'is_staff', 'is_superuser', 'profile', 'subs', )
+                  'is_staff', 'is_superuser', 'profile', 'subs')
+
+    def get_subs(self, obj):
+        li = Sr.objects.filter(users__user=obj.id)
+        return li.values_list('display_name', flat=True)

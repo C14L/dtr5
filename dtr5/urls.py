@@ -90,19 +90,27 @@ api_urlpatterns = [
 
     # Search results as paginated list view of user profiles
     url(r'^api/v1/results$',
-        views_api.results_list, name="api_results_list"),
+        views_api.results_list, name="results_list_api"),
 
     # Show "view user"'s profile page.
     url(r'^api/v1/u/(?P<username>' + settings.RSTR_USERNAME + r')$',
         views_api.user_detail, name="api_user_detail"),
 
     url(r'^api/v1/authuser$',
-        views_api.authuser_detail, name='api_authuser_detail'),
+        views_api.authuser_detail, name='authuser_detail_api'),
 
     # Show all users that subscribe to a specific subreddit.
     url(r'^api/v1/r/(?P<sr>' + settings.RSTR_SR_NAME + r')$',
-        views_api.sr_user_list, name="api_sr_user_list"),
+        views_api.sr_user_list, name="sr_user_list_api"),
 
+    url(r'^api/v1/upvotes_recv$',
+        views_api.upvotes_recv_api, name="upvotes_recv_api"),
+    url(r'^api/v1/matches$',
+        views_api.matches_api, name="matches_api"),
+    url(r'^api/v1/upvotes_sent',
+        views_api.upvotes_sent_api, name="upvotes_sent_api"),
+    url(r'^api/v1/downvotes_sent',
+        views_api.downvotes_sent_api, name="downvotes_sent_api"),
 ]
 
 api_urlpatterns = format_suffix_patterns(api_urlpatterns)
