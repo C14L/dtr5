@@ -375,6 +375,9 @@ def visitors_api(request, format=None):
     """
     Display a list of users who recently viewed auth user's profile.
     """
+    # TODO Remove pagination and limit to 500 or so.
+    # TODO make sure order by visit time and add visit time to sericalized data
+
     pg = int(request.GET.get('page', 1))
 
     # fetch last 1000 visitors list

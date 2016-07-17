@@ -89,7 +89,7 @@ class AuthProfileSerializer(serializers.ModelSerializer):
                   'link_karma', 'comment_karma', 'has_verified_email',
                   'lat', 'lng', 'sex', 'about', 'herefor', 'tagline',
                   'height', 'weight', 'views_count', 'matches_count',
-                  'dob', )
+                  'dob', 'pics', )
 
 
 class AuthUserSerializer(serializers.ModelSerializer):
