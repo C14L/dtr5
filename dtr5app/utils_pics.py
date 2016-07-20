@@ -31,9 +31,7 @@ def check_raw_files_have_active_user(base_dir, raw_dir, sizes):
         username = filename[:filename.rindex('.')]
         total += 1
 
-        try:
-            users.get(username=username)
-        except users.DoesNotExist:
+        if not users.filter(username=username).exists():
             print('No user found for {}'.format(filename), end=' ', flush=True)
             os.remove(join(raw_dir, filename))
             deleted += 1
