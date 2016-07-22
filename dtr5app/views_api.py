@@ -3,8 +3,11 @@ from datetime import date
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.db.models import F
 from django.http import JsonResponse
+from django.http.response import HttpResponseNotFound
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -21,7 +24,7 @@ from dtr5app.utils import add_likes_sent, add_likes_recv, \
     get_user_and_related_or_404, get_user_list_from_username_list, \
     get_user_list_after, get_prevnext_user, prepare_paginated_user_list, \
     get_paginated_user_list, get_matches_user_list, count_matches
-from dtr5app.utils_search import search_results_buffer, update_search_settings, \
+from dtr5app.utils_search import search_results_buffer, update_search_settings,\
     search_subreddit_users
 from toolbox import force_int
 
@@ -125,8 +128,35 @@ def sr_user_list(request, sr, format=None):
         'view_sr': ViewSrSerializer(view_sr, many=False).data})
 
 
+@csrf_exempt
 @login_required
-@api_view(['GET', 'POST', ])
+@require_http_methods(["POST"])
+def search_params(request):
+    """
+    Save the user search settings and redirect to search results page.
+    """
+    # TODO: Remove this step, update user search options from GET request
+    # TODO: only when they have changed.
+    if settings.DEBUG:
+        print('# POST sr-fav     == {}'.format(request.POST.get('sr-fav')))
+        print('# POST f_distance == {}'.format(request.POST.get('f_distance')))
+        print('# POST f_sex      == {}'.format(request.POST.get('f_sex')))
+        print('# POST order_by   == {}'.format(request.POST.get('order_by')))
+
+    # Save search options from request.POST
+    update_search_settings(request)
+    # Then force a search results buffer refresh
+    search_results_buffer(request, force=True)
+    # If no profiles found, return a 404 from here
+    if len(request.session['search_results_buffer']) < 1:
+        return HttpResponseNotFound()  # 404
+    # Otherwise return Found
+    return JsonResponse({})  # HTTP 200
+
+
+@csrf_exempt
+@login_required
+@api_view(['GET', 'HEAD', 'OPTIONS'])
 def results_list(request, format=None):
     """
     Return a list of search results from auth user's search buffer.
@@ -134,14 +164,13 @@ def results_list(request, format=None):
     On POST request, update the search settings before returning the results
     list.
     """
-    if request.method == 'POST':
-        update_search_settings(request)
+    pg = int(request.GET.get('page', 1))
+    if pg == 1:
+        update_search_if_changed(request.GET, request.user, request.session)
         search_results_buffer(request, force=True)
     else:
         search_results_buffer(request)
 
-    pg = int(request.GET.get('page', 1))
-    order_by = request.session.get('search_results_order', '')
     ul = request.session['search_results_buffer']
     ul = prepare_paginated_user_list(ul, pg)
 
@@ -150,14 +179,11 @@ def results_list(request, format=None):
     ul.object_list = add_likes_sent(ul.object_list, request.user)
     ul.object_list = add_likes_recv(ul.object_list, request.user)
 
-    sr_names = []
-    # for row in request.user.subs.all().prefetch_related('sr'):
-    #    fav = 1 if row.is_favorite else 0
-    #    sr_names.append({'name': row.sr.display_name, 'fav': fav})
-
     return Response(data={
+        'count': ul.paginator.count,
+        'num_pages': ul.paginator.num_pages,
         'user_list': BasicUserSerializer(ul.object_list, many=True).data,
-        'order_by': order_by, 'sr_names': sr_names, })
+    })
 
 
 @login_required
@@ -409,3 +435,88 @@ def visitors_api(request, format=None):
     return JsonResponse(data={
         'user_list': BasicUserSerializer(user_list, many=True).data,
     })
+
+
+def update_search_if_changed(opts, user, session_obj=None):
+    """Update all posted search uptions in authuser's Profile."""
+    changed = False
+    if 'order_by' in opts and session_obj is not None:
+        if session_obj['search_results_order'] != opts['order_by']:
+            changed = True
+        session_obj['search_results_order'] = opts['order_by']
+
+    if 'f_sex' in opts:
+        f_sex = force_int(opts['f_sex'])
+        if user.profile.f_sex != f_sex:
+            changed = True
+        user.profile.f_sex = f_sex
+
+    if 'f_distance' in opts:
+        f_distance = force_int(opts['f_distance'], min=0, max=21000)
+        if user.profile.f_distance != f_distance:
+            changed = True
+        user.profile.f_distance = f_distance
+
+    if 'f_minage' in opts:
+        f_minage = force_int(opts['f_minage'], min=18, max=99)
+        if user.profile.f_minage != f_minage:
+            changed = True
+        user.profile.f_minage = f_minage
+
+    if 'f_maxage' in opts:
+        f_maxage = force_int(opts['f_maxage'], min=19, max=100)
+        if user.profile.f_maxage != f_maxage:
+            changed = True
+        user.profile.f_maxage = f_maxage
+
+    if 'f_hide_no_pic' in opts:
+        f_hide_no_pic = bool(force_int(opts['f_hide_no_pic']))
+        if user.profile.f_hide_no_pic != f_hide_no_pic:
+            changed = True
+        user.profile.f_hide_no_pic = f_hide_no_pic
+
+    if 'f_has_verified_email' in opts:
+        f_has_verified_email = bool(force_int(opts['f_has_verified_email']))
+        if user.profile.f_has_verified_email != f_has_verified_email:
+            changed = True
+        user.profile.f_has_verified_email = f_has_verified_email
+
+    if 'f_over_18' in opts:  # unused
+        f_over_18 = bool(opts['f_over_18'])
+        if user.profile.f_over_18 != f_over_18:
+            changed = True
+        user.profile.f_over_18 = f_over_18
+
+    # Find active subreddits: loop through user's subs and those that are in
+    # the POST are active, all others are not.
+    sr_fav = None
+    if 'sr-fav' in opts:
+        sr_fav = opts.get('sr-fav').split(',')
+        if settings.DEBUG:
+            print('# sr-fav == {}'.format(sr_fav))
+
+        new_li = user.subs.filter(sr__display_name__in=sr_fav)
+        if new_li:  # ignore empty fav list!
+            cur_li = user.subs.filter(is_favorite=True)
+            if new_li != cur_li:
+                changed = True
+
+            with transaction.atomic():
+                user.subs.all().update(is_favorite=False)
+                new_li.update(is_favorite=True)
+
+            if settings.DEBUG:
+                print('### new_li == {}'.format(new_li))
+                print('### cur_li == {}'.format(cur_li))
+
+    if settings.DEBUG:
+        print('# search_results_order == {}'.format(
+            session_obj['search_results_order']))
+        print('# f_sex == {}'.format(user.profile.f_sex))
+        print('# f_distance == {}'.format(user.profile.f_distance))
+
+    user.profile.save(update_fields=[
+        'f_sex', 'f_minage', 'f_maxage', 'f_hide_no_pic',
+        'f_has_verified_email', 'f_over_18'])
+
+    return changed

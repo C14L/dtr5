@@ -88,6 +88,10 @@ urlpatterns = [
 
 api_urlpatterns = [
 
+    # POST here to store user selected search options and generate cached
+    # search results. Then request the first page with the below results view.
+    url(r'^api/v1/search$',
+        views_api.search_params, name="search_params_api"),
     # Search results as paginated list view of user profiles
     url(r'^api/v1/results$',
         views_api.results_list, name="results_list_api"),
@@ -128,7 +132,7 @@ if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static('/app/', document_root=
-                          '/home/chris/dev/new/reddmeet-material/app/')
+                          '/home/chris/dev/new/reddmeet-material/dist/')
     urlpatterns += static('/node_modules/', document_root=
                           '/home/chris/dev/new/reddmeet-material/node_modules/')
     urlpatterns += static('/s/', document_root=
