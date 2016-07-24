@@ -441,7 +441,7 @@ def update_search_if_changed(opts, user, session_obj=None):
     """Update all posted search uptions in authuser's Profile."""
     changed = False
     if 'order_by' in opts and session_obj is not None:
-        if session_obj['search_results_order'] != opts['order_by']:
+        if session_obj.get('search_results_order', None) != opts['order_by']:
             changed = True
         session_obj['search_results_order'] = opts['order_by']
 
