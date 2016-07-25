@@ -87,7 +87,7 @@ class AuthProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ('created', 'updated', 'accessed',
                   'link_karma', 'comment_karma', 'has_verified_email',
-                  'lat', 'lng', 'sex', 'about', 'herefor', 'tagline',
+                  'lat', 'lng', 'fuzzy', 'sex', 'about', 'herefor', 'tagline',
                   'height', 'weight', 'views_count', 'matches_count',
                   'dob', 'pics', )
 
@@ -100,7 +100,19 @@ class AuthUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'first_name', 'last_name',
                   'is_staff', 'is_superuser', 'profile', 'subs')
+        read_only_fields = ('id', 'username', 'is_staff', 'is_superuser',
+                            'subs')
 
+    # noinspection PyMethodMayBeStatic
     def get_subs(self, obj):
         li = Sr.objects.filter(users__user=obj.id)
         return li.values_list('display_name', flat=True)
+
+    def update(self, instance, validated_data):
+        # User can only update fields in Profile instance. The username and
+        # subs are taken from their Reddit profile.
+
+        instance.profile.fuzzy = validated_data['profile']['fuzzy']
+        instance.profile.save()
+
+        return instance

@@ -266,7 +266,7 @@ def user_detail(request, username, format=None):
 
 
 @login_required()
-@api_view(['GET', 'PATCH', 'PUT', 'DELETE', ])
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def authuser_detail(request, format=None):
     if request.method == 'GET':
         data = AuthUserSerializer(request.user).data
@@ -277,6 +277,8 @@ def authuser_detail(request, format=None):
         return Response(status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
+        print('### request.data --> {}')
+        print(request.data)
         serializer = AuthUserSerializer(request.user, data=request.data)
         if serializer.is_valid():
             serializer.save()
