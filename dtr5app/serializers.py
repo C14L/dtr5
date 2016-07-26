@@ -83,13 +83,15 @@ class AuthProfileSerializer(serializers.ModelSerializer):
     Used for auth user's own profile view, so they can edit some values that
     not visible to other users when viewing the profile.
     """
+    pref_distance_unit = serializers.CharField(max_length=2, default='km')
+
     class Meta:
         model = Profile
         fields = ('created', 'updated', 'accessed',
                   'link_karma', 'comment_karma', 'has_verified_email',
                   'lat', 'lng', 'fuzzy', 'sex', 'about', 'herefor', 'tagline',
                   'height', 'weight', 'views_count', 'matches_count',
-                  'dob', 'pics', )
+                  'dob', 'pics', 'pref_distance_unit', )
 
 
 class AuthUserSerializer(serializers.ModelSerializer):
@@ -114,5 +116,7 @@ class AuthUserSerializer(serializers.ModelSerializer):
         profile_data = validated_data.pop('profile', None)
         profile = Profile.objects.get(user=instance)
         if profile_data is not None:
+            print('### profile_data -- > {}')
+            print(dict(profile_data))
             super().update(profile, profile_data)
         return super().update(instance, validated_data)

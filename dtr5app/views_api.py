@@ -282,7 +282,7 @@ def authuser_detail(request, format=None):
         serializer = AuthUserSerializer(request.user, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'PATCH':
