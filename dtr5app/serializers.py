@@ -111,8 +111,8 @@ class AuthUserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # User can only update fields in Profile instance. The username and
         # subs are taken from their Reddit profile.
-
-        instance.profile.fuzzy = validated_data['profile']['fuzzy']
-        instance.profile.save()
-
-        return instance
+        profile_data = validated_data.pop('profile', None)
+        profile = Profile.objects.get(user=instance)
+        if profile_data is not None:
+            super().update(profile, profile_data)
+        return super().update(instance, validated_data)
