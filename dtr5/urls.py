@@ -132,7 +132,7 @@ if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static('/app/', document_root=
-                          '/home/chris/dev/new/reddmeet-material/dist/')
+                          '/home/chris/dev/new/reddmeet-material/app/')
     urlpatterns += static('/node_modules/', document_root=
                           '/home/chris/dev/new/reddmeet-material/node_modules/')
     urlpatterns += static('/s/', document_root=
