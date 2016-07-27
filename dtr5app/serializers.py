@@ -83,15 +83,20 @@ class AuthProfileSerializer(serializers.ModelSerializer):
     Used for auth user's own profile view, so they can edit some values that
     not visible to other users when viewing the profile.
     """
-    pref_distance_unit = serializers.CharField(max_length=2, default='km')
+    pref_distance_unit = serializers.CharField(max_length=2, required=False)
+    # MOCK: switch cloud messaging on/off.
+    pref_receive_notification = serializers.BooleanField(required=False)
+    # MOCK: store cloud messaging subscription objects here.
+    gcm_subscription = serializers.CharField(max_length=500, required=False)
 
     class Meta:
         model = Profile
         fields = ('created', 'updated', 'accessed',
                   'link_karma', 'comment_karma', 'has_verified_email',
                   'lat', 'lng', 'fuzzy', 'sex', 'about', 'herefor', 'tagline',
-                  'height', 'weight', 'views_count', 'matches_count',
-                  'dob', 'pics', 'pref_distance_unit', )
+                  'height', 'weight', 'views_count', 'matches_count', 'dob',
+                  'pics', 'pref_distance_unit', 'pref_receive_notification',
+                  'gcm_subscription', )
 
 
 class AuthUserSerializer(serializers.ModelSerializer):
@@ -115,8 +120,8 @@ class AuthUserSerializer(serializers.ModelSerializer):
         # subs are taken from their Reddit profile.
         profile_data = validated_data.pop('profile', None)
         profile = Profile.objects.get(user=instance)
+        print('### profile_data -- > {}')
+        print(dict(profile_data))
         if profile_data is not None:
-            print('### profile_data -- > {}')
-            print(dict(profile_data))
             super().update(profile, profile_data)
         return super().update(instance, validated_data)
