@@ -123,6 +123,12 @@ api_urlpatterns = [
 
     url(r'^api/v1/pushnotifications',
         views_api.push_notification_api, name="push_notification_api"),
+
+    # Let auth user set a flag on view user.
+    url(r'^api/v1/flag/(?P<flag>(like|nope))/'
+        r'(?P<username>' + settings.RSTR_USERNAME + r')$',
+        views_api.flag_api, name="flag_api"),
+
 ]
 
 api_urlpatterns = format_suffix_patterns(api_urlpatterns)

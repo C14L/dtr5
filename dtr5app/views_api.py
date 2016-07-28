@@ -529,16 +529,11 @@ def update_search_if_changed(opts, user, session_obj=None):
 @require_http_methods(["DELETE", "POST"])
 def push_notification_api(request, format=None):
     """Create or delete a push notificaton endpoint object for auth user."""
-
-    print('### request.body: {}'.format(request.body))
-
     try:
         sub = request.body.decode('utf-8')
         _ = json.loads(sub)
     except ValueError:
         raise Http404
-
-    print('### sub: {}'.format(sub))
 
     if request.method == 'POST':
         PushNotificationEndpoint.objects.create(user=request.user, sub=sub)
@@ -550,3 +545,34 @@ def push_notification_api(request, format=None):
             pass
 
     return JsonResponse(data={})
+
+
+@login_required
+@require_http_methods(["DELETE", "POST"])
+def flag_api(request, flag, username, format=None):
+    """Let auth user set or delete a flag "flag" on user "username".
+    For now options are: like, nope."""
+    data = {}
+    view_user = get_user_and_related_or_404(username)
+
+    if request.method == 'POST':
+        Flag.set_flag(request.user, view_user, flag)
+        update_fields = ['new_likes_count']
+        if flag == 'like':
+            # Count the like in the view_user profile.
+            view_user.profile.new_likes_count += 1
+            # Check if we have a match, count it, and return {'match': 1}
+            if request.user.profile.match_with(view_user):
+                request.user.profile.new_matches_count += 1
+                request.user.profile.save()
+                view_user.profile.new_matches_count += 1
+                update_fields.append('new_matches_count')
+                data['is_match'] = 1
+            view_user.profile.save(update_fields=update_fields)
+
+    if request.method == 'DELETE':
+        # This deletes any flag, because a user can only ever set one flag on
+        # another user at the same time.
+        Flag.delete_flag(request.user, view_user)
+
+    return JsonResponse(data=data)
