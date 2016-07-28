@@ -595,3 +595,12 @@ class Visit(models.Model):
     def add_visitor_host(cls, visitor, host):
         Visit.objects.filter(visitor=visitor, host=host).delete()
         return Visit.objects.create(visitor=visitor, host=host)
+
+
+class PushNotificationEndpoint(models.Model):
+    """Store users push notification subscriptions for cloud messaging."""
+    user = models.ForeignKey(User, related_name='endpoints')
+    sub = models.CharField(max_length=2000, blank=False, unique=True)
+
+    def __str__(self):
+        return self.sub[:50]

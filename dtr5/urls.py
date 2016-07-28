@@ -121,6 +121,8 @@ api_urlpatterns = [
     url(r'^api/v1/visitors',
         views_api.visitors_api, name="visitors_api"),
 
+    url(r'^api/v1/pushnotifications',
+        views_api.push_notification_api, name="push_notification_api"),
 ]
 
 api_urlpatterns = format_suffix_patterns(api_urlpatterns)

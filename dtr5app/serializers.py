@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from dtr5app.models import Profile, Subscribed, Sr
+from dtr5app.models import Profile, Subscribed, Sr, PushNotificationEndpoint
 
 
 class ViewSrSerializer(serializers.ModelSerializer):
@@ -84,10 +84,6 @@ class AuthProfileSerializer(serializers.ModelSerializer):
     not visible to other users when viewing the profile.
     """
     pref_distance_unit = serializers.CharField(max_length=2, required=False)
-    # MOCK: switch cloud messaging on/off.
-    pref_receive_notification = serializers.BooleanField(required=False)
-    # MOCK: store cloud messaging subscription objects here.
-    gcm_subscription = serializers.CharField(max_length=500, required=False)
 
     class Meta:
         model = Profile
@@ -95,8 +91,7 @@ class AuthProfileSerializer(serializers.ModelSerializer):
                   'link_karma', 'comment_karma', 'has_verified_email',
                   'lat', 'lng', 'fuzzy', 'sex', 'about', 'herefor', 'tagline',
                   'height', 'weight', 'views_count', 'matches_count', 'dob',
-                  'pics', 'pref_distance_unit', 'pref_receive_notification',
-                  'gcm_subscription', )
+                  'pics', 'pref_distance_unit', )
 
 
 class AuthUserSerializer(serializers.ModelSerializer):

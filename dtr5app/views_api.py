@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 from django.conf import settings
@@ -5,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import F
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.http.response import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -14,7 +15,7 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from dtr5app.models import Visit, Sr, Flag
+from dtr5app.models import Visit, Sr, Flag, PushNotificationEndpoint
 from dtr5app.serializers import SubscribedSerializer, \
     AuthUserSerializer, BasicUserSerializer, ViewUserSerializer, \
     ViewSrSerializer
@@ -522,3 +523,30 @@ def update_search_if_changed(opts, user, session_obj=None):
         'f_has_verified_email', 'f_over_18'])
 
     return changed
+
+
+@login_required
+@require_http_methods(["DELETE", "POST"])
+def push_notification_api(request, format=None):
+    """Create or delete a push notificaton endpoint object for auth user."""
+
+    print('### request.body: {}'.format(request.body))
+
+    try:
+        sub = request.body.decode('utf-8')
+        _ = json.loads(sub)
+    except ValueError:
+        raise Http404
+
+    print('### sub: {}'.format(sub))
+
+    if request.method == 'POST':
+        PushNotificationEndpoint.objects.create(user=request.user, sub=sub)
+
+    if request.method == 'DELETE':
+        try:
+            request.user.endpoints.get(sub=sub).delete()
+        except PushNotificationEndpoint.DoesNotExist():
+            pass
+
+    return JsonResponse(data={})
