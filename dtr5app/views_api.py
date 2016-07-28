@@ -1,5 +1,6 @@
 import json
 from datetime import date
+from urllib import request
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -568,6 +569,16 @@ def flag_api(request, flag, username, format=None):
                 view_user.profile.new_matches_count += 1
                 update_fields.append('new_matches_count')
                 data['is_match'] = 1
+
+                tt = "Match on Reddmeet"
+                tx = "You and {} upvoted each other's profile!"\
+                    .format(request.user.username)
+            else:
+                # No match, but view_user still received an upvote
+                tt = "Upvote on Reddmeet"
+                tx = "{} upvoted your profile!".format(request.user.username)
+
+            very_simple_push_notification(request.user, view_user, tt, tx)
             view_user.profile.save(update_fields=update_fields)
 
     if request.method == 'DELETE':
@@ -576,3 +587,20 @@ def flag_api(request, flag, username, format=None):
         Flag.delete_flag(request.user, view_user)
 
     return JsonResponse(data=data)
+
+
+def very_simple_push_notification(sender, receiver, title, message):
+    data = {'registration_ids': []}
+    url = 'https://android.googleapis.com/gcm/send'  # TODO: data is BY endpoint URL!
+    for obj in receiver.endpoints.all():
+        sub = json.loads(obj.sub)
+        _, rid = sub['endpoint'].rsplit('/', 1)
+        data['registration_ids'].append(rid)
+    if len(data['registration_ids']) < 1:
+        return
+
+    data_str = json.dumps(data, ensure_ascii=True).encode('ascii')
+    req = request.Request(url, data=data_str, method='POST')
+    req.add_header("Authorization", "key={}".format(settings.GCM_AUTHKEY))
+    req.add_header("Content-Type", "application/json")
+    request.urlopen(req)
