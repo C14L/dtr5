@@ -100,8 +100,11 @@ api_urlpatterns = [
     url(r'^api/v1/u/(?P<username>' + settings.RSTR_USERNAME + r')$',
         views_api.user_detail, name="api_user_detail"),
 
+    # Auth user, and auth user picture upload
     url(r'^api/v1/authuser$',
         views_api.authuser_detail, name='authuser_detail_api'),
+    url(r'^api/v1/authuser-picture$',
+        views_api.authuser_picture, name='authuser_picture_api'),
 
     # Show all users that subscribe to a specific subreddit.
     url(r'^api/v1/r/(?P<sr>' + settings.RSTR_SR_NAME + r')$',
@@ -128,6 +131,7 @@ api_urlpatterns = [
     url(r'^api/v1/flag/(?P<flag>(like|nope))/'
         r'(?P<username>' + settings.RSTR_USERNAME + r')$',
         views_api.flag_api, name="flag_api"),
+
 
 ]
 

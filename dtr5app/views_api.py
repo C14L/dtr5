@@ -1,6 +1,9 @@
+from os import remove
+
+import base64
 import json
+import urllib.request
 from datetime import date
-from urllib import request
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -11,6 +14,7 @@ from django.http import JsonResponse, Http404
 from django.http.response import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from os.path import join
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
@@ -289,6 +293,30 @@ def authuser_detail(request, format=None):
 
     elif request.method == 'PATCH':
         pass  # TODO: implement PATCHing auth user model, then remove PUT.
+
+
+@login_required()
+@api_view(['PUT', 'DELETE'])
+def authuser_picture(request, format=None):
+    """Upload JSON data with a base64 encoded file of auth user, already with
+    correct dimensions (resized on client) and store it to "avatars/m" under
+    auth user's username"""
+    fonly = '{}.jpg'.format(request.user.username)
+    fname = join(settings.BASE_DIR, 'avatars/m', fonly)
+
+    if request.method == 'PUT':
+        data = json.loads(request.body.decode('utf-8'))
+        b64 = data['pic']['dataURL'].split(',', 1)[1].encode('ascii')
+        b64fix = b64 + (b'=' * (4 - len(b64) % 4))  # correct padding!
+        img = base64.urlsafe_b64decode(b64fix)
+
+        with open(fname, 'wb') as fh:
+            fh.write(img)
+
+    elif request.method == 'DELETE':
+        remove(fname)
+
+    return JsonResponse(data={}, status=status.HTTP_200_OK)
 
 
 @login_required
@@ -600,7 +628,7 @@ def very_simple_push_notification(sender, receiver, title, message):
         return
 
     data_str = json.dumps(data, ensure_ascii=True).encode('ascii')
-    req = request.Request(url, data=data_str, method='POST')
+    req = urllib.request.Request(url, data=data_str, method='POST')
     req.add_header("Authorization", "key={}".format(settings.GCM_AUTHKEY))
     req.add_header("Content-Type", "application/json")
-    request.urlopen(req)
+    urllib.request.urlopen(req)
