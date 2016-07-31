@@ -106,6 +106,10 @@ api_urlpatterns = [
     url(r'^api/v1/authuser-picture$',
         views_api.authuser_picture, name='authuser_picture_api'),
 
+    # Private messages between auth user and another user.
+    url(r'^api/v1/pms/(?P<username>' + settings.RSTR_USERNAME + r')$',
+        views_api.pms_list, name='pms_list_api'),
+
     # Show all users that subscribe to a specific subreddit.
     url(r'^api/v1/r/(?P<sr>' + settings.RSTR_SR_NAME + r')$',
         views_api.sr_user_list, name="sr_user_list_api"),

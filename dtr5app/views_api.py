@@ -15,10 +15,12 @@ from django.http.response import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from os.path import join
+from pywebpush import WebPusher
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.status import HTTP_501_NOT_IMPLEMENTED
 
 from dtr5app.models import Visit, Sr, Flag, PushNotificationEndpoint
 from dtr5app.serializers import SubscribedSerializer, \
@@ -314,7 +316,10 @@ def authuser_picture(request, format=None):
             fh.write(img)
 
     elif request.method == 'DELETE':
-        remove(fname)
+        try:
+            remove(fname)
+        except FileNotFoundError:
+            pass
 
     return JsonResponse(data={}, status=status.HTTP_200_OK)
 
@@ -597,16 +602,10 @@ def flag_api(request, flag, username, format=None):
                 view_user.profile.new_matches_count += 1
                 update_fields.append('new_matches_count')
                 data['is_match'] = 1
-
-                tt = "Match on Reddmeet"
-                tx = "You and {} upvoted each other's profile!"\
-                    .format(request.user.username)
+                nt = "match"
             else:
-                # No match, but view_user still received an upvote
-                tt = "Upvote on Reddmeet"
-                tx = "{} upvoted your profile!".format(request.user.username)
-
-            very_simple_push_notification(request.user, view_user, tt, tx)
+                nt = "upvote"
+            very_simple_push_notification(request.user, view_user, nt)
             view_user.profile.save(update_fields=update_fields)
 
     if request.method == 'DELETE':
@@ -617,18 +616,71 @@ def flag_api(request, flag, username, format=None):
     return JsonResponse(data=data)
 
 
-def very_simple_push_notification(sender, receiver, title, message):
-    data = {'registration_ids': []}
-    url = 'https://android.googleapis.com/gcm/send'  # TODO: data is BY endpoint URL!
-    for obj in receiver.endpoints.all():
-        sub = json.loads(obj.sub)
-        _, rid = sub['endpoint'].rsplit('/', 1)
-        data['registration_ids'].append(rid)
-    if len(data['registration_ids']) < 1:
-        return
+@login_required
+@require_http_methods(["POST", "GET"])
+def pms_list(request, username, format=None):
+    """Send a message or retreive a partial list of messages between auth user
+    and another user."""
+    data = {}
+    view_user = get_object_or_404(User, username=username)
 
-    data_str = json.dumps(data, ensure_ascii=True).encode('ascii')
-    req = urllib.request.Request(url, data=data_str, method='POST')
-    req.add_header("Authorization", "key={}".format(settings.GCM_AUTHKEY))
-    req.add_header("Content-Type", "application/json")
-    urllib.request.urlopen(req)
+    if request.method == 'POST':
+        msg = request.POST.get('msg')
+
+        # TODO: Add to Messages model.
+
+        ntype = 'message'
+        teaser = '{}'.format(msg[:60])
+        very_simple_push_notification(request.user, view_user, ntype, teaser)
+
+    elif request.method == 'GET':
+
+        # TODO: Return some fake data here, need to create the model first!
+
+        data['msg_list'] = [
+            {'time': 1468797013589, 'text': 'Yo, a text 111',
+             'sender': 'CmdrBratwurst', 'receiver': 'C14L',
+             'is_sent': 1, 'is_seen': 0},
+            {'time': 1468797017634, 'text': 'Text 222',
+             'sender': 'CmdrBratwurst', 'receiver': 'C14L',
+             'is_sent': 1, 'is_seen': 0},
+            {'time': 1468797064723, 'text': 'nother 333',
+             'sender': 'CmdrBratwurst', 'receiver': 'C14L',
+             'is_sent': 1, 'is_seen': 0},
+            {'time': 1468797013369, 'text': 'and so on 444',
+             'sender': 'C14L', 'receiver': 'CmdrBratwurst',
+             'is_sent': 1, 'is_seen': 0},
+            {'time': 1468797013096, 'text': 'sup sups up 555',
+             'sender': 'CmdrBratwurst', 'receiver': 'C14L',
+             'is_sent': 1, 'is_seen': 0},
+        ]
+
+    return JsonResponse(data=data)
+
+
+def very_simple_push_notification(sender, receiver, notiftype, teaser=''):
+    data = {}
+    gcm_url = 'https://android.googleapis.com/gcm/send'
+    gcm_key = None
+    ttl = 120
+
+    for obj in receiver.endpoints.all():
+        if gcm_url in obj.sub:
+            gcm_key = settings.GCM_AUTHKEY
+
+        subscription_info = json.loads(obj.sub)
+        headers = {'Content-Type': 'application/json'}
+        data['notiftype'] = notiftype  # 'message', 'upvote', etc.
+        data['username'] = sender.username  # Sender's username.
+        data['teaser'] = teaser  # A few words of a message received, if any.
+        data_str = json.dumps(data, ensure_ascii=True)
+
+        print('### Sending Push -- sub: {}'.format(obj.sub))
+        print('### Sending Push -- data: {}'.format(data_str))
+
+        WebPusher(subscription_info).send(data_str, headers, ttl, gcm_key)
+
+    # req = urllib.request.Request(url, data=data_str, method='POST')
+    # req.add_header("Authorization", "key={}".format(settings.GCM_AUTHKEY))
+    # req.add_header("Content-Type", "application/json")
+    # urllib.request.urlopen(req)
