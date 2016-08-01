@@ -604,3 +604,28 @@ class PushNotificationEndpoint(models.Model):
 
     def __str__(self):
         return self.sub[:50]
+
+
+class Message(models.Model):
+    msg = models.CharField(max_length=240, blank=False, null=False)
+    sender = models.ForeignKey(User, related_name='sent_messages')
+    receiver = models.ForeignKey(User, related_name='received_messages')
+    created = models.DateTimeField(default=now)
+
+    class Meta:
+        verbose_name = "private message"
+        verbose_name_plural = "private messages"
+        ordering = ['-id']
+
+    def __str__(self):
+        return '<Message: {} to {} on {}>'.format(
+            self.sender.username, self.receiver.username, self.created)
+
+    @classmethod
+    def get_messages_list(cls, after, *user_list):
+        messages = (Message.objects.filter(sender__in=user_list) |
+                    Message.objects.filter(receiver__in=user_list))
+        if after:
+            messages = messages.filter(id__gt=after)
+
+        return messages.prefetch_related('sender', 'receiver')[:20]  # max 20

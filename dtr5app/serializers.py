@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from dtr5app.models import Profile, Subscribed, Sr, PushNotificationEndpoint
+from dtr5app.models import Profile, Subscribed, Sr, PushNotificationEndpoint, \
+    Message
 
 
 class ViewSrSerializer(serializers.ModelSerializer):
@@ -120,3 +121,9 @@ class AuthUserSerializer(serializers.ModelSerializer):
         if profile_data is not None:
             super().update(profile, profile_data)
         return super().update(instance, validated_data)
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['id', 'msg', 'sender', 'receiver', 'created']

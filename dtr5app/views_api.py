@@ -22,10 +22,10 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.status import HTTP_501_NOT_IMPLEMENTED
 
-from dtr5app.models import Visit, Sr, Flag, PushNotificationEndpoint
+from dtr5app.models import Visit, Sr, Flag, PushNotificationEndpoint, Message
 from dtr5app.serializers import SubscribedSerializer, \
     AuthUserSerializer, BasicUserSerializer, ViewUserSerializer, \
-    ViewSrSerializer
+    ViewSrSerializer, MessageSerializer
 from dtr5app.templatetags.dtr5tags import prefdist
 from dtr5app.utils import add_likes_sent, add_likes_recv, \
     add_matches_to_user_list, add_auth_user_latlng, \
@@ -619,43 +619,52 @@ def flag_api(request, flag, username, format=None):
 @login_required
 @require_http_methods(["POST", "GET"])
 def pms_list(request, username, format=None):
-    """Send a message or retreive a partial list of messages between auth user
-    and another user."""
+    """
+    Send a message or retreive a partial list of messages between auth user
+    and another user.
+
+    GET api/v1/pms/<username>?after=<id>
+
+        Return a list of x messages with an id larger than <id>, that is, more
+        recently sent than the most recent message currently displayed on the
+        client. If there is no message shown yet on the client and after is
+        unset, then get the x most recent messages.
+
+    POST api/v1/pms/<username> msg="Message text"&after=<id>
+
+        Create a new message from auth user to <username>. Then return a list
+        of messages with id values larger than <id>, including the just posted
+        message.
+
+    """
     data = {}
     view_user = get_object_or_404(User, username=username)
 
     if request.method == 'POST':
-        msg = request.POST.get('msg')
-
-        # TODO: Add to Messages model.
-
+        body = json.loads(request.body.decode('utf-8'))
+        # Store message
+        kwargs = {'sender': request.user,
+                  'receiver': view_user,
+                  'msg': body.get('msg')}
+        print('### pms_list() kwargs: {}'.format(kwargs))
+        Message.objects.create(**kwargs)
+        # Send push notification to receiver
         ntype = 'message'
-        teaser = '{}'.format(msg[:60])
-        very_simple_push_notification(request.user, view_user, ntype, teaser)
+        tease = '{}'.format(kwargs['msg'][:60])
+        very_simple_push_notification(request.user, view_user, ntype, tease)
+        # Respond with messages list
+        args = [body.get('after', None), request.user, view_user]
+        return JsonResponse(data=get_msg_data(*args))
 
     elif request.method == 'GET':
+        args = [request.GET.get('after', None), request.user, view_user]
+        return JsonResponse(data=get_msg_data(*args))
 
-        # TODO: Return some fake data here, need to create the model first!
 
-        data['msg_list'] = [
-            {'time': 1468797013589, 'text': 'Yo, a text 111',
-             'sender': 'CmdrBratwurst', 'receiver': 'C14L',
-             'is_sent': 1, 'is_seen': 0},
-            {'time': 1468797017634, 'text': 'Text 222',
-             'sender': 'CmdrBratwurst', 'receiver': 'C14L',
-             'is_sent': 1, 'is_seen': 0},
-            {'time': 1468797064723, 'text': 'nother 333',
-             'sender': 'CmdrBratwurst', 'receiver': 'C14L',
-             'is_sent': 1, 'is_seen': 0},
-            {'time': 1468797013369, 'text': 'and so on 444',
-             'sender': 'C14L', 'receiver': 'CmdrBratwurst',
-             'is_sent': 1, 'is_seen': 0},
-            {'time': 1468797013096, 'text': 'sup sups up 555',
-             'sender': 'CmdrBratwurst', 'receiver': 'C14L',
-             'is_sent': 1, 'is_seen': 0},
-        ]
-
-    return JsonResponse(data=data)
+def get_msg_data(after, user1, user2):
+    obj = Message.get_messages_list(after, user1, user2)
+    li = MessageSerializer(obj, many=True).data
+    return {'msg_list': li}
 
 
 def very_simple_push_notification(sender, receiver, notiftype, teaser=''):
