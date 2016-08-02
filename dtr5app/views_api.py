@@ -1,9 +1,10 @@
+from django.utils.timezone import now
 from os import remove
 
 import base64
 import json
 import urllib.request
-from datetime import date
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -605,7 +606,7 @@ def flag_api(request, flag, username, format=None):
                 nt = "match"
             else:
                 nt = "upvote"
-            very_simple_push_notification(request.user, view_user, nt)
+            simple_push_notification(request.user, view_user, nt)
             view_user.profile.save(update_fields=update_fields)
 
     if request.method == 'DELETE':
@@ -637,28 +638,27 @@ def pms_list(request, username, format=None):
         message.
 
     """
-    data = {}
     view_user = get_object_or_404(User, username=username)
 
     if request.method == 'POST':
         body = json.loads(request.body.decode('utf-8'))
+        msg = body.get('msg')
+        after = body.get('after', None)
+
         # Store message
-        kwargs = {'sender': request.user,
-                  'receiver': view_user,
-                  'msg': body.get('msg')}
-        print('### pms_list() kwargs: {}'.format(kwargs))
+        kwargs = {'sender': request.user, 'receiver': view_user, 'msg': msg}
         Message.objects.create(**kwargs)
+
         # Send push notification to receiver
-        ntype = 'message'
-        tease = '{}'.format(kwargs['msg'][:60])
-        very_simple_push_notification(request.user, view_user, ntype, tease)
+        args = [request.user, view_user, 'message', '{}'.format(msg[:60])]
+        simple_push_notification(*args)
+
         # Respond with messages list
-        args = [body.get('after', None), request.user, view_user]
-        return JsonResponse(data=get_msg_data(*args))
+        return JsonResponse(data=get_msg_data(after, request.user, view_user))
 
     elif request.method == 'GET':
-        args = [request.GET.get('after', None), request.user, view_user]
-        return JsonResponse(data=get_msg_data(*args))
+        after = request.GET.get('after', None)
+        return JsonResponse(data=get_msg_data(after, request.user, view_user))
 
 
 def get_msg_data(after, user1, user2):
@@ -667,7 +667,7 @@ def get_msg_data(after, user1, user2):
     return {'msg_list': li}
 
 
-def very_simple_push_notification(sender, receiver, notiftype, teaser=''):
+def simple_push_notification(sender, receiver, notiftype, teaser=''):
     data = {}
     gcm_url = 'https://android.googleapis.com/gcm/send'
     gcm_key = None
@@ -677,6 +677,13 @@ def very_simple_push_notification(sender, receiver, notiftype, teaser=''):
         if gcm_url in obj.sub:
             gcm_key = settings.GCM_AUTHKEY
 
+        # Make sure we only send one per minute at most. Further limit it on
+        # the client device.
+        if (obj.latest + timedelta(minutes=1)) > now():
+            return False
+        obj.latest = now()
+        obj.save()
+
         subscription_info = json.loads(obj.sub)
         headers = {'Content-Type': 'application/json'}
         data['notiftype'] = notiftype  # 'message', 'upvote', etc.
@@ -684,12 +691,4 @@ def very_simple_push_notification(sender, receiver, notiftype, teaser=''):
         data['teaser'] = teaser  # A few words of a message received, if any.
         data_str = json.dumps(data, ensure_ascii=True)
 
-        print('### Sending Push -- sub: {}'.format(obj.sub))
-        print('### Sending Push -- data: {}'.format(data_str))
-
         WebPusher(subscription_info).send(data_str, headers, ttl, gcm_key)
-
-    # req = urllib.request.Request(url, data=data_str, method='POST')
-    # req.add_header("Authorization", "key={}".format(settings.GCM_AUTHKEY))
-    # req.add_header("Content-Type", "application/json")
-    # urllib.request.urlopen(req)

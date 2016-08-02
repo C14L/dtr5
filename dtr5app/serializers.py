@@ -124,6 +124,9 @@ class AuthUserSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
+    sender = serializers.CharField(source='sender.username', read_only=True)
+    receiver = serializers.CharField(source='receiver.username', read_only=True)
+
     class Meta:
         model = Message
         fields = ['id', 'msg', 'sender', 'receiver', 'created']
