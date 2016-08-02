@@ -601,6 +601,7 @@ class PushNotificationEndpoint(models.Model):
     """Store users push notification subscriptions for cloud messaging."""
     user = models.ForeignKey(User, related_name='endpoints')
     sub = models.CharField(max_length=2000, blank=False, unique=True)
+    latest = models.DateTimeField(default=now)  # when the last notif. was send
 
     def __str__(self):
         return self.sub[:50]
