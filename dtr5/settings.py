@@ -67,10 +67,19 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'corsheaders',
     'rest_framework',
+    'channels',
 
     'simple_reddit_oauth',
     'dtr5app',
 )
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_ipc.IPCChannelLayer",
+        "ROUTING": "dtr5.routing.channel_routing",
+        "CONFIG": {"prefix": "dtr5"},
+    },
+}
 
 MIDDLEWARE_CLASSES = (
     'dtr5app.middleware.CheckSiteTemporarilyUnavailable',

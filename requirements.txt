@@ -1,7 +1,13 @@
 Django==1.8.5
 Pillow==3.1.1
+Twisted==16.2.0
+asgi-ipc==1.1.0
+asgiref==0.14.0
+autobahn==0.15.0
 cffi==1.7.0
+channels==0.17.1
 cryptography==1.4
+daphne==0.14.3
 defusedxml==0.4.1
 django-cors-headers==1.1.0
 djangorestframework==3.3.2
@@ -11,7 +17,9 @@ geopy==1.11.0
 http-ece==0.5.0
 idna==2.1
 mccabe==0.5.1
+msgpack-python==0.4.8
 oauthlib==1.0.3
+posix-ipc==1.0.0
 psycopg2==2.6.1
 pyasn1==0.1.9
 pycodestyle==2.0.0
@@ -28,3 +36,5 @@ pywebpush==0.4.0
 requests==2.9.1
 requests-oauthlib==0.5.0
 six==1.10.0
+txaio==2.5.1
+zope.interface==4.2.0

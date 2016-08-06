@@ -30,6 +30,7 @@ class PushNotificationEndpointAdmin(admin.ModelAdmin):
 
 
 class MessageAdmin(admin.ModelAdmin):
+    fields = ('id', 'sender', 'receiver', 'created')  # TODO: as text!
     list_display = ('id', 'sender', 'receiver', 'created', )
 
 
