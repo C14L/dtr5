@@ -677,6 +677,9 @@ def simple_push_notification(sender, receiver, notiftype, teaser=''):
         if gcm_url in obj.sub:
             gcm_key = settings.GCM_AUTHKEY
 
+        if settings.DEBUG:
+            print('### simple_push_notification() sends push notifications...')
+
         # Make sure we only send one per minute at most. Further limit it on
         # the client device.
         if (obj.latest + timedelta(minutes=1)) > now():
@@ -685,6 +688,12 @@ def simple_push_notification(sender, receiver, notiftype, teaser=''):
         obj.save()
 
         subscription_info = json.loads(obj.sub)
+        if settings.DEBUG:
+            print('### simple_push_notification(): obj.sub == '
+                  .format(obj.sub))
+            print('### simple_push_notification(): subscription_info == '
+                  .format(subscription_info))
+
         headers = {'Content-Type': 'application/json'}
         data['notiftype'] = notiftype  # 'message', 'upvote', etc.
         data['username'] = sender.username  # Sender's username.

@@ -623,9 +623,12 @@ class Message(models.Model):
             self.sender.username, self.receiver.username, self.created)
 
     @classmethod
-    def get_messages_list(cls, after, *user_list):
-        messages = (Message.objects.filter(sender__in=user_list) |
-                    Message.objects.filter(receiver__in=user_list))
+    def get_messages_list(cls, after, user1, user2):
+        """Return a list of Message objects with created time larger than
+        the "after" date. user_list is a list of exactly two users, both of
+        which have to be present, either os sender or receiver."""
+        messages = (Message.objects.filter(sender=user1, receiver=user2) |
+                    Message.objects.filter(sender=user2, receiver=user1))
         if after:
             messages = messages.filter(id__gt=after)
 
