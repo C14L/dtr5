@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 
 from dtr5app.models import Message
 from dtr5app.serializers import MessageSerializer
+from dtr5app.utils_push_notifications import simple_push_notification
 
 
 def get_group_id_for_user(user):
@@ -44,6 +45,10 @@ def chat_receive(message):
     obj = Message.objects.create(msg=msg, sender=sender, receiver=receiver)
     msg_obj = MessageSerializer(obj, many=False).data
     resp = {'action': 'chat.receive', 'msg_list': [msg_obj]}
+
+    # Send push notification to receiver
+    args = [sender, receiver, 'message', '{}'.format(msg[:60])]
+    simple_push_notification(*args)
 
     Group(sender_group).send({'text': json.dumps(resp)})
     Group(receiver_group).send({'text': json.dumps(resp)})

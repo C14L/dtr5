@@ -1,11 +1,7 @@
-from django.utils.timezone import now
-from os import remove
+import json
+from datetime import date
 
 import base64
-import json
-import urllib.request
-from datetime import date, timedelta
-
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -15,13 +11,12 @@ from django.http import JsonResponse, Http404
 from django.http.response import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from os import remove
 from os.path import join
-from pywebpush import WebPusher
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.status import HTTP_501_NOT_IMPLEMENTED
 
 from dtr5app.models import Visit, Sr, Flag, PushNotificationEndpoint, Message
 from dtr5app.serializers import SubscribedSerializer, \
@@ -33,6 +28,7 @@ from dtr5app.utils import add_likes_sent, add_likes_recv, \
     get_user_and_related_or_404, get_user_list_from_username_list, \
     get_user_list_after, get_prevnext_user, prepare_paginated_user_list, \
     get_paginated_user_list, get_matches_user_list, count_matches
+from dtr5app.utils_push_notifications import simple_push_notification
 from dtr5app.utils_search import search_results_buffer, update_search_settings,\
     search_subreddit_users
 from toolbox import force_int
@@ -87,6 +83,7 @@ def filter_members_view(request):
     return JsonResponse({'userlist': response_data})
 
 
+# noinspection PyUnusedLocal
 @api_view(['GET', ])
 def sr_user_list(request, sr, format=None):
     """Return a list of users who are member of a subreddit."""
@@ -163,6 +160,7 @@ def search_params(request):
     return JsonResponse({})  # HTTP 200
 
 
+# noinspection PyUnusedLocal
 @csrf_exempt
 @login_required
 @api_view(['GET', 'HEAD', 'OPTIONS'])
@@ -195,6 +193,7 @@ def results_list(request, format=None):
     })
 
 
+# noinspection PyUnusedLocal
 @login_required
 @api_view(['GET', ])
 def user_detail(request, username, format=None):
@@ -274,6 +273,7 @@ def user_detail(request, username, format=None):
         'is_nope': request.user.profile.does_nope(view_user), })
 
 
+# noinspection PyUnusedLocal
 @login_required()
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def authuser_detail(request, format=None):
@@ -298,6 +298,7 @@ def authuser_detail(request, format=None):
         pass  # TODO: implement PATCHing auth user model, then remove PUT.
 
 
+# noinspection PyUnusedLocal
 @login_required()
 @api_view(['PUT', 'DELETE'])
 def authuser_picture(request, format=None):
@@ -325,6 +326,7 @@ def authuser_picture(request, format=None):
     return JsonResponse(data={}, status=status.HTTP_200_OK)
 
 
+# noinspection PyUnusedLocal
 @login_required
 @require_http_methods(["GET", "HEAD"])
 def upvotes_recv_api(request, format=None):
@@ -358,6 +360,7 @@ def upvotes_recv_api(request, format=None):
     })
 
 
+# noinspection PyUnusedLocal
 @login_required
 @require_http_methods(["GET", "HEAD"])
 def matches_api(request, format=None):
@@ -384,6 +387,7 @@ def matches_api(request, format=None):
     })
 
 
+# noinspection PyUnusedLocal
 @login_required
 @require_http_methods(["GET", "HEAD"])
 def upvotes_sent_api(request, format=None):
@@ -405,6 +409,7 @@ def upvotes_sent_api(request, format=None):
     })
 
 
+# noinspection PyUnusedLocal
 @login_required
 @require_http_methods(["GET", "HEAD"])
 def downvotes_sent_api(request, format=None):
@@ -422,6 +427,7 @@ def downvotes_sent_api(request, format=None):
     })
 
 
+# noinspection PyUnusedLocal
 @login_required
 @require_http_methods(["GET", "HEAD"])
 def visits_api(request, format=None):
@@ -433,6 +439,7 @@ def visits_api(request, format=None):
     })
 
 
+# noinspection PyUnusedLocal
 @login_required
 @require_http_methods(["GET", "HEAD"])
 def visitors_api(request, format=None):
@@ -527,7 +534,7 @@ def update_search_if_changed(opts, user, session_obj=None):
 
     # Find active subreddits: loop through user's subs and those that are in
     # the POST are active, all others are not.
-    sr_fav = None
+    # sr_fav = None
     if 'sr-fav' in opts:
         sr_fav = opts.get('sr-fav').split(',')
         if settings.DEBUG:
@@ -560,6 +567,7 @@ def update_search_if_changed(opts, user, session_obj=None):
     return changed
 
 
+# noinspection PyUnusedLocal
 @login_required
 @require_http_methods(["DELETE", "POST"])
 def push_notification_api(request, format=None):
@@ -582,6 +590,7 @@ def push_notification_api(request, format=None):
     return JsonResponse(data={})
 
 
+# noinspection PyUnusedLocal
 @login_required
 @require_http_methods(["DELETE", "POST"])
 def flag_api(request, flag, username, format=None):
@@ -617,6 +626,7 @@ def flag_api(request, flag, username, format=None):
     return JsonResponse(data=data)
 
 
+# noinspection PyUnusedLocal
 @login_required
 @require_http_methods(["POST", "GET"])
 def pms_list(request, username, format=None):
@@ -665,39 +675,3 @@ def get_msg_data(after, user1, user2):
     obj = Message.get_messages_list(after, user1, user2)
     li = MessageSerializer(obj, many=True).data
     return {'msg_list': li}
-
-
-def simple_push_notification(sender, receiver, notiftype, teaser=''):
-    data = {}
-    gcm_url = 'https://android.googleapis.com/gcm/send'
-    gcm_key = None
-    ttl = 120
-
-    for obj in receiver.endpoints.all():
-        if gcm_url in obj.sub:
-            gcm_key = settings.GCM_AUTHKEY
-
-        if settings.DEBUG:
-            print('### simple_push_notification() sends push notifications...')
-
-        # Make sure we only send one per minute at most. Further limit it on
-        # the client device.
-        if (obj.latest + timedelta(minutes=1)) > now():
-            return False
-        obj.latest = now()
-        obj.save()
-
-        subscription_info = json.loads(obj.sub)
-        if settings.DEBUG:
-            print('### simple_push_notification(): obj.sub == '
-                  .format(obj.sub))
-            print('### simple_push_notification(): subscription_info == '
-                  .format(subscription_info))
-
-        headers = {'Content-Type': 'application/json'}
-        data['notiftype'] = notiftype  # 'message', 'upvote', etc.
-        data['username'] = sender.username  # Sender's username.
-        data['teaser'] = teaser  # A few words of a message received, if any.
-        data_str = json.dumps(data, ensure_ascii=True)
-
-        WebPusher(subscription_info).send(data_str, headers, ttl, gcm_key)
