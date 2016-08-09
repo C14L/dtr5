@@ -6,36 +6,45 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
 from dtr5app.models import Message
+from dtr5app.serializers import MessageSerializer
 
 
 def get_group_id_for_user(user):
     return 'user-{}'.format(user.id)
 
 
+def get_msg_data(after, user1, user2):
+    obj = Message.get_messages_list(after, user1, user2)
+    return MessageSerializer(obj, many=True).data
+
+
+def get_request_object(message_object):
+    return json.loads(message_object.content['text'])
+
+
 @channel_session_user
-def message_consumer(message):
-    payload = json.loads(message.content['text'])
+def chat_init(message):
+    payload = get_request_object(message)
+    sender_group = get_group_id_for_user(message.user)
+    view_user = get_object_or_404(User, username=payload['view_user'])
+    msg_list = get_msg_data(payload['after'], message.user, view_user)
+    resp = {'action': 'chat.init', 'msg_list': msg_list}
+    Group(sender_group).send({'text': json.dumps(resp)})
+
+
+@channel_session_user
+def chat_receive(message):
+    payload = get_request_object(message)
     msg = payload['msg']
     sender = message.user
     receiver = get_object_or_404(User, username=payload['receiver'])
     sender_group = get_group_id_for_user(sender)
     receiver_group = get_group_id_for_user(receiver)
 
-    print('### message_consumer: sender_group == "{}"'.format(sender_group))
-    print('### message_consumer: receiver_group == "{}"'.format(receiver_group))
-    print('### message consumer: msg == {}'.format(msg))
-    print('### message consumer: message.content == {}'.format(message.content))
-    print('### message consumer: message.channel == {}'.format(message.channel))
+    obj = Message.objects.create(msg=msg, sender=sender, receiver=receiver)
+    msg_obj = MessageSerializer(obj, many=False).data
+    resp = {'action': 'chat.receive', 'msg_list': [msg_obj]}
 
-    m = Message.objects.create(msg=msg, sender=sender, receiver=receiver)
-    resp = [{
-        'action': 'chat.receive',
-        'id': m.id,
-        'msg': m.msg,
-        'sender': m.sender.username,
-        'receiver': m.receiver.username,
-        'created': str(m.created)[:19],  # e.g. '2016-08-08 13:50:38'
-    }, ]
     Group(sender_group).send({'text': json.dumps(resp)})
     Group(receiver_group).send({'text': json.dumps(resp)})
 
