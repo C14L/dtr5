@@ -1,8 +1,19 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from dtr5app.models import Profile, Subscribed, Sr, PushNotificationEndpoint, \
-    Message
+from dtr5app.models import Profile, Subscribed, Sr, Message
+
+
+class ChatsUserSerializer(serializers.ModelSerializer):
+    latest = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'latest')
+
+    # noinspection PyMethodMayBeStatic
+    def get_latest(self, obj):
+        return str(obj.latest)
 
 
 class ViewSrSerializer(serializers.ModelSerializer):

@@ -3,10 +3,11 @@ import json
 from channels import Channel, Group
 from channels.auth import channel_session_user, channel_session_user_from_http
 from django.contrib.auth.models import User
+from django.db.models import Max
 from django.shortcuts import get_object_or_404
 
 from dtr5app.models import Message
-from dtr5app.serializers import MessageSerializer
+from dtr5app.serializers import MessageSerializer, ChatsUserSerializer
 from dtr5app.utils_push_notifications import simple_push_notification
 
 
@@ -21,6 +22,26 @@ def get_msg_data(after, user1, user2):
 
 def get_request_object(message_object):
     return json.loads(message_object.content['text'])
+
+
+def get_user_list_by_latest_message_sent(user):
+    """For User user, return all User objects that recently sent a chat
+    message."""
+    user_list = User.objects.filter(sent_messages__receiver=user)\
+        .annotate(latest=Max('sent_messages__created')).order_by()
+
+    return user_list
+
+
+@channel_session_user
+def chats_init(message):
+    """Sends a list of users that authuser had a chat with, ordered by the
+    most recent message sent or received first."""
+    sender_group = get_group_id_for_user(message.user)
+    ul = get_user_list_by_latest_message_sent(message.user)
+    user_list = ChatsUserSerializer(ul, many=True).data
+    resp = {'action': 'chats.init', 'user_list': user_list}
+    Group(sender_group).send({'text': json.dumps(resp)})
 
 
 @channel_session_user
@@ -56,9 +77,11 @@ def chat_receive(message):
 
 @channel_session_user_from_http
 def ws_connect(message):
-    # A user may be connected from various browsers or devices, so group all
-    # the user's connections into one Group to send messages to that are
-    # addressed to the user.
+    """
+    A user may be connected from various browsers or devices, so group all
+    the user's connections into one Group to send messages to that are
+    addressed to the user.
+    """
     group_kw = get_group_id_for_user(message.user)
     Group(group_kw).add(message.reply_channel)
     print('### WS connect: group_kw == "{}"'.format(group_kw))

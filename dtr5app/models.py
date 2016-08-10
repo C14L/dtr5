@@ -619,7 +619,7 @@ class Message(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return '<Message: {} to {} on {}>'.format(
+        return '{} -> {}'.format(
             self.sender.username, self.receiver.username, self.created)
 
     @classmethod
