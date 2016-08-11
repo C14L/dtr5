@@ -7,7 +7,8 @@ from django.db.models import Max
 from django.shortcuts import get_object_or_404
 
 from dtr5app.models import Message
-from dtr5app.serializers import MessageSerializer, ChatsUserSerializer
+from dtr5app.serializers import MessageSerializer
+from dtr5app.utils_common import json_serializer_helper
 from dtr5app.utils_push_notifications import simple_push_notification
 
 
@@ -27,9 +28,11 @@ def get_request_object(message_object):
 def get_user_list_by_latest_message_sent(user):
     """For User user, return all User objects that recently sent a chat
     message."""
-    user_list = User.objects.filter(sent_messages__receiver=user)\
-        .annotate(latest=Max('sent_messages__created')).order_by()
-
+    user_list = User.objects\
+        .filter(sent_messages__receiver=user)\
+        .annotate(latest=Max('sent_messages__created'))\
+        .values('id', 'username', 'latest')\
+        .order_by()[:50]
     return user_list
 
 
@@ -38,10 +41,10 @@ def chats_init(message):
     """Sends a list of users that authuser had a chat with, ordered by the
     most recent message sent or received first."""
     sender_group = get_group_id_for_user(message.user)
-    ul = get_user_list_by_latest_message_sent(message.user)
-    user_list = ChatsUserSerializer(ul, many=True).data
+    user_list = get_user_list_by_latest_message_sent(message.user)
     resp = {'action': 'chats.init', 'user_list': user_list}
-    Group(sender_group).send({'text': json.dumps(resp)})
+    Group(sender_group).send(
+        {'text': json.dumps(resp, default=json_serializer_helper)})
 
 
 @channel_session_user
