@@ -13,6 +13,8 @@ from dtr5app.utils_push_notifications import simple_push_notification
 
 
 def get_group_id_for_user(user):
+    if not user.id:
+        raise PermissionError('Websockets only for authenticated users.')
     return 'user-{}'.format(user.id)
 
 
@@ -94,11 +96,8 @@ def ws_connect(message):
 def ws_receive(message):
     group_kw = get_group_id_for_user(message.user)
     payload = json.loads(message.content['text'])
-    print('### WS receive: group_kw == {}'.format(group_kw))
-    print('### WS receive: message[text] == {}'.format(message['text']))
-    print('### WS receive: message.content == {}'.format(message.content))
-    print('### WS receive: message.channel == {}'.format(message.channel))
     Channel(payload['action']).send(message.content)
+    print('### WS receive: group_kw == {}'.format(group_kw))
 
 
 @channel_session_user
