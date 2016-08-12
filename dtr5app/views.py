@@ -1,8 +1,6 @@
-import pytz
-
 from datetime import datetime, timedelta, date
-from urllib.parse import urlencode
 
+import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -15,7 +13,6 @@ from django.views.decorators.http import require_http_methods
 
 from simple_reddit_oauth import api
 from toolbox import force_int
-
 from . import utils_stats
 from .models import Sr, Flag, Visit
 from .utils import add_auth_user_latlng, count_matches, get_matches_user_list, \
@@ -23,7 +20,7 @@ from .utils import add_auth_user_latlng, count_matches, get_matches_user_list, \
                    get_paginated_user_list, prepare_paginated_user_list, \
                    add_matches_to_user_list, get_user_list_from_username_list, \
                    get_user_list_after, add_likes_sent, add_likes_recv, \
-    get_subs_for_user
+                   get_subs_for_user
 from .utils_search import search_results_buffer, search_subreddit_users
 
 

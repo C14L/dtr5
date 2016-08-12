@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Profile, Flag, Sr, Subscribed, Report
+from .models import Profile, Flag, Sr, Subscribed, Report, \
+    PushNotificationEndpoint, Message
 
 
 class ProfileAdmin(admin.ModelAdmin):
@@ -24,8 +25,19 @@ class ReportAdmin(admin.ModelAdmin):
     list_display = ('sender', 'receiver', 'created', 'resolved', 'reason', )
 
 
+class PushNotificationEndpointAdmin(admin.ModelAdmin):
+    list_display = ('user', 'sub', )
+
+
+class MessageAdmin(admin.ModelAdmin):
+    fields = ('id', 'sender', 'receiver', 'created')  # TODO: as text!
+    list_display = ('id', 'sender', 'receiver', 'created', )
+
+
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Sr, SrAdmin)
 admin.site.register(Subscribed, SubscribedAdmin)
 admin.site.register(Flag, FlagAdmin)
 admin.site.register(Report, ReportAdmin)
+admin.site.register(PushNotificationEndpoint, PushNotificationEndpointAdmin)
+admin.site.register(Message, MessageAdmin)

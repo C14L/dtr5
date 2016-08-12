@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
-from os.path import join
+from os import path
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from simple_reddit_oauth import urls as simple_reddit_oauth_urls
 from dtr5app import views, views_me, views_mod, views_api
@@ -11,14 +12,6 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include(simple_reddit_oauth_urls)),
     url(r'^$', views.home_view, name="home_page"),
-
-    # API URLs
-    url(r'^api/v1/filter-members.json$',
-        views_api.filter_members, name="api_filter_members"),
-    url(r'^api/v1/results.json$',
-        views_api.results, name="api_results"),
-    url(r'^api/v1/u/(?P<username>' + settings.RSTR_USERNAME + r')\.json$',
-        views_api.profile, name="api_profile"),
 
     # Users preferences page, and URIs to POST to.
     url(r'^me/$', views_me.me_view, name="me_page"),
@@ -71,20 +64,80 @@ urlpatterns = [
     url(r'^stats/$', views.stats_view, name="stats"),
 
     url(r'^map/$', views.usermap_view, name="usermap"),
+
+    # API URLs
+
+    url(r'^api/v1/filter-members.json$', views_api.filter_members_view,
+        name="filter_members"),
 ]
 
+api_urlpatterns = [
+
+    # POST here to store user selected search options and generate cached
+    # search results. Then request the first page with the below results view.
+    url(r'^api/v1/search$',
+        views_api.search_params, name="search_params_api"),
+    # Search results as paginated list view of user profiles
+    url(r'^api/v1/results$',
+        views_api.results_list, name="results_list_api"),
+
+    # Show "view user"'s profile page.
+    url(r'^api/v1/u/(?P<username>' + settings.RSTR_USERNAME + r')$',
+        views_api.user_detail, name="api_user_detail"),
+
+    # Auth user, and auth user picture upload
+    url(r'^api/v1/authuser$',
+        views_api.authuser_detail, name='authuser_detail_api'),
+    url(r'^api/v1/authuser-picture$',
+        views_api.authuser_picture, name='authuser_picture_api'),
+
+    # Private messages between auth user and another user.
+    url(r'^api/v1/pms/(?P<username>' + settings.RSTR_USERNAME + r')$',
+        views_api.pms_list, name='pms_list_api'),
+
+    # Show all users that subscribe to a specific subreddit.
+    url(r'^api/v1/r/(?P<sr>' + settings.RSTR_SR_NAME + r')$',
+        views_api.sr_user_list, name="sr_user_list_api"),
+
+    url(r'^api/v1/upvotes_recv$',
+        views_api.upvotes_recv_api, name="upvotes_recv_api"),
+    url(r'^api/v1/matches$',
+        views_api.matches_api, name="matches_api"),
+    url(r'^api/v1/upvotes_sent',
+        views_api.upvotes_sent_api, name="upvotes_sent_api"),
+    url(r'^api/v1/downvotes_sent',
+        views_api.downvotes_sent_api, name="downvotes_sent_api"),
+
+    url(r'^api/v1/visits',
+        views_api.visits_api, name="visits_api"),
+    url(r'^api/v1/visitors',
+        views_api.visitors_api, name="visitors_api"),
+
+    url(r'^api/v1/pushnotifications',
+        views_api.push_notification_api, name="push_notification_api"),
+
+    # Let auth user set a flag on view user.
+    url(r'^api/v1/flag/(?P<flag>(like|nope))/'
+        r'(?P<username>' + settings.RSTR_USERNAME + r')$',
+        views_api.flag_api, name="flag_api"),
+
+
+]
+
+api_urlpatterns = format_suffix_patterns(api_urlpatterns)
+
+urlpatterns += api_urlpatterns
 
 if settings.DEBUG:
-    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     from django.conf.urls.static import static
-
-    urlpatterns.append(url(r'^app/$', views_api.app_index_view))
-
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     urlpatterns += staticfiles_urlpatterns()
-    urlpatterns += static('/app/', document_root=join(
-        settings.BASE_DIR, '../../reddmeet-material/app/'))
-    urlpatterns += static('/node_modules/', document_root=join(
-        settings.BASE_DIR, '../../reddmeet-material/node_modules/'))
-    urlpatterns += static('/m/', document_root=join(
-        settings.BASE_DIR, 'avatars/m/'))
 
+    urlpatterns += static('/app/', document_root=
+                          '/home/chris/dev/new/reddmeet-material/dist/')
+    urlpatterns += static('/node_modules/', document_root=
+                          '/home/chris/dev/new/reddmeet-material/node_modules/')
+    urlpatterns += static('/s/', document_root=
+                          path.join(settings.BASE_DIR, 'avatars/s/'))
+    urlpatterns += static('/m/', document_root=
+                          path.join(settings.BASE_DIR, 'avatars/m/'))

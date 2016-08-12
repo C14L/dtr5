@@ -232,6 +232,7 @@ def get_matches_user_list(user):
         c1 = x.flags_sent.get(receiver=user.pk).created
         c2 = user.flags_sent.get(receiver=x.pk).created
         setattr(x, 'matched', c1 if c1 > c2 else c2)
+        setattr(x, 'flag_created', x.matched)  # need for serializer
     user_list.sort(key=lambda row: row.matched, reverse=True)
     return user_list
 

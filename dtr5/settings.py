@@ -66,9 +66,21 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'corsheaders',
+
+    'rest_framework',
+    'channels',
+
     'simple_reddit_oauth',
     'dtr5app',
 )
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_ipc.IPCChannelLayer",
+        "ROUTING": "dtr5.routing.channel_routing",
+        "CONFIG": {"prefix": "dtr5"},
+    },
+}
 
 MIDDLEWARE_CLASSES = (
     'dtr5app.middleware.CheckSiteTemporarilyUnavailable',
@@ -123,8 +135,18 @@ STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 # settings for "django-cors-headers"
 # =====================================
 
-CORS_ORIGIN_ALLOW_ALL = True
+# https://github.com/ottoyiu/django-cors-headers
+# CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_WHITELIST = ['localhost:3333', 'localhost:8000']
+
+# =====================================
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
+}
 
 # =====================================
 # settings for "dtr5app"

@@ -245,6 +245,22 @@ class Profile(models.Model):
         else:
             raise ValueError('pref_distance_unit must be "km" or "mi".')
 
+    @property
+    def western_zodiac(self):
+        return get_western_zodiac(self.dob)
+
+    @property
+    def western_zodiac_symbol(self):
+        return get_western_zodiac_symbol(self.dob)
+
+    @property
+    def eastern_zodiac(self):
+        return eastern_zodiac(self.dob)
+
+    @property
+    def eastern_zodiac_symbol(self):
+        return get_eastern_zodiac_symbol(self.dob)
+
     def display_background_pic(self):
         """
         Return the URL of the background_pic with the correct size Byte in
@@ -276,6 +292,10 @@ class Profile(models.Model):
             return get_age(self.dob)
         except:
             return ''
+
+    @property
+    def age(self):
+        return get_age(self.dob)
 
     @property
     def subscribed_subs(self):
@@ -377,6 +397,21 @@ class Profile(models.Model):
     def get_distance_in_miles(self):
         """Returns above distance in miles."""
         return float(self.get_distance_in_km() * 0.621371)
+
+    @property
+    def distance_km(self):
+        return '{} km'.format(int(self.get_distance_in_km() * 100) / 100)
+
+    @property
+    def distance_mi(self):
+        return '{} mi'.format(int(self.get_distance_in_miles() * 100) / 100)
+
+    @property
+    def gender(self):
+        try:
+            return [x[1] for x in settings.SEX if x[0] == self.sex][0]
+        except IndexError:
+            return ''
 
     def match_with(self, view_user):
         """Return True if user is a match (multual like) with view_user."""
@@ -560,3 +595,41 @@ class Visit(models.Model):
     def add_visitor_host(cls, visitor, host):
         Visit.objects.filter(visitor=visitor, host=host).delete()
         return Visit.objects.create(visitor=visitor, host=host)
+
+
+class PushNotificationEndpoint(models.Model):
+    """Store users push notification subscriptions for cloud messaging."""
+    user = models.ForeignKey(User, related_name='endpoints')
+    sub = models.CharField(max_length=2000, blank=False, unique=True)
+    latest = models.DateTimeField(default=now)  # when the last notif. was send
+
+    def __str__(self):
+        return self.sub[:50]
+
+
+class Message(models.Model):
+    msg = models.CharField(max_length=240, blank=False, null=False)
+    sender = models.ForeignKey(User, related_name='sent_messages')
+    receiver = models.ForeignKey(User, related_name='received_messages')
+    created = models.DateTimeField(default=now)
+
+    class Meta:
+        verbose_name = "private message"
+        verbose_name_plural = "private messages"
+        ordering = ['-id']
+
+    def __str__(self):
+        return '{} -> {}'.format(
+            self.sender.username, self.receiver.username, self.created)
+
+    @classmethod
+    def get_messages_list(cls, after, user1, user2):
+        """Return a list of Message objects with created time larger than
+        the "after" date. user_list is a list of exactly two users, both of
+        which have to be present, either os sender or receiver."""
+        messages = (Message.objects.filter(sender=user1, receiver=user2) |
+                    Message.objects.filter(sender=user2, receiver=user1))
+        if after:
+            messages = messages.filter(id__gt=after)
+
+        return messages.prefetch_related('sender', 'receiver')[:20]  # max 20
