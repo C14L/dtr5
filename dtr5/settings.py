@@ -74,13 +74,25 @@ INSTALLED_APPS = (
     'dtr5app',
 )
 
+redis_host = os.environ.get('REDIS_HOST', 'localhost')
+
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "asgi_ipc.IPCChannelLayer",
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(redis_host, 6379)],
+        },
         "ROUTING": "dtr5.routing.channel_routing",
-        "CONFIG": {"prefix": "dtr5"},
     },
 }
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgi_ipc.IPCChannelLayer",
+#         "ROUTING": "dtr5.routing.channel_routing",
+#         "CONFIG": {"prefix": "dtr5"},
+#     },
+# }
 
 MIDDLEWARE_CLASSES = (
     'dtr5app.middleware.CheckSiteTemporarilyUnavailable',
