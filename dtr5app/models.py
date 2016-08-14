@@ -255,7 +255,7 @@ class Profile(models.Model):
 
     @property
     def eastern_zodiac(self):
-        return eastern_zodiac(self.dob)
+        return get_eastern_zodiac(self.dob)
 
     @property
     def eastern_zodiac_symbol(self):
@@ -287,6 +287,7 @@ class Profile(models.Model):
     def get_eastern_zodiac_symbol(self):
         return get_eastern_zodiac_symbol(self.dob)
 
+    # noinspection PyBroadException
     def get_age(self):
         try:
             return get_age(self.dob)
@@ -318,8 +319,6 @@ class Profile(models.Model):
         :subs_list: QS or list of auth user's subreddit subscriptions.
         :fav_only: only consider objects in subs_list where is_favorite=True.
         """
-        if settings.DEBUG:
-            print('_set_common_not_common_subs() called...')
         self._common_subs = []
         self._not_common_subs = []
 
@@ -334,12 +333,8 @@ class Profile(models.Model):
         # exist in auth user's "subs_list_pks" and those that don't.
         for sub in self.subscribed_subs:
             if sub.sr.pk in subs_list_pks:
-                if settings.DEBUG:
-                    print('YES!', sub.sr.display_name)
                 self._common_subs.append(sub)
             else:
-                if settings.DEBUG:
-                    print('NOO', sub.sr.display_name)
                 self._not_common_subs.append(sub)
 
     def get_common_subs(self, user, fav_only=True):
@@ -352,8 +347,6 @@ class Profile(models.Model):
         :subs_list: QS or list of auth user's subreddit subscriptions.
         :fav_only: only consider objects in subs_list where is_favorite=True.
         """
-        if settings.DEBUG:
-            print('common_subs() called...')
         if not hasattr(self, '_common_subs'):
             self._set_common_not_common_subs(user, fav_only)
 
@@ -467,24 +460,24 @@ class Flag(models.Model):
                                       self.receiver.username)
 
     @classmethod
-    def delete_flag(cls, sender, receiver):
+    def delete_flag(cls, _sender, _receiver):
         """
         All flag relations are unique, so that there is only ever one flag set
         between a pair of users. Deleting a flag between two users always
         deletes all flags between them.
         """
-        for x in cls.objects.filter(sender=sender, receiver=receiver):
+        for x in cls.objects.filter(sender=_sender, receiver=_receiver):
             x.delete()
 
     @classmethod
-    def set_flag(cls, sender, receiver, flag):
+    def set_flag(cls, _sender, _receiver, flag):
         """
         All current flags are "unique", so that setting one of them
         on a user, automatically removes all previously set flags on
         that user.
         """
-        cls.delete_flag(sender, receiver)
-        return cls.objects.create(sender=sender, receiver=receiver,
+        cls.delete_flag(_sender, _receiver)
+        return cls.objects.create(sender=_sender, receiver=_receiver,
                                   flag=cls.FLAG_DICT[flag])
 
 
@@ -562,6 +555,7 @@ class Subscribed(models.Model):
         return '{} --> {}'.format(self.user.username, self.sr.name)
 
 
+# noinspection PyUnusedLocal,PyBroadException
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

@@ -42,6 +42,7 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
         fields = ('accessed', 'link_karma', 'comment_karma', 'lat', 'lng',
                   'sex', 'age', 'pic')
 
+    # noinspection PyMethodMayBeStatic
     def get_pic(self, obj):
         try:
             return obj.pics[0]['url']
