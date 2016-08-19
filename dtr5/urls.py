@@ -88,6 +88,8 @@ api_urlpatterns = [
     # Auth user, and auth user picture upload
     url(r'^api/v1/authuser$',
         views_api.authuser_detail, name='authuser_detail_api'),
+    url(r'^api/v1/authuser_subs$',
+        views_api.authuser_subs, name='authuser_subs_api'),
     url(r'^api/v1/authuser-picture$',
         views_api.authuser_picture, name='authuser_picture_api'),
 

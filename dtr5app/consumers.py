@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import Max
 from django.shortcuts import get_object_or_404
 
-from dtr5app.models import Message
+from dtr5app.models import Message, Subscribed
 from dtr5app.serializers import MessageSerializer
 from dtr5app.utils_common import json_serializer_helper
 from dtr5app.utils_push_notifications import simple_push_notification
@@ -107,3 +107,19 @@ def ws_disconnect(message):
     group_kw = get_group_id_for_user(message.user)
     Group(group_kw).discard(message.reply_channel)
     print('### WS disconnect: group_kw == {}'.format(group_kw))
+
+
+@channel_session_user
+def authuser_sub(message):
+    payload = get_request_object(message)
+
+    if '__all__' in payload:
+        # Select all or none
+        qs = Subscribed.objects.filter(user=message.user)
+        qs.update(is_favorite=bool(payload['__all__']))
+    else:
+        sub = json.loads(payload['sub'])
+        qs = Subscribed.objects.filter(user=message.user)
+        qs = qs.get(sr__display_name=sub['sr'])
+        qs.is_favorite = sub['is_favorite']
+        qs.save(update_fields=['is_favorite'])

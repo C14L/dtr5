@@ -18,7 +18,8 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from dtr5app.models import Visit, Sr, Flag, PushNotificationEndpoint, Message
+from dtr5app.models import Visit, Sr, Flag, PushNotificationEndpoint, Message, \
+    Subscribed
 from dtr5app.serializers import SubscribedSerializer, \
     AuthUserSerializer, BasicUserSerializer, ViewUserSerializer, \
     ViewSrSerializer, MessageSerializer
@@ -27,10 +28,12 @@ from dtr5app.utils import add_likes_sent, add_likes_recv, \
     add_matches_to_user_list, add_auth_user_latlng, \
     get_user_and_related_or_404, get_user_list_from_username_list, \
     get_user_list_after, get_prevnext_user, prepare_paginated_user_list, \
-    get_paginated_user_list, get_matches_user_list, count_matches
+    get_paginated_user_list, get_matches_user_list, count_matches, \
+    update_list_of_subscribed_subreddits
 from dtr5app.utils_push_notifications import simple_push_notification
 from dtr5app.utils_search import search_results_buffer, update_search_settings,\
     search_subreddit_users
+from simple_reddit_oauth import api
 from toolbox import force_int
 
 
@@ -286,8 +289,6 @@ def authuser_detail(request, format=None):
         return Response(status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
-        print('### request.data --> {}')
-        print(request.data)
         serializer = AuthUserSerializer(request.user, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -296,6 +297,20 @@ def authuser_detail(request, format=None):
 
     elif request.method == 'PATCH':
         pass  # TODO: implement PATCHing auth user model, then remove PUT.
+
+
+# noinspection PyUnusedLocal
+@login_required()
+@api_view(['GET', 'PUT'])
+def authuser_subs(request, format=None):
+    if request.method == 'PUT':
+        # Update subreddit list from Reddit before returning subs list.
+        subscribed = api.get_sr_subscriber(request, settings.SR_FETCH_LIMIT)
+        if subscribed:
+            update_list_of_subscribed_subreddits(request.user, subscribed)
+
+    sr_li = SubscribedSerializer(request.user.subs, many=True).data
+    return Response(data={'subs': sr_li})
 
 
 # noinspection PyUnusedLocal
