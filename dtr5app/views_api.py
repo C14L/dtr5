@@ -500,6 +500,7 @@ def visitors_api(request, format=None):
 def update_search_if_changed(opts, user, session_obj=None):
     """Update all posted search uptions in authuser's Profile."""
     changed = False
+
     if 'order_by' in opts and session_obj is not None:
         if session_obj.get('search_results_order', None) != opts['order_by']:
             changed = True
@@ -517,14 +518,23 @@ def update_search_if_changed(opts, user, session_obj=None):
             changed = True
         user.profile.f_distance = f_distance
 
+    f_minage, f_maxage = None, None
+
     if 'f_minage' in opts:
         f_minage = force_int(opts['f_minage'], min=18, max=99)
+    if 'f_maxage' in opts:
+        f_maxage = force_int(opts['f_maxage'], min=19, max=100)
+    if 'f_age' in opts:
+        f_minage, f_maxage = opts['f_age'].split('-', 1)
+        f_minage = force_int(f_minage, min=18, max=99)
+        f_maxage = force_int(f_maxage, min=19, max=100)
+
+    if f_minage:
         if user.profile.f_minage != f_minage:
             changed = True
         user.profile.f_minage = f_minage
 
-    if 'f_maxage' in opts:
-        f_maxage = force_int(opts['f_maxage'], min=19, max=100)
+    if f_maxage:
         if user.profile.f_maxage != f_maxage:
             changed = True
         user.profile.f_maxage = f_maxage
