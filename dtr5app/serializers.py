@@ -110,7 +110,7 @@ class AuthProfileSerializer(serializers.ModelSerializer):
 class AuthUserSerializer(serializers.ModelSerializer):
     profile = AuthProfileSerializer(many=False, read_only=False)
     # subs = serializers.SerializerMethodField()
-    subs = SubscribedSerializer(many=True, read_only=False)
+    subs = SubscribedSerializer(many=True, read_only=False, required=False)
 
     class Meta:
         model = User
@@ -119,10 +119,10 @@ class AuthUserSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'username', 'is_staff', 'is_superuser')
 
     # noinspection PyMethodMayBeStatic
-    def get_subs(self, obj):
-        li = Sr.objects.filter(users__user=obj.id)
-        li = li.values('users__is_favorite', 'display_name')
-        return li
+    # def get_subs(self, obj):
+    #     li = Sr.objects.filter(users__user=obj.id)
+    #     li = li.values('users__is_favorite', 'display_name')
+    #     return li
 
     def update(self, instance, validated_data):
         # User can only update fields in Profile instance. The username and
