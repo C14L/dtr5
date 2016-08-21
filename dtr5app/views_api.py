@@ -557,28 +557,6 @@ def update_search_if_changed(opts, user, session_obj=None):
             changed = True
         user.profile.f_over_18 = f_over_18
 
-    # Find active subreddits: loop through user's subs and those that are in
-    # the POST are active, all others are not.
-    # sr_fav = None
-    if 'sr-fav' in opts:
-        sr_fav = opts.get('sr-fav').split(',')
-        if settings.DEBUG:
-            print('# sr-fav == {}'.format(sr_fav))
-
-        new_li = user.subs.filter(sr__display_name__in=sr_fav)
-        if new_li:  # ignore empty fav list!
-            cur_li = user.subs.filter(is_favorite=True)
-            if new_li != cur_li:
-                changed = True
-
-            with transaction.atomic():
-                user.subs.all().update(is_favorite=False)
-                new_li.update(is_favorite=True)
-
-            if settings.DEBUG:
-                print('### new_li == {}'.format(new_li))
-                print('### cur_li == {}'.format(cur_li))
-
     if settings.DEBUG:
         print('# search_results_order == {}'.format(
             session_obj['search_results_order']))
