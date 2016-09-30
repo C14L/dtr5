@@ -62,6 +62,7 @@ def from_iso8601(when=None):
     return _when
 
 
+# noinspection PyShadowingBuiltins
 def force_int(x, min=None, max=None):
     """
     Receives any value and returns an integer. Values that can not be
@@ -90,6 +91,7 @@ def force_float(x):
     Receives any value and returns a float. Values that can not be
     parsed are returned as 0.0
     """
+    # noinspection PyBroadException
     try:
         return float(x)
     except:
@@ -111,6 +113,7 @@ def set_imgur_url(url="http://i.imgur.com/wPqDiEy.jpg", size='t'):
         https://i.imgur.com/f7VXJQF -- same but missng ext.
         https://imgur.com/S1dZBPm --  picture page
         https://imgur.com/gallery/HFoOCeg -- gallery link (don't always work)
+        http://m.imgur.com/182moWW -- mobile picture page
 
     :size: the required picture "size" Byte:
         See: http://api.imgur.com/models/image
@@ -127,8 +130,8 @@ def set_imgur_url(url="http://i.imgur.com/wPqDiEy.jpg", size='t'):
     """
     base = 'https://i.imgur.com/'
 
-    m = re.search(r'^https?://(?:i.)?imgur.com/(?:gallery/)?'
-                  r'(?P<name>[a-zA-Z0-9]{5,20}?)'
+    m = re.search(r'^https?://(?:[im].)?imgur.com/(?:gallery/)?'
+                  r'(?P<name>[a-zA-Z0-9]{5,20})'
                   r'(?P<ext>\.[a-zA-Z]{3,4})?$', url)
     if m:
         ext = m.group('ext') or '.jpg'
@@ -227,6 +230,7 @@ EASTERN_ZODIAC_UPPER_LIMIT = (  # from 1925-01-23 until 2044-01-29
 
 def get_western_zodiac_index(dob):
     """Gets a datetime.date value and returns its Western zodiac index"""
+    # noinspection PyBroadException
     try:
         mdd = int(dob.strftime('%m%d'))
         lim = WESTERN_ZODIAC_UPPER_LIMIT
@@ -251,6 +255,7 @@ def get_western_zodiac_symbol(dob):
 
 def get_eastern_zodiac_index(dob):
     """Gets a datetime.date value and returns its Eastern zodiac"""
+    # noinspection PyBroadException
     try:
         ymd = int(dob.strftime('%Y%m%d'))
         lim = EASTERN_ZODIAC_UPPER_LIMIT
