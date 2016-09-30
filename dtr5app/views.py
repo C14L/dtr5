@@ -126,7 +126,8 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
            'view_user': view_user,
            'user_list': user_list,
            'common_subs': view_user.profile.get_common_subs(request.user),
-           'not_common_subs': view_user.profile.get_not_common_subs(request.user),
+           'not_common_subs': view_user.profile.get_not_common_subs(
+               request.user),
            'is_match': request.user.profile.match_with(view_user),
            'is_like': request.user.profile.does_like(view_user),
            'is_nope': request.user.profile.does_nope(view_user),
