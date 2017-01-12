@@ -136,9 +136,9 @@ if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
 
     urlpatterns += static('/app/', document_root=
-                          '/home/chris/dev/new/reddmeet-material/dist/')
+                          '/home/chris/dev/new/dater5/dtr5-material/dist/')
     urlpatterns += static('/node_modules/', document_root=
-                          '/home/chris/dev/new/reddmeet-material/node_modules/')
+                          '/home/chris/dev/new/dater5/dtr5-material/node_modules/')
     urlpatterns += static('/s/', document_root=
                           path.join(settings.BASE_DIR, 'avatars/s/'))
     urlpatterns += static('/m/', document_root=
