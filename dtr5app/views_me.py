@@ -2,15 +2,15 @@
 All views that update user profile data.
 """
 
+from datetime import datetime, timedelta, date
+from time import time as unixtime
+
 import dateutil.parser
 import pytz
-from time import time as unixtime
-from datetime import datetime, timedelta, date
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-
 from django.http import HttpResponse, HttpResponseBadRequest, Http404
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
@@ -19,7 +19,6 @@ from django.views.decorators.http import require_http_methods
 from simple_reddit_oauth import api
 from toolbox import force_int, force_float, get_age
 from toolbox_imgur import set_imgur_url
-
 from .models import Subscribed, Flag, Report
 from .utils import get_matches_user_queryset, \
                    update_list_of_subscribed_subreddits, get_prevnext_user, \

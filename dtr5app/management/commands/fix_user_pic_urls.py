@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 from random import randrange
 
-from toolbox_imgur import get_pic_from_album, get_pic_from_gallery
+from toolbox_imgur import extract_image_src, re_topic
 from toolbox_imgur import re_album, re_gallery, re_noext, re_srpic
 
 
@@ -71,9 +71,11 @@ class Command(BaseCommand):
         base = 'https://i.imgur.com/'
 
         if re_album.search(url):
-            url = get_pic_from_album(url, size)
+            url = extract_image_src(url, size)
         elif re_gallery.search(url):
-            url = get_pic_from_gallery(url, size)
+            url = extract_image_src(url, size)
+        elif re_topic.search(url):
+            url = extract_image_src(url, size)
         elif re_noext.search(url):
             partial = url.rsplit('/', 1)[1]
             url = '{}{}{}.jpg'.format(base, partial, size)

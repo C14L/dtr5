@@ -3,58 +3,76 @@ import requests
 
 
 # E.g. http://imgur.com/a/Sxk3RM2
-re_album = re.compile(r'imgur\.com/a/[a-zA-Z0-9]{4,7}$')
+re_album = re.compile(r'imgur\.com/a/[a-z0-9]{4,9}(/new)?$',
+                      flags=re.IGNORECASE)
 
 # E.g. http://m.imgur.com/gallery/qXcqEM9
-re_gallery = re.compile(r'imgur.com/gallery/[a-zA-Z0-9]{5,9}$')
+#      http://imgur.com/gallery/rgMhYjO/new
+re_gallery = re.compile(r'imgur.com/gallery/[a-z0-9]{4,9}(/new)?$',
+                        flags=re.IGNORECASE)
 
-# E.g. http://m.imgur.com/dmkK3M2
-re_noext = re.compile(r'imgur.com/[a-zA-Z0-9]{6,8}$')
+# E.g. http://m.imgur.com/dmkK3M2  Http://imgur.com/gF245
+re_noext = re.compile(r'imgur.com/[a-z0-9]{4,9}$',
+                      flags=re.IGNORECASE)
 
 # E.g. http://imgur.com/r/IASIP/S0kKRM2
-re_srpic = re.compile(r'imgur.com/r/[a-zA-Z0-9_-]+/[a-zA-Z0-9]{4,9}$')
+re_srpic = re.compile(r'imgur.com/r/[a-z0-9_-]+/[a-z0-9]{4,9}$',
+                      flags=re.IGNORECASE)
 
-# Extract main picture URL from album / gallery page.
-re_albumpic = re.compile(r'<link\s+rel="image_src"\s+href="(?P<pic>.+?)"\s*/?>')
-re_gallpic = re.compile(r'<link\s+rel="image_src"\s+href="(?P<pic>.+?)"\s*/?>')
+# E.g. http://imgur.com/topic/Caturday/b1LXq
+#      https://imgur.com/t/golden_retriever/XYyQ1R1
+#      http://imgur.com/t/tyler_durden/tGNRnFp
+re_topic = re.compile(r'imgur.com/t(opic)?/[a-z0-9_-]+/[a-z0-9]{4,9}$',
+                      flags=re.IGNORECASE)
+
+# These usually return HTTP 403
+# E.g. https://scontent.xx.fbcdn.net/v/t1.0-9/133...958_n.jpg?oh=bb1...0dd
+re_fbcdn = re.compile(r'\.fbcdn\.net/')
+
+# Extract main picture URL from album / gallery / topic page.
+re_imgsrc = re.compile(r'<link\s+rel="image_src"\s+href="(?P<pic>.+?)"\s*/?>')
+
+# Extract main picture URL from video pages (mp4, gifv)
+re_vidsrc = re.compile(
+    r'<meta\s+itemprop="thumbnailUrl"\s+content="(?P<src>.+?h\.jpg)"\s+/>')
 
 
-def get_pic_from_album(url, size):
+def extract_image_src(url, size):
     # Find this line and extract the image, for example:
     # <link rel="image_src"   href="http://i.imgur.com/hOexIku.jpg"/>
     r = requests.get(url)
     if r.status_code != 200:
         return ''  # Empty URL
-    m = re_albumpic.search(r.text)
+    m = re_imgsrc.search(r.text)
 
     try:
         url = m.group('pic')
         url = url.replace('.jpg', '{}.jpg'.format(size))
     except AttributeError:
-        pass
+        url = maybe_video_src(r.text, size)
 
     return url
 
 
-def get_pic_from_gallery(url, size):
-    # Find this line and extract the image, for example:
-    # <link rel="image_src"  href="http://i.imgur.com/EYXdNa2.jpg"/>
-    r = requests.get(url)
-    if r.status_code != 200:
-        return ''  # Empty URL
-    m = re_albumpic.search(r.text)
+def maybe_video_src(text, size):
+    m = re_vidsrc.search(text)
 
+    # Returns a URL like this https://i.imgur.com/tGNRnFph.jpg
+    # The "h.jpg" means this is a static image for the video. To get the
+    # medium size, replace "h" with "m" as usual.
     try:
-        url = m.group('pic')
-        url = url.replace('.jpg', '{}.jpg'.format(size))
+        url = m.group('src')
+        url = url.replace('h.jpg', '{}.jpg'.format(size))
     except AttributeError:
-        pass
+        url = ''
 
     return url
 
 
 def set_imgur_url(url="http://i.imgur.com/wPqDiEy.jpg", size='t'):
     """
+    Fallback for any other URL format.
+
     Convert a variety of Imgur links into a direct link to the picture.
 
     :url: the URL with the full size image ID on Imgur, with no size Bytes.
@@ -85,9 +103,11 @@ def set_imgur_url(url="http://i.imgur.com/wPqDiEy.jpg", size='t'):
     base = 'https://i.imgur.com/'
 
     if re_album.search(url):
-        url = get_pic_from_album(url, size)
+        url = extract_image_src(url, size)
     elif re_gallery.search(url):
-        url = get_pic_from_gallery(url, size)
+        url = extract_image_src(url, size)
+    elif re_topic.search(url):
+        url = extract_image_src(url, size)
     elif re_noext.search(url):
         partial = url.rsplit('/', 1)[1]
         url = '{}{}{}.jpg'.format(base, partial, size)
