@@ -200,7 +200,13 @@ class Profile(models.Model):
     @property
     def pics(self):
         try:
-            return json.loads(self._pics)
+            li = json.loads(self._pics)
+            for x in li:
+                if 'imgur.com/' in x['url']:
+                    x['url_large'] = x['url'].replace('m.jpg', '.jpg')
+                else:
+                    x['url_large'] = x['url']
+            return li
         except ValueError:
             return []
 

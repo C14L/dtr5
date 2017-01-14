@@ -148,8 +148,10 @@
     <div class="pics">
       <ul>
         <li>
-          {% if view_user.pics_list.0.url %}
+          {% if view_user.pics_list.1.url %}
             <a href="#id_pics" class="pic" style="background-image: url({{view_user.pics_list.0.url}});"></a>
+          {% elif view_user.pics_list.0.url %}
+            <a href="{{view_user.pics_list.0.url_large}}" class="pic" style="background-image: url({{view_user.pics_list.0.url}});"></a>
           {% else %}
             <span class="pic" style="background-image: url({% static 'nopic.jpg' %});"></span>
           {% endif %}
@@ -246,12 +248,12 @@
     </section>
   </div>
 
-  {% if view_user.pics_list|length > 1 %}
+  {% if view_user.pics_list.1.url %}
     <div class="card nopadd" id="id_pics">
       <section class="nopadd fullpics">
         {% for pic in view_user.pics_list %}
           {% if pic.url %}
-            <span><a href="{{pic.src}}" class="pic" style="background-image: url({{pic.url}});"></a></span>
+            <span><a href="{{pic.url_large}}" class="pic" style="background-image: url({{pic.url}});"></a></span>
           {% else %}
             <span class="no"><span class="pic" style="background-image: url({% static 'nopic.jpg' %});"></span></span>
           {% endif %}
