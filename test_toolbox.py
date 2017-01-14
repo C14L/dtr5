@@ -1,6 +1,8 @@
 import toolbox
 from django.test import SimpleTestCase
 
+import toolbox_imgur
+
 
 class ToolboxTestCase(SimpleTestCase):
 
@@ -30,7 +32,7 @@ class ToolboxTestCase(SimpleTestCase):
                 'http://redddate.com/static/nopic.jpg')
 
         for i in range(len(orig)):
-            res = toolbox.set_imgur_url(orig[i], 'm')
+            res = toolbox_imgur.set_imgur_url(orig[i], 'm')
             self.assertEqual(res, mres[i])
-            res = toolbox.set_imgur_url(orig[i], 't')
+            res = toolbox_imgur.set_imgur_url(orig[i], 't')
             self.assertEqual(res, tres[i])

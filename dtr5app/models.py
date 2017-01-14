@@ -16,12 +16,11 @@ from toolbox import (
                      get_age,
                      get_eastern_zodiac,
                      get_eastern_zodiac_symbol,
-                     get_imgur_page_from_picture_url,
                      get_western_zodiac,
                      get_western_zodiac_symbol,
-                     set_imgur_url,
                      sr_str_to_list,
                     )
+from toolbox_imgur import set_imgur_url, get_imgur_page_from_picture_url
 
 
 class Profile(models.Model):
@@ -214,7 +213,8 @@ class Profile(models.Model):
         # For all pictures, make sure to use the right imgur size.
         for pic in li:
             if '//i.imgur.com/' in pic['url']:
-                pic['src'] = get_imgur_page_from_picture_url(pic['url'])
+                pass
+                # pic['src'] = get_imgur_page_from_picture_url(pic['url'])
                 # do the same for other common image hosters... who?
                 # -- TODO --
         # Serialilze pics list into JSON string.

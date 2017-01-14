@@ -2,12 +2,13 @@
 Collection of random simple general-purpose helper functions.
 """
 
-from datetime import date, datetime
-from geopy.distance import great_circle
-import dateutil.parser
 import math
+from datetime import date, datetime
+
+import dateutil.parser
 import pytz
 import re
+from geopy.distance import great_circle
 
 
 def meters_in_km(m):
@@ -96,61 +97,6 @@ def force_float(x):
         return float(x)
     except:
         return 0
-
-
-# --- Parse image file names ---------------------------------------- #
-
-
-def set_imgur_url(url="http://i.imgur.com/wPqDiEy.jpg", size='t'):
-    """
-    Convert a variety of Imgur links into a direct link to the picture.
-
-    :url: the URL with the full size image ID on Imgur, with no size Bytes.
-
-    Examples:
-
-        https://i.imgur.com/kMoI9Vn.jpg -- full size picture
-        https://i.imgur.com/f7VXJQF -- same but missng ext.
-        https://imgur.com/S1dZBPm --  picture page
-        https://imgur.com/gallery/HFoOCeg -- gallery link (don't always work)
-        http://m.imgur.com/182moWW -- mobile picture page
-
-    :size: the required picture "size" Byte:
-        See: http://api.imgur.com/models/image
-
-        s = Small Square (90x90)
-        b = Big Square (160x160)
-        t = Small Thumbnail (160x160)
-        m = Medium Thumbnail (320x320)
-        l = Large Thumbnail (640x640)
-        h = Huge Thumbnail (1024x1024)
-          = original upload size
-
-    If :url: is not a valid Imgur URL, the value is returned unchanged.
-    """
-    base = 'https://i.imgur.com/'
-
-    m = re.search(r'^https?://(?:[im].)?imgur.com/(?:gallery/)?'
-                  r'(?P<name>[a-zA-Z0-9]{5,20})'
-                  r'(?P<ext>\.[a-zA-Z]{3,4})?$', url)
-    if m:
-        ext = m.group('ext') or '.jpg'
-        url = '{}{}{}{}'.format(base, m.group('name'), size, ext)
-
-    return url
-
-
-def get_imgur_page_from_picture_url(url):
-    """
-    Returns the URL of the containing page for a picture URL
-    on imgur.com
-    """
-    m = re.search(r'^https?://i.imgur.com/(?P<name>[a-zA-Z0-9]{2,20})'
-                  r'[stml]?\.(?P<ext>jpe?g|gif|png|webp)$', url)
-    if m:
-        return 'https://imgur.com/{}'.format(m.group('name'))
-    else:
-        return ''
 
 
 # --- Date of Birth and Zodiac -------------------------------------- #

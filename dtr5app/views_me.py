@@ -17,7 +17,8 @@ from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 
 from simple_reddit_oauth import api
-from toolbox import force_int, force_float, set_imgur_url, get_age
+from toolbox import force_int, force_float, get_age
+from toolbox_imgur import set_imgur_url
 
 from .models import Subscribed, Flag, Report
 from .utils import get_matches_user_queryset, \
