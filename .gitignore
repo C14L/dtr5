@@ -1,9 +1,10 @@
 # More in: ~/dev/global-settings/.gitignore
 
+avatars/
 www/
 ng-app/libs/
 static_files/
 dtr5/settings_secrets.py
 NOTES
 simple_reddit_oauth
-**/__*
+**/__pycache__
