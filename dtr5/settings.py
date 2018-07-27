@@ -133,6 +133,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dtr5.wsgi.application'
+ASGI_APPLICATION = 'dtr5.wsgi.application'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

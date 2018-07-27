@@ -7,7 +7,7 @@ import pytz
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext

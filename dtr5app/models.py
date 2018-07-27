@@ -25,9 +25,9 @@ from toolbox_imgur import set_imgur_url, get_imgur_page_from_picture_url
 
 class Profile(models.Model):
     """All user specific information."""
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                primary_key=True, editable=False,
-                                related_name="profile")
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, 
+        primary_key=True, editable=False, related_name="profile")
     # static Reddit user account data:
     name = models.CharField(default="", max_length=20)
     created = models.DateField(null=True, default=None)  # REDDIT accunt created
@@ -446,12 +446,12 @@ class Flag(models.Model):
     NOPE_FLAG = 2
     BLOCK_FLAG = 3
     REPORT_FLAG = 4
-    FLAG_CHOICES = ((LIKE_FLAG, 'like'), (NOPE_FLAG, 'nope'),
-                    (BLOCK_FLAG, 'block'), (REPORT_FLAG, 'report'), )
+    FLAG_CHOICES = (
+        (LIKE_FLAG, 'like'), (NOPE_FLAG, 'nope'), (BLOCK_FLAG, 'block'), (REPORT_FLAG, 'report'))
     FLAG_DICT = {x[1]: x[0] for x in FLAG_CHOICES}
 
-    sender = models.ForeignKey(User, related_name="flags_sent")
-    receiver = models.ForeignKey(User, related_name="flags_received")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="flags_sent")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="flags_received")
     flag = models.PositiveSmallIntegerField(blank=False, choices=FLAG_CHOICES)
     created = models.DateTimeField(default=now)
 
@@ -461,9 +461,8 @@ class Flag(models.Model):
         unique_together = ['sender', 'receiver', 'flag']
 
     def __str__(self):
-        return '{} --{}--> {}'.format(self.sender.username,
-                                      self.get_flag_display(),
-                                      self.receiver.username)
+        return '<Flag: {} --{}--> {}>'.format(
+            self.sender.username, self.get_flag_display(), self.receiver.username)
 
     @classmethod
     def delete_flag(cls, _sender, _receiver):
@@ -483,8 +482,8 @@ class Flag(models.Model):
         that user.
         """
         cls.delete_flag(_sender, _receiver)
-        return cls.objects.create(sender=_sender, receiver=_receiver,
-                                  flag=cls.FLAG_DICT[flag])
+        return cls.objects.create(
+            sender=_sender, receiver=_receiver, flag=cls.FLAG_DICT[flag])
 
 
 class Report(models.Model):
@@ -493,8 +492,8 @@ class Report(models.Model):
         (1, 'spam'), (2, 'personal information'), (3, 'inapropriate picture'),
         (4, 'sexualizing minors'), (5, 'other (write below)')))
 
-    sender = models.ForeignKey(User, related_name="reports_sent")
-    receiver = models.ForeignKey(User, related_name="reports_received")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reports_sent")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reports_received")
     created = models.DateTimeField(default=now)
     resolved = models.DateTimeField(default=None, null=True, blank=True)
     reason = models.PositiveSmallIntegerField(choices=REASON_CHOICES)
@@ -535,13 +534,12 @@ class Sr(models.Model):
         ordering = ['display_name']
 
     def __str__(self):
-        return '{} ({}/{})'.format(self.name,
-                                   self.subscribers_here, self.subscribers)
+        return '<Sr: {} ({}/{})>'.format(self.name, self.subscribers_here, self.subscribers)
 
 
 class Subscribed(models.Model):
-    user = models.ForeignKey(User, editable=False, related_name="subs")
-    sr = models.ForeignKey(Sr, editable=False, related_name="users")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, editable=False, related_name="subs")
+    sr = models.ForeignKey(Sr, on_delete=models.CASCADE, editable=False, related_name="users")
     user_is_contributor = models.BooleanField(default=False)
     user_is_moderator = models.BooleanField(default=False)
     user_is_subscriber = models.BooleanField(default=True)
@@ -558,7 +556,7 @@ class Subscribed(models.Model):
         # unique_together = [user, sr]
 
     def __str__(self):
-        return '{} --> {}'.format(self.user.username, self.sr.name)
+        return '<Subscribed: {} --> {}>'.format(self.user.username, self.sr.name)
 
 
 # noinspection PyUnusedLocal,PyBroadException
@@ -575,10 +573,10 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class Visit(models.Model):
     """Remember the last visit of a user to another user's profile page."""
-    visitor = models.ForeignKey(User, editable=False, related_name='visited',
-                                db_index=True)
-    host = models.ForeignKey(User, editable=False, related_name='was_visited',
-                             db_index=True)
+    visitor = models.ForeignKey(
+        User, on_delete=models.CASCADE, editable=False, related_name='visited', db_index=True)
+    host = models.ForeignKey(
+        User, on_delete=models.CASCADE, editable=False, related_name='was_visited', db_index=True)
     created = models.DateTimeField(default=now)
     hidden = models.BooleanField(default=False)
 
@@ -599,7 +597,7 @@ class Visit(models.Model):
 
 class PushNotificationEndpoint(models.Model):
     """Store users push notification subscriptions for cloud messaging."""
-    user = models.ForeignKey(User, related_name='endpoints')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='endpoints')
     sub = models.CharField(max_length=2000, blank=False, unique=True)
     latest = models.DateTimeField(default=now)  # when the last notif. was send
 
@@ -609,8 +607,8 @@ class PushNotificationEndpoint(models.Model):
 
 class Message(models.Model):
     msg = models.CharField(max_length=240, blank=False, null=False)
-    sender = models.ForeignKey(User, related_name='sent_messages')
-    receiver = models.ForeignKey(User, related_name='received_messages')
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='sent_messages')
+    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='received_messages')
     created = models.DateTimeField(default=now)
 
     class Meta:
@@ -619,8 +617,7 @@ class Message(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return '{} -> {}'.format(
-            self.sender.username, self.receiver.username, self.created)
+        return '<Message: {} --> {}>'.format(self.sender.username, self.receiver.username)
 
     @classmethod
     def get_messages_list(cls, after, user1, user2):
