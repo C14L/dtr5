@@ -11,7 +11,7 @@ from django.http import (
     Http404,
     HttpResponseRedirect,
 )
-from django.shortcuts import redirect, render_to_response, get_object_or_404
+from django.shortcuts import redirect, render, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 
@@ -38,13 +38,12 @@ from .utils_search import search_results_buffer, search_subreddit_users
 
 
 @require_http_methods(["GET", "HEAD"])
-def home_view(request, template_name='dtr5app/home_anon.html'):
-    if request.user.is_authenticated():
+def home_view(request):
+    if request.user.is_authenticated:
         return redirect(reverse('me_results_page'))
-
-    ctx = {'auth_url': api.make_authorization_url(request)}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+    template_name = 'dtr5app/home_anon.html'
+    context = {'auth_url': api.make_authorization_url(request)}
+    return render(request, template_name, context)
 
 
 @login_required

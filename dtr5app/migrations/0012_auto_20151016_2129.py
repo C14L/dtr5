@@ -21,8 +21,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
                 ('flag', models.PositiveSmallIntegerField(choices=[(1, 'like'), (2, 'nope'), (3, 'block')])),
                 ('created', models.DateTimeField(default=datetime.datetime(2015, 10, 16, 21, 29, 28, 16741, tzinfo=utc))),
-                ('receiver', models.ForeignKey(related_name='flags_received', to=settings.AUTH_USER_MODEL)),
-                ('sender', models.ForeignKey(related_name='flags_sent', to=settings.AUTH_USER_MODEL)),
+                ('receiver', models.ForeignKey(on_delete=models.CASCADE, related_name='flags_received', to=settings.AUTH_USER_MODEL)),
+                ('sender', models.ForeignKey(on_delete=models.CASCADE, related_name='flags_sent', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AlterModelOptions(

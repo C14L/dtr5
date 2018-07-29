@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Profile',
             fields=[
-                ('user', models.OneToOneField(primary_key=True, serialize=False, related_name='profile', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(on_delete=models.CASCADE, primary_key=True, serialize=False, related_name='profile', to=settings.AUTH_USER_MODEL)),
                 ('name', models.CharField(max_length=20, default='')),
                 ('created', models.DateField(default=None, null=True)),
                 ('link_karma', models.IntegerField(default=0)),
@@ -62,8 +62,8 @@ class Migration(migrations.Migration):
                 ('user_is_subscriber', models.BooleanField(default=True)),
                 ('user_is_banned', models.BooleanField(default=False)),
                 ('user_is_muted', models.BooleanField(default=False)),
-                ('sr', models.ForeignKey(editable=False, related_name='users', to='dtr5app.Sr')),
-                ('user', models.ForeignKey(editable=False, related_name='subs', to=settings.AUTH_USER_MODEL)),
+                ('sr', models.ForeignKey(on_delete=models.CASCADE, editable=False, related_name='users', to='dtr5app.Sr')),
+                ('user', models.ForeignKey(on_delete=models.CASCADE, editable=False, related_name='subs', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'Subreddit subscription',

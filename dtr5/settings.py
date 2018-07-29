@@ -49,9 +49,12 @@ AUTHENTICATION_BACKENDS = (
 # Use memcached for sessions. Careful: cache size has to be large enough! Once
 # the cache fills up, random items will be evicted, i.e. sessions dumped.
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -76,15 +79,15 @@ INSTALLED_APPS = (
 
 redis_host = os.environ.get('REDIS_HOST', 'localhost')
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "asgi_redis.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(redis_host, 6379)],
-        },
-        "ROUTING": "dtr5.routing.channel_routing",
-    },
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgi_redis.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [(redis_host, 6379)],
+#         },
+#         "ROUTING": "dtr5.routing.channel_routing",
+#     },
+# }
 
 # CHANNEL_LAYERS = {
 #     "default": {
@@ -94,23 +97,23 @@ CHANNEL_LAYERS = {
 #     },
 # }
 
-MIDDLEWARE_CLASSES = (
-    'dtr5app.middleware.CheckSiteTemporarilyUnavailable',
-    'dtr5app.middleware.CheckSiteUnavailableIfSiteIsOnlineNotFound',
+MIDDLEWARE = (
+    # 'dtr5app.middleware.CheckSiteTemporarilyUnavailable',
+    # 'dtr5app.middleware.CheckSiteUnavailableIfSiteIsOnlineNotFound',
 
     'django.middleware.common.BrokenLinkEmailsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
 
-    'dtr5app.middleware.UserSetDefaultLocalizationValues',
-    'dtr5app.middleware.UserProfileLastActiveMiddleware',
+    # 'dtr5app.middleware.UserSetDefaultLocalizationValues',
+    # 'dtr5app.middleware.UserProfileLastActiveMiddleware',
 )
 
 ROOT_URLCONF = 'dtr5.urls'
@@ -133,7 +136,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dtr5.wsgi.application'
-ASGI_APPLICATION = 'dtr5.wsgi.application'
+ASGI_APPLICATION = 'dtr5.routing.application'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

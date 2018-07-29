@@ -20,8 +20,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
                 ('msg', models.CharField(max_length=240)),
                 ('created', models.DateTimeField(default=django.utils.timezone.now)),
-                ('receiver', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='received_messages')),
-                ('sender', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='sent_messages')),
+                ('receiver', models.ForeignKey(on_delete=models.SET_NULL, null=True, to=settings.AUTH_USER_MODEL, related_name='received_messages')),
+                ('sender', models.ForeignKey(on_delete=models.SET_NULL, null=True, to=settings.AUTH_USER_MODEL, related_name='sent_messages')),
             ],
             options={
                 'verbose_name': 'private message',

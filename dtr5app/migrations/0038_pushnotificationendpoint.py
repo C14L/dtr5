@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
                 ('endpoint', models.CharField(max_length=1000, unique=True)),
                 ('keys', models.CharField(max_length=1000)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='endpoints')),
+                ('user', models.ForeignKey(on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL, related_name='endpoints')),
             ],
         ),
     ]

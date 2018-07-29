@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
                 ('url', models.CharField(max_length=150)),
-                ('user', models.ForeignKey(related_name='pics', editable=False, to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(on_delete=models.CASCADE, related_name='pics', editable=False, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'picture',

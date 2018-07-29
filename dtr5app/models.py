@@ -2,6 +2,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
 from django.db.models import Q
 from django.db.models.fields import NOT_PROVIDED
@@ -69,7 +70,8 @@ class Profile(models.Model):
     tagline = models.CharField(default='', max_length=160)          # unused
     height = models.PositiveSmallIntegerField(default=0)  # in cm   # unused
     weight = models.PositiveSmallIntegerField(default=0)  # in kg   # unused
-    _lookingfor = models.CommaSeparatedIntegerField(  # settings.LOOKINGFOR
+    _lookingfor = models.CharField(  # settings.LOOKINGFOR
+        validators=[validate_comma_separated_integer_list],
         max_length=50, blank=True, default='')
     relstatus = models.PositiveSmallIntegerField(default=1,
                                                  choices=settings.RELSTATUS)
@@ -607,8 +609,10 @@ class PushNotificationEndpoint(models.Model):
 
 class Message(models.Model):
     msg = models.CharField(max_length=240, blank=False, null=False)
-    sender = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='sent_messages')
-    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='received_messages')
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, 
+            null=True, related_name='sent_messages')
+    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, 
+            null=True, related_name='received_messages')
     created = models.DateTimeField(default=now)
 
     class Meta:

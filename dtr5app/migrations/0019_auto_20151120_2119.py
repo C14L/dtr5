@@ -21,8 +21,8 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(default=django.utils.timezone.now)),
                 ('reason', models.PositiveSmallIntegerField(choices=[(1, 'spam'), (2, 'personal information'), (3, 'inapropriate picture'), (4, 'sexualizing minors'), (5, 'other (write below)')])),
                 ('details', models.TextField(default='')),
-                ('receiver', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='reports_received')),
-                ('sender', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='reports_sent')),
+                ('receiver', models.ForeignKey(on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL, related_name='reports_received')),
+                ('sender', models.ForeignKey(on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL, related_name='reports_sent')),
             ],
             options={
                 'verbose_name_plural': 'user reports',

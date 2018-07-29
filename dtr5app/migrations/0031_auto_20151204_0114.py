@@ -20,8 +20,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('created', models.DateTimeField(default=django.utils.timezone.now)),
                 ('hidden', models.BooleanField(default=False)),
-                ('host', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, related_name='was_visited')),
-                ('visitor', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, related_name='visited')),
+                ('host', models.ForeignKey(on_delete=models.SET_NULL, null=True, editable=False, to=settings.AUTH_USER_MODEL, related_name='was_visited')),
+                ('visitor', models.ForeignKey(on_delete=models.SET_NULL, null=True, editable=False, to=settings.AUTH_USER_MODEL, related_name='visited')),
             ],
         ),
         migrations.AddField(
@@ -32,6 +32,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='user',
-            field=models.OneToOneField(serialize=False, related_name='profile', to=settings.AUTH_USER_MODEL, primary_key=True, editable=False),
+            field=models.OneToOneField(on_delete=models.CASCADE, serialize=False, related_name='profile', to=settings.AUTH_USER_MODEL, primary_key=True, editable=False),
         ),
     ]
