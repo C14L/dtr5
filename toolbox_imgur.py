@@ -3,27 +3,22 @@ import requests
 
 
 # E.g. http://imgur.com/a/Sxk3RM2
-re_album = re.compile(r'imgur\.com/a/[a-z0-9]{4,9}(/new)?$',
-                      flags=re.IGNORECASE)
+re_album = re.compile(r'imgur\.com/a/[a-z0-9]{4,9}(/new)?$', flags=re.IGNORECASE)
 
 # E.g. http://m.imgur.com/gallery/qXcqEM9
 #      http://imgur.com/gallery/rgMhYjO/new
-re_gallery = re.compile(r'imgur.com/gallery/[a-z0-9]{4,9}(/new)?$',
-                        flags=re.IGNORECASE)
+re_gallery = re.compile(r'imgur.com/gallery/[a-z0-9]{4,9}(/new)?$', flags=re.IGNORECASE)
 
 # E.g. http://m.imgur.com/dmkK3M2  Http://imgur.com/gF245
-re_noext = re.compile(r'imgur.com/[a-z0-9]{4,9}$',
-                      flags=re.IGNORECASE)
+re_noext = re.compile(r'imgur.com/[a-z0-9]{4,9}$', flags=re.IGNORECASE)
 
 # E.g. http://imgur.com/r/IASIP/S0kKRM2
-re_srpic = re.compile(r'imgur.com/r/[a-z0-9_-]+/[a-z0-9]{4,9}$',
-                      flags=re.IGNORECASE)
+re_srpic = re.compile(r'imgur.com/r/[a-z0-9_-]+/[a-z0-9]{4,9}$', flags=re.IGNORECASE)
 
 # E.g. http://imgur.com/topic/Caturday/b1LXq
 #      https://imgur.com/t/golden_retriever/XYyQ1R1
 #      http://imgur.com/t/tyler_durden/tGNRnFp
-re_topic = re.compile(r'imgur.com/t(opic)?/[a-z0-9_-]+/[a-z0-9]{4,9}$',
-                      flags=re.IGNORECASE)
+re_topic = re.compile(r'imgur.com/t(opic)?/[a-z0-9_-]+/[a-z0-9]{4,9}$', flags=re.IGNORECASE)
 
 # These usually return HTTP 403
 # E.g. https://scontent.xx.fbcdn.net/v/t1.0-9/133...958_n.jpg?oh=bb1...0dd
@@ -33,8 +28,7 @@ re_fbcdn = re.compile(r'\.fbcdn\.net/')
 re_imgsrc = re.compile(r'<link\s+rel="image_src"\s+href="(?P<pic>.+?)"\s*/?>')
 
 # Extract main picture URL from video pages (mp4, gifv)
-re_vidsrc = re.compile(
-    r'<meta\s+itemprop="thumbnailUrl"\s+content="(?P<src>.+?h\.jpg)"\s+/>')
+re_vidsrc = re.compile(r'<meta\s+itemprop="thumbnailUrl"\s+content="(?P<src>.+?h\.jpg)"\s+/>')
 
 
 def extract_image_src(url, size):
@@ -115,9 +109,10 @@ def set_imgur_url(url="http://i.imgur.com/wPqDiEy.jpg", size='t'):
         partial = url.rsplit('/', 1)[1]
         url = '{}{}{}.jpg'.format(base, partial, size)
     else:
-        m = re.search(r'^https?://(?:[im].)?imgur.com/(?:gallery/)?'
-                      r'(?P<name>[a-zA-Z0-9]{5,20})'
-                      r'(?P<ext>\.[a-zA-Z]{3,4})?$', url)
+        m = re.search(
+            r'^https?://(?:[im].)?imgur.com/(?:gallery/)?'
+            r'(?P<name>[a-zA-Z0-9]{5,20})'
+            r'(?P<ext>\.[a-zA-Z]{3,4})?$', url)
         if m:
             ext = m.group('ext') or '.jpg'
             url = '{}{}{}{}'.format(base, m.group('name'), size, ext)
@@ -130,8 +125,10 @@ def get_imgur_page_from_picture_url(url):
     Returns the URL of the containing page for a picture URL
     on imgur.com
     """
-    m = re.search(r'^https?://i.imgur.com/(?P<name>[a-zA-Z0-9]{2,20})'
-                  r'[stml]?\.(?P<ext>jpe?g|gif|png|webp)$', url)
+    m = re.search(
+        r'^https?://i.imgur.com/(?P<name>[a-zA-Z0-9]{2,20})'
+        r'[stml]?\.(?P<ext>jpe?g|gif|png|webp)$', url)
+
     if m:
         return 'https://imgur.com/{}'.format(m.group('name'))
     else:
