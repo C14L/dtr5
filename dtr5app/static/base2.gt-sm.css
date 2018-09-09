@@ -741,8 +741,7 @@ body.as-overlay main,
 body.signup-steps main {
   display: block;
   min-height: 100vh; width: 100%;
-  background: #FFFFFF url(/static/reddit2.jpg) center center no-repeat;
-  background-size: cover;
+  background: #FFFFFF;
 }
 body.as-overlay article,
 body.signup-steps article {

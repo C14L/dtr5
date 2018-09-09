@@ -55,7 +55,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
-                # 'dtr5app.context_processors.selected_settings',
+                'dtr5app.context_processors.selected_settings',
             ],
         },
     },

@@ -6,16 +6,10 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 from simple_reddit_oauth import urls as simple_reddit_oauth_urls
 
-<<<<<<< Updated upstream
-from dtr5app import views_misc, views_me, views_mod, views_api
-
-from dtr5app.views import anonymous as views_anon
-=======
 from dtr5app import views_me, views_mod, views_api
 
 from dtr5app.views import anonymous as views_anon
 from dtr5app.views import authenticated as views_auth
->>>>>>> Stashed changes
 
 
 urlpatterns = [
@@ -26,16 +20,10 @@ urlpatterns = [
 
     # Homepage
     url(r'^$', views_anon.home_view, name="home_page"),
-<<<<<<< Updated upstream
-
-    # Show all users that subscribe to a specific subreddit.
-    url(r'^r/(?P<sr>' + settings.RSTR_SR_NAME + ')/$', views_anon.sr_view, name="sr_page"),
-=======
     # Show all users that subscribe to a specific subreddit.
     url(r'^r/(?P<sr>' + settings.RSTR_SR_NAME + ')/$', views_anon.sr_view, name="sr_page"),
     # Site usage stats
     url(r'^stats/$', views_anon.stats_view, name="stats"),
->>>>>>> Stashed changes
 
     ### Views accessible only to authenticated users ###
 
@@ -48,33 +36,16 @@ urlpatterns = [
     url(r'^me/pic/$', views_me.me_picture_view, name="me_picture_page"),
     url(r'^me/pic/delete$', views_me.me_pic_del_view, name="me_pic_del_page"),
     url(r'^me/flag/delete$', views_me.me_flag_del_view, name="me_flag_del_page"),
-<<<<<<< Updated upstream
-    url(r'^me/visitors/$', views_misc.viewed_me_view, name="me_viewed_me_page"),
-    url(r'^me/upvotes_inbox$', views_misc.likes_recv_view, name="me_recv_like_page"),
-    url(r'^me/upvotes_sent$', views_misc.likes_sent_view, name="me_like_page"),
-    url(r'^me/nopes_sent$', views_misc.nope_view, name="me_nope_page"),
-=======
     url(r'^me/visitors/$', views_auth.viewed_me_view, name="me_viewed_me_page"),
     url(r'^me/upvotes_inbox$', views_auth.likes_recv_view, name="me_recv_like_page"),
     url(r'^me/upvotes_sent$', views_auth.likes_sent_view, name="me_like_page"),
     url(r'^me/nopes_sent$', views_auth.nope_view, name="me_nope_page"),
->>>>>>> Stashed changes
     url(r'^me/account/delete$', views_me.me_account_del_view, name="me_account_del_page"),
 
     # Refill search results buffer if necessary are redirect.
     url(r'^search/$', views_me.me_search_view, name="me_search_page"),
 
     # Search results as paginated list view of user profiles
-<<<<<<< Updated upstream
-    url(r'^results/$', views_misc.results_view, name="me_results_page"),
-
-    # Show a list of matches (auth user and view user mutual likes).
-    url(r'^matches/$', views_misc.matches_view, name="matches_page"),
-
-    # Show "view user"'s profile page.
-    url(r'^u/(?P<username>' + settings.RSTR_USERNAME + r')/$',
-        views_misc.profile_view, name="profile_page"),
-=======
     url(r'^results/$', views_auth.results_view, name="me_results_page"),
 
     # Show a list of matches (auth user and view user mutual likes).
@@ -82,7 +53,6 @@ urlpatterns = [
 
     # Show "view user"'s profile page.
     url(r'^u/(?P<username>' + settings.RSTR_USERNAME + r')/$', views_auth.profile_view, name="profile_page"),
->>>>>>> Stashed changes
 
     # Let auth user set a flag on view user (like, nope, block, etc).
     url(r'^flag/(?P<action>set|delete)/'
@@ -90,24 +60,11 @@ urlpatterns = [
         r'(?P<username>' + settings.RSTR_USERNAME + r')/$',
         views_me.me_flag_view, name="me_flag_page"),
 
-<<<<<<< Updated upstream
-    url(r'^mod/deluser/(?P<pk>\d*)/$', views_mod.mod_deluser_view,
-        name="mod_deluser_page"),
-    url(r'^mod/reports/$', views_mod.mod_report_view,
-        name="mod_report_page"),
-    url(r'^mod/reports/(?P<pk>\d*)/$', views_mod.mod_report_view,
-        name="mod_report_item_page"),
-
-    url(r'^stats/$', views_misc.stats_view, name="stats"),
-
-    url(r'^map/$', views_misc.usermap_view, name="usermap"),
-=======
     url(r'^mod/deluser/(?P<pk>\d*)/$', views_mod.mod_deluser_view, name="mod_deluser_page"),
     url(r'^mod/reports/$', views_mod.mod_report_view, name="mod_report_page"),
     url(r'^mod/reports/(?P<pk>\d*)/$', views_mod.mod_report_view, name="mod_report_item_page"),
 
     url(r'^map/$', views_auth.usermap_view, name="usermap"),
->>>>>>> Stashed changes
 
     # API URLs
 

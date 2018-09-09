@@ -1,20 +1,8 @@
-<<<<<<< Updated upstream
-# Views accessible to anonymous users.
-=======
 from datetime import datetime, timedelta, date
->>>>>>> Stashed changes
 
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseNotFound, Http404, HttpResponseRedirect
 from django.shortcuts import redirect, render, render_to_response, get_object_or_404
-<<<<<<< Updated upstream
-from django.views.decorators.http import require_http_methods
-
-from simple_reddit_oauth import api as reddit_api
-
-from toolbox import force_int
-
-=======
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
@@ -25,43 +13,11 @@ from dtr5app import utils_stats
 from dtr5app.models import Sr, Flag, Visit
 from dtr5app.utils import add_likes_sent, add_likes_recv, add_matches_to_user_list, \
     get_paginated_user_list, get_subs_for_user
->>>>>>> Stashed changes
 from dtr5app.utils_search import search_results_buffer, search_subreddit_users
 
 
 @require_http_methods(["GET", "HEAD"])
 def home_view(request):
-<<<<<<< Updated upstream
-    if request.user.is_authenticated:
-        return redirect(reverse('me_results_page'))
-
-    template_name = 'dtr5app/anonymous/home.html'
-
-    context = {
-        'auth_url': reddit_api.make_authorization_url(request),
-    }
-
-    return render(request, template_name, context)
-
-
-@require_http_methods(["GET", "HEAD"])
-def sr_view(request, sr, template_name='dtr5app/sr.html'):
-    """
-    Display a list of users who are subscribed to a subreddit.
-    """
-    pg = int(request.GET.get('page', 1))
-    view_sr = get_object_or_404(Sr, display_name__iexact=sr)
-
-    if request.user.is_anonymous() and not view_sr.display_name.lower() in \
-            [x.lower() for x in settings.SR_ANON_ACCESS_ALLOWED]:
-        params = ''  # urlencode({'next': request.get_full_path()})
-        return HttpResponseRedirect('{}?{}'.format(settings.LOGIN_URL, params))
-
-    params = dict()
-    params['order'] = request.GET.get('order', '-last_login')
-    params['has_verified_email'] = \
-        bool(force_int(request.GET.get('has_verified_email', 0)))
-=======
     template_name = 'dtr5app/anonymous/home.html'
 
     if request.user.is_authenticated:
@@ -83,7 +39,6 @@ def sr_view(request, sr):
     params = dict()
     params['order'] = request.GET.get('order', '-last_login')
     params['has_verified_email'] = bool(force_int(request.GET.get('has_verified_email', 0)))
->>>>>>> Stashed changes
     params['hide_no_pic'] = bool(force_int(request.GET.get('hide_no_pic', 1)))
     params['sex'] = force_int(request.GET.get('s', 0))
     params['distance'] = force_int(request.GET.get('dist', 1))
@@ -91,19 +46,11 @@ def sr_view(request, sr):
     params['minage'] = force_int(request.GET.get('minage', 18))
     if params['minage'] not in range(18, 100):
         params['minage'] = 18
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
     params['maxage'] = force_int(request.GET.get('maxage', 100))
     if params['maxage'] not in range(params['minage'], 101):
         params['maxage'] = 100
 
-<<<<<<< Updated upstream
-    if request.user.is_authenticated():
-=======
     if request.user.is_authenticated:
->>>>>>> Stashed changes
         params['user_id'] = request.user.id
         params['lat'] = request.user.profile.lat
         params['lng'] = request.user.profile.lng
@@ -130,8 +77,6 @@ def sr_view(request, sr):
         'user_subs_all': get_subs_for_user(request.user),
     })
 
-<<<<<<< Updated upstream
-=======
 
 def stats_view(request):
     template_name = 'dtr5app/anonymous/stats.html'
@@ -158,4 +103,3 @@ def stats_view(request):
     })
 
 
->>>>>>> Stashed changes

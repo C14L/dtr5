@@ -5,28 +5,61 @@
 
 {% block body_classes %}home-anon signup-steps step-1{% endblock %}
 
-{% block head %}{% endblock %}
+{% block head %}
+<style>
+
+.about {
+  max-width: 990px;
+  min-width: 300px;
+  margin: 20px auto;
+}
+
+.home-01 {
+  background: rgba(0,82,128,1);  /* #84B4E4; */
+  padding: 60px 0;
+  text-align: center;  
+}
+
+.home-02 {
+  background: #F3F3F3;
+  padding: 20px;
+  text-align: center;  
+}
+
+p {
+  text-align: center;
+}
+
+</style>
+{% endblock %}
 
 {% block main %}
 
-{% include 'dtr5app/announce_move_redddate_reddmeet.html' %}
-
-<article>
-  <div class="overlay">
-    <h1><a href="/">reddmeet</a></h1>
-    <p><a class="mainbtn" href="{{auth_url}}">login with reddit</a></p>
-  </div>
-  <div class="abouts">
-
+<div class="home-01">
 <p>Some time ago, a redditor posted <a href="https://www.reddit.com/r/Lightbulb/comments/3mug22/a_reddit_dating_site_that_matches_you_based_on/">this idea on r/lightbulb</a>:</p>
+<p class="about-about">"A site that matches you with Redditors based on interest in similar subreddits."</p>
+<p>So, here it is! Reddmeet is the place to meet Redditors.</p>
+<p><a class="mainbtn" href="{{auth_url}}">login with reddit</a></p>
+</div>
 
-<p style="font-weight:bold; padding: 0 16px; font-size: 1.25rem; text-align:center; ">"A Reddit dating site that matches you based on interest in similar subreddits."</p>
+<div class="home-02">
+  <p>
+    <a href="{{auth_url}}">Sign up with your reddit account</a>, setup your profile, and find other 
+    redditors from the subreddits you subscribe to.
+  </p>
+  <p>
+    Also, post related opinions, ideas, criticism <a href="https://www.reddit.com/r/reddmeet/">on 
+    r/reddmeet</a>.
+  </p>
+</div>
 
-<p>So, here it is! But, it's not limited only to dating. Reddmeet is the place to meet Redditors.</p>
-
-<p><a href="{{auth_url}}">Sign up with your reddit account</a>, setup your profile, and find other redditors from the subreddits you subscribe to. Also, post related opinions, ideas, criticism <a href="https://www.reddit.com/r/redddate/">on r/redddate</a>.</p>
-
-<p class="help">Privacy and anonymity are important on Reddit, and here too. After signup with your reddit account (oAuth), reddmeet will load only your public user account data and subreddit list. No other permissions are required. It will ask for your geolocation and "fuzzy" it in the browser, before sending it to the reddmeet server. So your real location is never uploaded! On your profile page, you can add links to your picture, and add some other details.</p>
+<p>
+  Privacy and anonymity are important on Reddit, and here too. After signup with your reddit 
+  account (oAuth), reddmeet will load only your public user account data and subreddit list. 
+  No other permissions are required. It will ask for your geolocation and "fuzzy" it in the 
+  browser, before sending it to the reddmeet server. So your real location is never uploaded! 
+  On your profile page, you can add links to your picture, and add some other details.
+</p>
 
 <p>
   <a href="{% static 'privacy.html' %}">privacy policy</a>
@@ -34,14 +67,12 @@
   <a href="{% static 'useragreement.html' %}">user agreement</a>
 </p>
 
-  </div>
+<hr>
 
-</article>
+{% for x in settings.SR_ANON_ACCESS_ALLOWED %}
+  <a href="/r/{{ x }}/">/r/{{ x }}</a> &nbsp;
+{% endfor %}
 
-<div style="margin: 0 auto; width: 500px; line-height: 2em; text-align: center;">
-  {% for x in settings.SR_ANON_ACCESS_ALLOWED %}
-    <a href="/r/{{ x }}/">/r/{{ x }}</a> &nbsp;
-  {% endfor %}
 </div>
 
 {% endblock %}

@@ -21,9 +21,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
     {% block head %}{% endblock %}
-    <script>
-      function ga() { return true; }
-    </script>
+    <script>function ga(){return true}</script>
   </head>
   <body class="{% block body_classes %}{% endblock %}{% if user.is_authenticated %} auth-user{% else %} anon-user{% endif %}"{% if view_user and view_user.profile.background_pic %} style="background-image: url({{view_user.profile.display_background_pic}}); background-attachment: fixed; background-position: center center; background-repeat: no-repeat; background-size: cover;"{% endif %}>
     <header>
@@ -124,18 +122,12 @@
       <p>
         <a href="/stats/" onclick="ga('send', 'event', 'footer', 'click', 'stats');">site stats</a>
         &middot;
-        discuss on <a href="https://www.reddit.com/r/redddate" onclick="ga('send', 'event', 'footer', 'click', 'ext-r-redddit');">r/redddate</a>
+        discuss on <a href="https://www.reddit.com/r/redddate" onclick="ga('send', 'event', 'footer', 'click', 'ext-r-redddit');">r/reddmeet</a>
         &middot;
-        view source on <a href="https://github.com/C14L/dtr5" onclick="ga('send', 'event', 'footer', 'click', 'ext-github');"><span class="fa fa-github"></span> GitHub</a>
-        &middot;
-        tweet on <a href="https://twitter.com/redddate" onclick="ga('send', 'event', 'footer', 'click', 'ext-twitter');"><span class="fa fa-twitter"></span></a>
-        &middot;
-        pin on <a href="https://www.pinterest.com/redddate/" onclick="ga('send', 'event', 'footer', 'click', 'ext-pinterest');"><span class="fa fa-pinterest"></span></a>
-        &middot;
-        blog on <a href="https://redddate.wordpress.com/"><span class="fa fa-wordpress" onclick="ga('send', 'event', 'footer', 'click', 'ext-wordpress');"></span></a> and <a href="https://www.tumblr.com/blog/redddate" onclick="ga('send', 'event', 'footer', 'click', 'ext-tumblr');"><span class="fa fa-tumblr"></span></a>
+        source on <a href="https://github.com/C14L/dtr5" onclick="ga('send', 'event', 'footer', 'click', 'ext-github');"><span class="fa fa-github"></span> GitHub</a>
       </p>
       <p>
-        &copy; 2016 redddate/reddmeet.com -- use of this site constitutes acceptance of our <a href="{% static 'useragreement.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'user-agreement');">User Agreement</a> and <a href="{% static 'privacy.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'privacy-policy');">Privacy Policy</a>.
+        &copy; 2016-18 ReddMeet.com -- use of this site implies acceptance of the <a href="{% static 'useragreement.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'user-agreement');">User Agreement</a> and <a href="{% static 'privacy.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'privacy-policy');">Privacy Policy</a>.
       <p>
 
       {% if DEBUG or user.is_superuser %}
