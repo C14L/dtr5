@@ -15,7 +15,6 @@ from django.shortcuts import redirect, render, render_to_response, get_object_or
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 
-from simple_reddit_oauth import api
 from toolbox import force_int
 from . import utils_stats
 from .models import Sr, Flag, Visit
@@ -35,15 +34,6 @@ from .utils import (
     get_subs_for_user,
 )
 from .utils_search import search_results_buffer, search_subreddit_users
-
-
-@require_http_methods(["GET", "HEAD"])
-def home_view(request):
-    if request.user.is_authenticated:
-        return redirect(reverse('me_results_page'))
-    template_name = 'dtr5app/home_anon.html'
-    context = {'auth_url': api.make_authorization_url(request)}
-    return render(request, template_name, context)
 
 
 @login_required
@@ -145,60 +135,6 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
            'is_nope': request.user.profile.does_nope(view_user),
            'prev_user': prev_user,
            'next_user': next_user}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
-
-
-@require_http_methods(["GET", "HEAD"])
-def sr_view(request, sr, template_name='dtr5app/sr.html'):
-    """
-    Display a list of users who are subscribed to a subreddit.
-    """
-    pg = int(request.GET.get('page', 1))
-    view_sr = get_object_or_404(Sr, display_name__iexact=sr)
-
-    if request.user.is_anonymous() and not view_sr.display_name.lower() in \
-            [x.lower() for x in settings.SR_ANON_ACCESS_ALLOWED]:
-        params = ''  # urlencode({'next': request.get_full_path()})
-        return HttpResponseRedirect('{}?{}'.format(settings.LOGIN_URL, params))
-
-    params = dict()
-    params['order'] = request.GET.get('order', '-last_login')
-    params['has_verified_email'] = \
-        bool(force_int(request.GET.get('has_verified_email', 0)))
-    params['hide_no_pic'] = bool(force_int(request.GET.get('hide_no_pic', 1)))
-    params['sex'] = force_int(request.GET.get('s', 0))
-    params['distance'] = force_int(request.GET.get('dist', 1))
-
-    params['minage'] = force_int(request.GET.get('minage', 18))
-    if params['minage'] not in range(18, 100):
-        params['minage'] = 18
-    params['maxage'] = force_int(request.GET.get('maxage', 100))
-    if params['maxage'] not in range(params['minage'], 101):
-        params['maxage'] = 100
-
-    if request.user.is_authenticated():
-        params['user_id'] = request.user.id
-        params['lat'] = request.user.profile.lat
-        params['lng'] = request.user.profile.lng
-
-    ul = search_subreddit_users(params, view_sr)
-
-    if params['order'] == '-accessed':  # most recently accessed first
-        ul = ul.order_by('-profile__accessed')
-    elif params['order'] == '-date_joined':  # most recent redddate acccount
-        ul = ul.order_by('-date_joined')
-    elif params['order'] == '-views_count':  # most views first
-        ul = ul.order_by('-profile__views_count')
-
-    # Paginate and add "is_like_recv" and "is_like"sent"
-    ul = get_paginated_user_list(ul, pg, request.user)
-    ul.object_list = add_likes_sent(ul.object_list, request.user)
-    ul.object_list = add_likes_recv(ul.object_list, request.user)
-    ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
-
-    ctx = {'view_sr': view_sr, 'user_list': ul, 'params': params,
-           'user_subs_all': get_subs_for_user(request.user)}
     kwargs = {'context_instance': RequestContext(request)}
     return render_to_response(template_name, ctx, **kwargs)
 

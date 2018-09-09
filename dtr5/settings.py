@@ -66,8 +66,13 @@ WSGI_APPLICATION = 'dtr5.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': 'localhost',
+        'NAME': 'dtr5',
+        'USER': 'redddate',
+        'PASSWORD': 'plaplapla',
     }
 }
 
@@ -124,12 +129,6 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
     )
 }
-
-##########################################################################
-##########################################################################
-##########################################################################
-
-import re
 
 # =====================================
 # settings for "dtr5app"

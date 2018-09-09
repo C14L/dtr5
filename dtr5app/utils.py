@@ -1,94 +1,105 @@
-"""
-All kinds of supporting functions for views and models.
-"""
+# pylint: disable=E1101
+
 import pytz
 import requests
+
 from datetime import datetime
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
-from .models import Sr, Subscribed, Flag
+
 from toolbox import force_int
+
+from dtr5app.models import Sr, Subscribed, Flag
 
 
 def get_subs_for_user(user):
-    if user.is_authenticated():
-        return user.subs.all().prefetch_related('sr')
-
-    return []
+    return user.subs.all().prefetch_related('sr') if user.is_authenticated else []
 
 
 def prepare_paginated_user_list(user_list, page):
-    """
-    Receives a list and a page number, and returns the appropriate page. If
-    the page doesn't exist, it raises Http404.
+    """Receives a list and a page number, and returns the appropriate page. 
+    If the page doesn't exist, it raises Http404.
+
+    Args:
+        user_list (QuerySet):
+        page (int):
+
+    Returns:
+        django.core.QuerySetPaginator: 
     """
     per_page = getattr(settings, 'USERS_PER_PAGE', 20)
     orphans = getattr(settings, 'USERS_ORPHANS', 0)
-
     paginated = Paginator(user_list, per_page=per_page,  orphans=orphans)
+
     try:
-        user_page = paginated.page(page)
+        return paginated.page(page)
     except EmptyPage:  # out of range
         raise Http404
     except ValueError:  # not a number
         raise Http404
 
-    return user_page
-
 
 def get_paginated_user_list(user_list, page, user):
-    """
-    Return one page of a list of user objects to be handed to the template,
-    complete with auth user's geolocation values attached for display of the
-    distance between the two users.
+    """Return one page of a list of user objects to be handed to the 
+    template, complete with auth user's geolocation values attached for 
+    display of the distance between the two users.
 
-    :user_list: User queryset to be paginated.
-    :page: the number of the page to return.
-    :user: a User instance, usually request.user, from whose geolocation the
-           distances to all users the the returned page are calculated.
+    Args:
+        user_list (QuerySet): Users to be paginated.
+        page (int): Number of the page to return.
+        user (django.auth.models.User): Usually the request.user, from whose
+                geolocation the distances to all users the the returned page
+                are calculated.
     """
     user_page = prepare_paginated_user_list(user_list, page)
-    if user.is_authenticated():
-        ul = add_auth_user_latlng(user, user_page.object_list)
-        user_page.object_list = ul
+
+    if user.is_authenticated:
+        user_page.object_list = add_auth_user_latlng(user, user_page.object_list)
+
     return user_page
 
 
 def update_list_of_subscribed_subreddits(user, subscribed):
-    """
-    Get a list of subreddits and update the user account, adding new
+    """Get a list of subreddits and update the user account, adding new
     subreddits and removing deleted ones from the user's subscription
     list. Do NOT simply remove all and then add the current list,
     because that would lose the user's "is_favorite" value that is
     part of the Subscribed model.
+
+    Args:
+        user (django.auth.models.User):
+        subscribed ():
     """
     for row in subscribed:
         # Fetch this subreddit onject or create it.
-        sr, sr_created = Sr.objects.get_or_create(id=row['id'], defaults={
+        created_utc = datetime.utcfromtimestamp(int(row['created_utc'])).replace(tzinfo=pytz.utc)
+        sr, _sr_created = Sr.objects.get_or_create(id=row['id'], defaults={
             'name': row['display_name'][:50],  # display_name
-            'created': datetime.utcfromtimestamp(int(row['created_utc'])
-                                                 ).replace(tzinfo=pytz.utc),
+            'created': created_utc,
             'url': row['url'][:50],
             'over18': row['over18'],
             'lang': row['lang'],
             'title': row['title'][:100],
             'display_name': row['display_name'],
             'subreddit_type': row['subreddit_type'][:50],
-            'subscribers': row['subscribers'], })
+            'subscribers': row['subscribers'],
+        })
 
         # Add the user as subscriber to the subredit object, if that's
         # not already the case.
-        default = {'user_is_contributor': bool(row['user_is_contributor']),
-                   'user_is_moderator': bool(row['user_is_moderator']),
-                   'user_is_subscriber': bool(row['user_is_subscriber']),
-                   'user_is_banned': bool(row['user_is_banned']),
-                   'user_is_muted': bool(row['user_is_muted']), }
-        try:
-            sub, sub_created = Subscribed.objects.get_or_create(
-                user=user, sr=sr, defaults=default)
+        default = {
+            'user_is_contributor': bool(row['user_is_contributor']),
+            'user_is_moderator': bool(row['user_is_moderator']),
+            'user_is_subscriber': bool(row['user_is_subscriber']),
+            'user_is_banned': bool(row['user_is_banned']),
+            'user_is_muted': bool(row['user_is_muted']),
+        }
 
+        try:
+            _, sub_created = Subscribed.objects.get_or_create(user=user, sr=sr, defaults=default)
         except Subscribed.MultipleObjectsReturned:
             # There are a couple of users who have "double subscriptions" to
             # some (not all) of their subreddits. These users will cause this
@@ -110,9 +121,8 @@ def update_list_of_subscribed_subreddits(user, subscribed):
     # check if they are still added to any subs they were previously
     # subscribed to, but not anymore. That is, any subscription not part of the
     # new subscribed list.
-    sr_ids = [row['id'] for row in subscribed]
-    to_del = Subscribed.objects.filter(user=user).exclude(sr__in=sr_ids)
-    for row in to_del:
+    sr_ids = set([row['id'] for row in subscribed])
+    for row in Subscribed.objects.filter(user=user).exclude(sr__in=sr_ids):
         if row.sr.subscribers_here > 0:
             row.sr.subscribers_here -= 1
         row.sr.save()
@@ -120,8 +130,16 @@ def update_list_of_subscribed_subreddits(user, subscribed):
 
 
 def get_user_list_after(request, view_user, n=5):
-    """
-    From the search buffer, return a list of "n" user objects after view_user.
+    """From the search buffer, return a list of "n" user objects after
+    view_user.
+
+    Args:
+        request ():
+        view_user (django.auth.models.User):
+        n (int):
+
+    Returns:
+        QuerySet:
     """
     buff = request.session['search_results_buffer']
 
@@ -130,7 +148,7 @@ def get_user_list_after(request, view_user, n=5):
     except ValueError:  # view_user is not part of buffer, begin at index 0
         return get_user_list_from_username_list(buff[:n])
 
-    if (len(buff)-1) <= n:
+    if (len(buff) - 1) <= n:
         # buff minus view_user is n? then use entire list minus view_user
         return get_user_list_from_username_list(buff[:idx] + buff[idx+1:])
 
@@ -138,18 +156,23 @@ def get_user_list_after(request, view_user, n=5):
     if len(usernames) < n:  # if end-of-list was reached, wrap around
         n2 = n - len(usernames)
         usernames += buff[0:n2]
+
     return get_user_list_from_username_list(usernames)
 
 
 def get_user_list_from_username_list(username_list):
-    """
-    Return a list of user objects with prefetched profiles and subs, from
-    a list of usernames. Important: must be are in the same order as the
-    username_list.
+    """Return a list of user objects with prefetched profiles and subs,
+    from a list of usernames. Important: must be are in the same order
+    as the username_list.
+
+    Args:
+        username_list (list of str): Usernames.
+
+    Returns:
+        QuerySet:
     """
     # Look up complete info on the users on that list.
-    li = User.objects.filter(
-        username__in=username_list).prefetch_related('profile', 'subs')
+    li = User.objects.filter(username__in=username_list).prefetch_related('profile', 'subs')
 
     user_list = []
     for x in username_list:
@@ -162,16 +185,23 @@ def get_user_list_from_username_list(username_list):
 
 
 def get_prevnext_user(request, view_user):
-    """
-    Return previous and next users, relative to view user, from the
+    """Return previous and next users, relative to view user, from the
     search results list of users.
+
+    Args:
+        request:
+        view_user:
+
+    Returns:
+        tuple:
     """
     username_list = request.session['search_results_buffer']
+
     try:
-        idx = [username_list.index(row) for row in username_list
-               if view_user.username == row][0]
+        idx = [username_list.index(row) for row in username_list if view_user.username == row][0]
     except IndexError:
         return None, None
+
     try:
         # Try one user to the right.
         next_user = username_list[idx+1]
@@ -183,6 +213,7 @@ def get_prevnext_user(request, view_user):
     except UnboundLocalError:
         # View user wasn't on the list (no idx)? Return first user.
         next_user = username_list[0]
+
     try:
         # Try one user to the left.
         prev_user = username_list[idx-1]
@@ -192,65 +223,100 @@ def get_prevnext_user(request, view_user):
     except UnboundLocalError:
         # View user wasn't on the list (no idx)? Return first user.
         prev_user = view_user
+
     # Return the user objects of both.
-    return (User.objects.get(username__iexact=prev_user),
-            User.objects.get(username__iexact=next_user))
+    return (
+        User.objects.get(username__iexact=prev_user),
+        User.objects.get(username__iexact=next_user),
+    )
 
 
 def add_auth_user_latlng(user, user_list):
-    """
-    Set the auth user's geolocation on each user list object.
+    """Set the auth user's geolocation on each user list object.
+
+    Args:
+        user (django.auth.models.User):
+        user_list:
+
+    Returns:
+        user_list
     """
     for row in user_list:
         row.profile.set_viewer_latlng(user.profile.lat, user.profile.lng)
+
     return user_list
 
 
 def count_matches(user):
-    """
-    Return the number of matches (mututal likes) of User :user:.
+    """Return the number of matches (mututal likes) of User `user`.
+
+    Args:
+        user (django.auth.models.User):
+
+    Returns:
+        int:
     """
     return get_matches_user_queryset(user).distinct().count()
 
 
 def get_matches_user_queryset(user):
-    """
-    Return a queryset that finds all matches for user.
+    """Return a queryset that finds all matches for user.
+
+    Args:
+        user (django.auth.models.User):
+
+    Returns:
+        django.auth.models.User:
     """
     return User.objects.filter(
-        flags_sent__receiver=user, flags_sent__flag=Flag.LIKE_FLAG,
-        flags_received__sender=user, flags_received__flag=Flag.LIKE_FLAG)
+        flags_sent__receiver=user,
+        flags_sent__flag=Flag.LIKE_FLAG,
+        flags_received__sender=user,
+        flags_received__flag=Flag.LIKE_FLAG,
+    )
 
 
 def get_matches_user_list(user):
-    """
-    Return a user_list with all mutual likes for 'user'.
+    """Return a user_list with all mutual likes for 'user'.
+
+    Args:
+        user (django.auth.models.User):
+
+    Returns:
+        QuerySet:
     """
     user_list = list(get_matches_user_queryset(user))
+
     for x in user_list:
         # set the datetime they matched
         c1 = x.flags_sent.get(receiver=user.pk).created
         c2 = user.flags_sent.get(receiver=x.pk).created
         setattr(x, 'matched', c1 if c1 > c2 else c2)
         setattr(x, 'flag_created', x.matched)  # need for serializer
+
     user_list.sort(key=lambda row: row.matched, reverse=True)
     return user_list
 
 
 def add_likes_sent(user_list, user):
-    """
-    Look at it from the perspective of :user: and add a "is_like_sent"
-    attribut to all User objects in the user_list list who
-    received a "like" from :user:.
+    """Look at it from the perspective of :user: and add a "is_like_sent"
+    attribut to all User objects in the user_list list who received a 
+    "like" from `user`.
 
-    :user_list: a list of User objects.
-    :user: a single User object.
+    Args:
+        user_list (): List of User objects.
+        user (): User object.
+    
+    Returns:
+        QuerySet:
     """
-    if user.is_authenticated():
-        li = User.objects.filter(username__in=[x.username for x in user_list],
-                                 flags_received__sender=user,
-                                 flags_received__flag=Flag.LIKE_FLAG
-                                 ).values_list('username', flat=True)
+    if user.is_authenticated:
+        li = set(User.objects.filter(
+            username__in=[x.username for x in user_list],
+            flags_received__sender=user,
+            flags_received__flag=Flag.LIKE_FLAG
+        ).values_list('username', flat=True))
+
         for x in user_list:
             setattr(x, 'is_like_sent', x.username in li)
 
@@ -258,19 +324,21 @@ def add_likes_sent(user_list, user):
 
 
 def add_likes_recv(user_list, user):
-    """
-    Look at it from the perspective of :user: and add a "is_like_recv"
-    attribut to all User objects in the user_list list who
-    sent a "like" to :user:.
+    """Look at it from the perspective of :user: and add a "is_like_recv"
+    attribut to all User objects in the user_list list who sent a "like"
+    to `user`.
 
-    :user_list: a list of User objects.
-    :user: a single User object.
+    Args:
+        user_list: List of User objects.
+        user: User object.
     """
-    if user.is_authenticated():
-        li = User.objects.filter(username__in=[x.username for x in user_list],
-                                 flags_sent__receiver=user,
-                                 flags_sent__flag=Flag.LIKE_FLAG
-                                 ).values_list('username', flat=True)
+    if user.is_authenticated:
+        li = set(User.objects.filter(
+            username__in=[x.username for x in user_list],
+            flags_sent__receiver=user,
+            flags_sent__flag=Flag.LIKE_FLAG
+        ).values_list('username', flat=True))
+
         for x in user_list:
             setattr(x, 'is_like_recv', x.username in li)
 
@@ -278,14 +346,22 @@ def add_likes_recv(user_list, user):
 
 
 def add_matches_to_user_list(user_list, user):
+    """Add a "is_match" attribut to all User objects in the user_list
+    list who are a match (mutual like) with user and return the 
+    user_list.
+
+    Args:
+        user_list: List of User objects.
+        user: User object.
+    
+    Returns:
+        list:
     """
-    Add a "is_match" attribut to all User objects in the user_list list
-    who are a match (mutual like) with user and return the user_list.
-    """
-    if user.is_authenticated():
+    if user.is_authenticated:
         li = [x.username for x in user_list]
         qs = get_matches_user_queryset(user).filter(username__in=li)
         li = [x.username for x in qs]
+
         for x in user_list:
             setattr(x, 'is_match', x.username in li)
 
@@ -293,11 +369,11 @@ def add_matches_to_user_list(user_list, user):
 
 
 def get_user_and_related_or_404(username, *args):
-    """
-    Like Django's get_object_or_404() but for User objects, and it prefetches
-    the related items from the :*args: list.
+    """Like Django's `get_object_or_404()` but for User objects, and it
+    prefetches the related items from the `*args` list.
 
-    :username: either str (User.username) or int (User.id).
+    Args:
+        username (str|int): Either User.username or User.id
     """
     if isinstance(username, str):
         q = {'username__iexact': username}
@@ -305,6 +381,7 @@ def get_user_and_related_or_404(username, *args):
         q = {'pk': username}
     else:
         raise Http404
+
     try:
         return User.objects.prefetch_related(*args).get(**q)
     except User.DoesNotExist:
@@ -312,11 +389,11 @@ def get_user_and_related_or_404(username, *args):
 
 
 def normalize_sr_names(li):
-    """
-    Receive a set of randomly cased subreddit names, and return a set of
-    appropriately cased subreddit names.
+    """Receive a set of randomly cased subreddit names, and return a
+    set of appropriately cased subreddit names.
     """
     sr_qs = Sr.objects.none()
+
     for x in li:
         sr_qs |= Sr.objects.filter(name__iexact=x)
 
@@ -337,26 +414,20 @@ def assert_pic_accessible(pic_url):
             'The image {} is loading very slowly.'.format(pic_url))
 
     if r.status_code == 302 and 'imgur.com' in pic_url:
-        return PictureInaccessibleError(
-            'The image at "{}" can not be accessed, it was <b>probably '
-            'deleted on Imgur</b>.'.format(pic_url))
+        txt = 'The image at "{}" can not be accessed, it was <b>probably deleted on Imgur</b>.'
+        return PictureInaccessibleError(txt.format(pic_url))
 
     if r.status_code != 200:
-        return PictureInaccessibleError(
-            'The image "{}"" can not be accessed, it returned HTTP status '
-            'code "{}".'.format(pic_url, r.status_code))
+        txt = 'The image "{}"" can not be accessed, it returned HTTP status code "{}".'
+        return PictureInaccessibleError(txt.format(pic_url, r.status_code))
 
     if r.headers.get('content-type', None) not in settings.PIC_CONTENT_TYPES:
-        return PictureInaccessibleError(
-            'Not recognized as an image file. Please only use jpg, gif, '
-            'png, or webp images. Recognized content type was "{}".'.
-            format(r.headers.get('content-type', '')))
+        txt = 'Not recognized as an image file. Please only use jpg, gif, png, or webp images. Recognized content type was "{}".'
+        return PictureInaccessibleError(txt.format(r.headers.get('content-type', '')))
 
     if force_int(r.headers.get('content-length')) > (1024 * 512):
-        x = int(int(r.headers.get('content-length')) / 1024)
-        return PictureInaccessibleError(
-            'The image file size ({} kiB) is too large. Please use a '
-            'smaller size (max. 500 kiB) to ensure that your profile '
-            'page loads fast for your visitors.'.format(x))
+        n = int(int(r.headers.get('content-length')) / 1024)
+        txt = 'The image file size ({} kiB) is too large. Please use a smaller size (max. 500 kiB) to ensure that your profile page loads fast for your visitors.'
+        return PictureInaccessibleError(txt.format(n))
 
     return True
