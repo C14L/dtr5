@@ -10,45 +10,82 @@
 
 header {
   height: 0;
-}
-
-.about {
-  max-width: 990px;
-  min-width: 300px;
-  margin: 20px auto;
+  display: none;
 }
 
 .home-01 {
   background: rgba(0,82,128,1);  /* #84B4E4; */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 50vh;
-  overflow: hidden;
   padding: 0;
+  margin: 0;
   text-align: center;
-  vertical-align: middle;
+  height: 50vh;
+  font-size: 1rem;
 }
 
-.home-01 div {
+.home-01 p {
+  padding: 1em 0;
+  margin: 0;
   color: white;
-  font-size: 28px;
-  font-weight: normal;
-  line-height: 1.75em;
+  line-height: 1em;
+  text-align: center;
+}
+
+.home-01 p:nth-child(1) {
+  padding: 2em 0;
+}
+
+.home-01 p:nth-child(1) img {
+  height: 72px;
+}
+
+.home-01 p:nth-child(2) {
+  font-size: 1em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.home-01 p:nth-child(3) {
+  font-size: 2em;
+}
+
+.home-01 p:nth-child(4) {
+  font-size: 1em;
+  color: rgba(255, 255, 255, 0.7);
+  padding-bottom: 2em;
+}
+
+.home-01 p a {
+  color: inherit;
 }
 
 .home-02 {
-  background: #F3F3F3 url(/static/reddit2.jpg) center center no-repeat;
-  background-size: cover;
-  background-position: bottom;
-  height: 50vh;
-  overflow: hidden;
+  background-color: white;
+  max-width: 500px;
+  min-width: 300px;
+  margin: 30px auto;
   padding: 0;
-  text-align: center;  
+  overflow: hidden;
+  text-align: left;
 }
 
-p {
-  text-align: center;
+.rm-btn {
+  background: transparent;
+  border: 3px solid white;
+  color: white;
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 2em;
+  margin: 0;
+  padding: 0 2em;
+  transition: 0.5s ease-in-out;
+}
+
+.rm-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transition: 0.5s ease-in-out;
+}
+
+.rm-btn.large {
+  font-size: 1.75rem;
 }
 
 </style>
@@ -57,36 +94,32 @@ p {
 {% block main %}
 
 <div class="home-01">
-  <div>Some time ago, a redditor posted <a href="https://www.reddit.com/r/Lightbulb/comments/3mug22/a_reddit_dating_site_that_matches_you_based_on/">this idea on r/lightbulb</a>:</div>
-  <div class="about-about">"A site that matches you with Redditors based on interest in similar subreddits."</div>
-  <div>So, here it is! Reddmeet is the place to meet Redditors.</div>
-  <div><a class="mainbtn" href="{{auth_url}}">login with reddit</a></div>
+  <p><img src="/static/logo100.gif" alt=""></p>
+  <p>Some time ago, a redditor posted <a href="https://www.reddit.com/r/Lightbulb/comments/3mug22/a_reddit_dating_site_that_matches_you_based_on/">this idea on r/lightbulb</a>:</p>
+  <p class="about-about">"A site that matches you with Redditors based on interest in similar subreddits."</p>
+  <p>So, here it is! Reddmeet is the place to meet Redditors:</p>
+  <p><a class="rm-btn large" href="{{auth_url}}">login with reddit</a></p>
 </div>
 
 <div class="home-02">
-  <p>
-    <a href="{{auth_url}}">Sign up with your reddit account</a>, setup your profile, and find other 
-    redditors from the subreddits you subscribe to.
-  </p>
-  <p>
-    Also, post related opinions, ideas, criticism <a href="https://www.reddit.com/r/reddmeet/">on 
-    r/reddmeet</a>.
-  </p>
-</div>
+  <p>Sign up with your reddit account, setup your profile, and find other redditors from the subreddits you subscribe to.</p>
+  <p>Privacy and anonymity are important on Reddit, and here too. After signup with your reddit account (oAuth), reddmeet will:</p>
+  <ul>
+    <li>...only fetch your public user account data and subreddit list. No other data or permissions are required.</li>
+    <li>...ask for your geolocation and "fuzzy" it <b>in your browser</b>, before sending it to the reddmeet server. So your real location is never uploaded!</li>
+    <li>...ask you to add a picture to your profile. You can simply add a link to your picture on Imgur, for example</li>
+       and add some other details.
 
-<p>
-  Privacy and anonymity are important on Reddit, and here too. After signup with your reddit 
-  account (oAuth), reddmeet will load only your public user account data and subreddit list. 
-  No other permissions are required. It will ask for your geolocation and "fuzzy" it in the 
-  browser, before sending it to the reddmeet server. So your real location is never uploaded! 
-  On your profile page, you can add links to your picture, and add some other details.
-</p>
 
-<p>
-  <a href="{% static 'privacy.html' %}">privacy policy</a>
-  <span>&nbsp;|&nbsp;</span>
-  <a href="{% static 'useragreement.html' %}">user agreement</a>
-</p>
+  </ul>    
+  <p>
+  </p>
+  <p>Post related opinions, ideas, criticism <a href="https://www.reddit.com/r/reddmeet/">on r/reddmeet</a>.</p>
+  <p>
+    <a href="{% static 'privacy.html' %}">privacy policy</a>
+    <span>&nbsp;|&nbsp;</span>
+    <a href="{% static 'useragreement.html' %}">user agreement</a>
+  </p>
 
 <hr>
 
