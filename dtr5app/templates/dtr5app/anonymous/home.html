@@ -17,7 +17,16 @@
 .home-01 {
   background: rgba(0,82,128,1);  /* #84B4E4; */
   padding: 60px 0;
-  text-align: center;  
+  text-align: center;
+  height: 50vh;
+}
+
+.home-01 p {
+  color: white;
+}
+
+.home-01 p a {
+  color: inherit;
 }
 
 .home-02 {
@@ -30,27 +39,42 @@ p {
   text-align: center;
 }
 
+.rm-btn {
+  background: transparent;
+  border: 3px solid white;
+  color: white;
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 2em;
+  margin: 0;
+  padding: 0 2em;
+  transition: 0.5s ease-in-out;
+}
+
+.rm-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transition: 0.5s ease-in-out;
+}
+
+.rm-btn.large {
+  font-size: 1.75rem;
+}
+
 </style>
 {% endblock %}
 
 {% block main %}
 
 <div class="home-01">
-<p>Some time ago, a redditor posted <a href="https://www.reddit.com/r/Lightbulb/comments/3mug22/a_reddit_dating_site_that_matches_you_based_on/">this idea on r/lightbulb</a>:</p>
-<p class="about-about">"A site that matches you with Redditors based on interest in similar subreddits."</p>
-<p>So, here it is! Reddmeet is the place to meet Redditors.</p>
-<p><a class="mainbtn" href="{{auth_url}}">login with reddit</a></p>
+  <p>Some time ago, a redditor posted <a href="https://www.reddit.com/r/Lightbulb/comments/3mug22/a_reddit_dating_site_that_matches_you_based_on/">this idea on r/lightbulb</a>:</p>
+  <p class="about-about">"A site that matches you with Redditors based on interest in similar subreddits."</p>
+  <p>So, here it is! Reddmeet is the place to meet Redditors.</p>
+  <p><a class="rm-btn large" href="{{auth_url}}">login with reddit</a></p>
 </div>
 
 <div class="home-02">
-  <p>
-    <a href="{{auth_url}}">Sign up with your reddit account</a>, setup your profile, and find other 
-    redditors from the subreddits you subscribe to.
-  </p>
-  <p>
-    Also, post related opinions, ideas, criticism <a href="https://www.reddit.com/r/reddmeet/">on 
-    r/reddmeet</a>.
-  </p>
+  <p><a href="{{auth_url}}">Sign up with your reddit account</a>, setup your profile, and find other redditors from the subreddits you subscribe to.</p>
+  <p>Also, post related opinions, ideas, criticism <a href="https://www.reddit.com/r/reddmeet/">on r/reddmeet</a>.</p>
 </div>
 
 <p>
