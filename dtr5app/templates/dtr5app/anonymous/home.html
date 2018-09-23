@@ -8,6 +8,10 @@
 {% block head %}
 <style>
 
+header {
+  height: 0;
+}
+
 .about {
   max-width: 990px;
   min-width: 300px;
@@ -16,13 +20,30 @@
 
 .home-01 {
   background: rgba(0,82,128,1);  /* #84B4E4; */
-  padding: 60px 0;
-  text-align: center;  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 50vh;
+  overflow: hidden;
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.home-01 div {
+  color: white;
+  font-size: 28px;
+  font-weight: normal;
+  line-height: 1.75em;
 }
 
 .home-02 {
-  background: #F3F3F3;
-  padding: 20px;
+  background: #F3F3F3 url(/static/reddit2.jpg) center center no-repeat;
+  background-size: cover;
+  background-position: bottom;
+  height: 50vh;
+  overflow: hidden;
+  padding: 0;
   text-align: center;  
 }
 
@@ -36,10 +57,10 @@ p {
 {% block main %}
 
 <div class="home-01">
-<p>Some time ago, a redditor posted <a href="https://www.reddit.com/r/Lightbulb/comments/3mug22/a_reddit_dating_site_that_matches_you_based_on/">this idea on r/lightbulb</a>:</p>
-<p class="about-about">"A site that matches you with Redditors based on interest in similar subreddits."</p>
-<p>So, here it is! Reddmeet is the place to meet Redditors.</p>
-<p><a class="mainbtn" href="{{auth_url}}">login with reddit</a></p>
+  <div>Some time ago, a redditor posted <a href="https://www.reddit.com/r/Lightbulb/comments/3mug22/a_reddit_dating_site_that_matches_you_based_on/">this idea on r/lightbulb</a>:</div>
+  <div class="about-about">"A site that matches you with Redditors based on interest in similar subreddits."</div>
+  <div>So, here it is! Reddmeet is the place to meet Redditors.</div>
+  <div><a class="mainbtn" href="{{auth_url}}">login with reddit</a></div>
 </div>
 
 <div class="home-02">

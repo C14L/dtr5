@@ -20,7 +20,8 @@
       <div class="mainopts">
         <span class="reddit-link"><a href="https://www.reddit.com/r/{{view_sr.display_name}}" class="fa fa-reddit"></a><a href="/r/{{view_sr.display_name}}">/r/{{view_sr.display_name}}</a></span>
         <label>
-          <select name="s" size="1"><!-- rename param "sex" to just "s", because it will show in the URL and may trigger blocking by overly P.C. company or uni networks -->
+          <select name="s" size="1">
+            <!-- rename param "sex" to just "s", because it will show in the URL and may trigger blocking by overly P.C. company or uni networks -->
             <option value="">everybody</option>
             {% for sex in settings.SEX_PLURAL %}
               {% if sex.0 > 0 %}
@@ -31,7 +32,7 @@
         </label>&nbsp;
         <span>within</span>&nbsp;
         <label>
-          <select name="dist" size="1">
+          <select {% if user.is_anonymous %}disabled="disabled"{% endif %} name="dist" size="1">
             {% for x in DISTANCE %}
               <option {% if params.distance == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
             {% endfor %}
