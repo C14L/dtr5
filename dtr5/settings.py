@@ -1,5 +1,12 @@
 import os
 import re
+import dtr5.settings_private as spriv
+
+OAUTH_REDDIT_CLIENT_ID = spriv.OAUTH_REDDIT_CLIENT_ID
+OAUTH_REDDIT_CLIENT_SECRET = spriv.OAUTH_REDDIT_CLIENT_SECRET
+OAUTH_REDDIT_USER_AGENT = spriv.OAUTH_REDDIT_USER_AGENT
+
+###
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -17,8 +24,9 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.humanize',
     'django.contrib.messages',
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
 
     # 'rest_framework',
@@ -98,8 +106,6 @@ LOGIN_URL = '/'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 
-# Use memcached for sessions. Careful: cache size has to be large enough! Once
-# the cache fills up, random items will be evicted, i.e. sessions dumped.
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -110,12 +116,6 @@ CACHES = {
     }
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-
-OAUTH_REDDIT_CLIENT_ID = os.environ.get('OAUTH_REDDIT_CLIENT_ID')
-
-OAUTH_REDDIT_CLIENT_SECRET = os.environ.get('OAUTH_REDDIT_CLIENT_SECRET')
-
-OAUTH_REDDIT_USER_AGENT = os.environ.get('OAUTH_REDDIT_CLIENT_AGENT')
 
 AUTHENTICATION_BACKENDS = (
     # 'django.contrib.auth.backends.ModelBackend',  # default

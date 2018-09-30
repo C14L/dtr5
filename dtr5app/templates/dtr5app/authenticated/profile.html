@@ -10,7 +10,6 @@
 {% block main %}
 
 <article>
-
   {% if view_user.username != user.username %}
     {% if is_match %}
 
@@ -27,8 +26,8 @@
           </div>
         </div>
         <div class="action">
-          <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}" onclick="ga('send', 'event', 'profile', 'click', 'match-sent-message');">Send a message</a>
-          <a class="later" href="{% url 'me_search_page' %}" onclick="ga('send', 'event', 'profile', 'click', 'match-message-not-now');">not now</a>
+          <a class="send-a-msg-btn mainbtn" href="https://www.reddit.com/message/compose/?to={{view_user.username}}">Send a message</a>
+          <a class="later" href="{% url 'me_search_page' %}">not now</a>
         </div>
       </div>
 
@@ -43,71 +42,25 @@
       </div>
 
     {% else %}
-<!--
+
       <div class="announce herefor">
         <span class="herefor-bg{{view_user.profile.herefor}}">{{view_user.profile.herefor|display_choice:settings.HEREFOR}}</span>
       </div>
--->
+
     {% endif %}
   {% endif %}
 
+  <c14l-userhead pics="{% for pic in view_user.pics_list %}{{pic.url}} {% endfor %}">
+    Meet <a class="username" href="https://www.reddit.com/u/{{view_user.username}}">{{view_user.username}}</a>, 
+    a {{view_user.profile.get_age}} years old 
+    {% if view_user.profile.relstatus > 1 %}{{view_user.profile.get_relstatus_display|default:"single"}}{% endif %} 
+    {{view_user.profile.get_sex_display}}, here for {{view_user.profile.get_herefor_display|default:"friends or dating"}} and
+    <!-- <a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}}</a> -->
+    <a href="/map/#{{view_user.profile.lat}},{{view_user.profile.lng}},8z" title="view approximate location">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if common_subs|length > 0 %}you have <a href="#id_matches">{{common_subs|length}} subreddits</a> in common{% endif %}
+  </c14l-userhead>
+
   <div class="card headcard" id="id_header">
     {% if is_like %}<div class="announce like"><span class="tx">upvoted</span></div>{% endif %}
-
-    <nav class="dotmenu">
-      <span class="fa fa-ellipsis-h"></span>
-      <input type="checkbox">
-      <ul class="opts">
-        {% if view_user.username == user.username %}
-          <li><a href="/me/">Edit my profile</a></li>
-        {% else %}
-          {% if is_like %}
-            <li>
-              <form class="delete-like-form" method="POST" action="{% url 'me_flag_page' 'delete' 'like' view_user.username %}">
-                {% csrf_token %}
-                <span class="fa fa-ban"></span>
-                <input type="submit" class="del-like opt" value="cancel upvote">
-               </form>
-            </li>
-          {% endif %}
-          {% if is_nope %}
-            <li>
-              <form class="delete-nope-form" method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
-                {% csrf_token %}
-                <span class="fa fa-arrow-down"></span>
-                <input type="submit" class="del-nope opt" value="unhide">
-              </form>
-            </li>
-          {% endif %}
-          {% if not is_like and not is_nope %}
-            <li>
-              <form class="set-like-form" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
-                {% csrf_token %}
-                <span class="fa fa-arrow-up"></span>
-                <input type="submit" class="like opt" value="upvote">
-              </form>
-            </li>
-            <li class="secondary">
-              <form class="set-nope-form" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
-                {% csrf_token %}
-                <span class="fa fa-arrow-down"></span>
-                <input type="submit" class="nope opt" value="hide">
-              </form>
-            </li>
-          {% endif %}
-          <li class="secondary">
-            <span class="fa fa-frown-o"></span>
-            <a href="{% url 'me_flag_page' 'set' 'report' view_user.username %}">report this profile</a>
-          </li>
-          {% if user.is_staff %}
-            <li class="secondary staff-only">
-              <span class="fa fa-exclamation-circle"></span>
-              <a href="{% url 'mod_deluser_page' view_user.id %}">delete this profile</a>
-            </li>
-          {% endif %}
-        {% endif %}
-      </ul>
-    </nav>
 
     {% if view_user.username != user.username %}
     <div class="upvote-hide">
@@ -128,23 +81,24 @@
 
     <div class="intro">
       <div class="top">
-        <a href="https://www.reddit.com/user/{{view_user.username}}/submitted/" class="karma" onclick="ga('send', 'event', 'profile', 'click', 'ext-link-karma');">link karma: {{view_user.profile.link_karma}}</a>
-        <a href="https://www.reddit.com/user/{{view_user.username}}/comments/" class="karma" onclick="ga('send', 'event', 'profile', 'click', 'ext-comment-karma');">comment karma: {{view_user.profile.comment_karma}}</a>
+        <a href="https://www.reddit.com/user/{{view_user.username}}/submitted/" class="karma">link karma: {{view_user.profile.link_karma}}</a>
+        <a href="https://www.reddit.com/user/{{view_user.username}}/comments/" class="karma">comment karma: {{view_user.profile.comment_karma}}</a>
       </div>
       <div class="textline">
-        Meet <a class="username" href="https://www.reddit.com/u/{{view_user.username}}" onclick="ga('send', 'event', 'profile', 'click', 'ext-reddit-profile-username');">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {% if view_user.profile.relstatus > 1 %}{{view_user.profile.get_relstatus_display|default:"single"}}{% endif %} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.get_herefor_display|default:"friends or dating"}} and
+        Meet <a class="username" href="https://www.reddit.com/u/{{view_user.username}}">{{view_user.username}}</a>, a {{view_user.profile.get_age}} years old {% if view_user.profile.relstatus > 1 %}{{view_user.profile.get_relstatus_display|default:"single"}}{% endif %} {{view_user.profile.get_sex_display}}, here for {{view_user.profile.get_herefor_display|default:"friends or dating"}} and
         <!-- <a href="https://www.google.com/maps/@{{view_user.profile.lat}},{{view_user.profile.lng}},11z" title="NOT the exact location: its intentionally fuzzied by a few km/miles.">{{view_user.profile.get_distance|prefdist:user}}</a> -->
-        <a href="/map/#{{view_user.profile.lat}},{{view_user.profile.lng}},8z" title="view approximate location" onclick="ga('send', 'event', 'profile', 'click', 'view-map-location');">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if common_subs|length > 0 %}you have <a href="#id_matches" onclick="ga('send', 'event', 'profile', 'click', 'jump-shared-subs');">{{common_subs|length}} subreddits</a> in common{% endif %}
+        <a href="/map/#{{view_user.profile.lat}},{{view_user.profile.lng}},8z" title="view approximate location">{{view_user.profile.get_distance|prefdist:user}}</a> away: {% if common_subs|length > 0 %}you have <a href="#id_matches">{{common_subs|length}} subreddits</a> in common{% endif %}
       </div>
       <div class="meta">
         <span>last active {{view_user.profile.accessed|timesince}} ago</span>
         {% if show_created %}
           &nbsp;&middot;&nbsp;
-          <span><a href="https://www.reddit.com/user/{{view_user.username}}/" class="reddage" onclick="ga('send', 'event', 'profile', 'click', 'ext-reddit-profile-account-age');">a redditor for {{view_user.profile.created|timesince}}</a></span>
+          <span><a href="https://www.reddit.com/user/{{view_user.username}}/" class="reddage">a redditor for {{view_user.profile.created|timesince}}</a></span>
         {% endif %}
         <!-- <span>on redddate {{view_user.date_joined|timesince}}</span> -->
       </div>
     </div>
+
     <div class="pics">
       <ul>
         <li>
@@ -158,6 +112,44 @@
         </li>
       </ul>
     </div>
+
+    <c14l-menu>
+      {% if view_user.username == user.username %}
+        <a href="/me/">Edit my profile</a>
+      {% else %}
+        {% if is_like %}
+          <form class="delete-like-form" method="POST" action="{% url 'me_flag_page' 'delete' 'like' view_user.username %}">
+            {% csrf_token %}
+            <span class="fa fa-ban"></span>
+            <input type="submit" class="del-like opt" value="cancel upvote">
+          </form>
+        {% endif %}
+        {% if is_nope %}
+          <form class="delete-nope-form" method="POST" action="{% url 'me_flag_page' 'delete' 'nope' view_user.username %}">
+            {% csrf_token %}
+            <span class="fa fa-arrow-down"></span>
+            <input type="submit" class="del-nope opt" value="unhide">
+          </form>
+        {% endif %}
+        {% if not is_like and not is_nope %}
+          <form class="set-like-form" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}">
+            {% csrf_token %}
+            <span class="fa fa-arrow-up"></span>
+            <input type="submit" class="like opt" value="upvote">
+          </form>
+          <form class="secondary set-nope-form" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}">
+            {% csrf_token %}
+            <span class="fa fa-arrow-down"></span>
+            <input type="submit" class="nope opt" value="hide">
+          </form>
+        {% endif %}
+        <a class="secondary" href="{% url 'me_flag_page' 'set' 'report' view_user.username %}">report this profile</a>
+        {% if user.is_staff %}
+          <a class="secondary staff-only" href="{% url 'mod_deluser_page' view_user.id %}">delete this profile</a>
+        {% endif %}
+      {% endif %}
+    </c14l-menu>
+
   </div>
 
   <div class="card nopadd">
@@ -180,36 +172,25 @@
     {% endif %}
   </div>
 
-  <div class="card nopadd sr-list-inline subreddit-matches" id="id_matches">
+  <div class="card nopadd subreddit-matches" id="id_matches">
     <a href="#" class="fa fa-arrow-up"></a>
     {% if common_subs|length == 0 %}
       <h2>No subreddit matches :(</h2>
     {% else %}
       <h2>{{common_subs|length}} subreddit matches!</h2>
       <section>
-        <ul class="sr-list">
-          {% for row in common_subs %}
-            <li>
-              {% if row.user_is_banned %}
-                <span class="banned-tag">banned from</span>
-              {% endif %}
-              {% if row.user_is_muted %}
-                <span class="muted-tag">muted on</span>
-              {% endif %}
-              {% if row.user_is_moderator %}
-                <span class="mod-tag">moderator of</span>
-              {% endif %}
-
-              <a href="{% url 'sr_page' row.sr.display_name %}" title="{{row.sr.subscribers_here|intcomma}} subscribers here">r/{{row.sr.display_name}}</a>
-
-              {% if row.sr.over_18 %}
-                <span class="nsfw-tag">NSFW</span>
-              {% endif %}
-
-              <a href="https://www.reddit.com/r/{{row.sr.display_name}}" title="{{row.sr.subscribers|intcomma}} subscribers on reddit"><span class="fa fa-reddit"></span></a>
-            </li>
-          {% endfor %}
-        </ul>
+        {% for row in common_subs %}
+        <a is="c14l-srchip"
+            {% if row.user_is_banned %}isbanned{% endif %}
+            {% if row.user_is_muted %}ismuted{% endif %}
+            {% if row.user_is_moderator %}ismod{% endif %}
+            {% if row.sr.over_18 %}isnsfw{% endif %}
+            here="{{row.sr.subscribers_here|intcomma}}"
+            subs="{{row.sr.subscribers|intcomma}}"
+            href="{% url 'sr_page' row.sr.display_name %}"
+          >{{row.sr.display_name}}</a>
+        </c14l-srchip>
+        {% endfor %}
       </section>
     {% endif %}
 

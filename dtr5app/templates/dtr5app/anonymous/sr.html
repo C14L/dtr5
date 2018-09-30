@@ -12,83 +12,81 @@
 
 {% block main %}
 
+
 <section class="subheader">
-  <div class="search-bar" id="id_search">
-    <div id="id_search_loading" class="loading" style="display:none; text-align:center; border: 0.75rem solid transparent;"><span></span><span></span><span></span></div>
-
-    <form id="id_search_form" method="GET" action="{% url 'sr_page' view_sr.display_name %}">
-      <div class="mainopts">
-        <span class="reddit-link"><a href="https://www.reddit.com/r/{{view_sr.display_name}}" class="fa fa-reddit"></a><a href="/r/{{view_sr.display_name}}">/r/{{view_sr.display_name}}</a></span>
-        <label>
-          <select name="s" size="1">
-            <!-- rename param "sex" to just "s", because it will show in the URL and may trigger blocking by overly P.C. company or uni networks -->
-            <option value="">everybody</option>
-            {% for sex in settings.SEX_PLURAL %}
-              {% if sex.0 > 0 %}
-                <option {% if params.sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
-        </label>&nbsp;
-        <span>within</span>&nbsp;
-        <label>
-          <select {% if user.is_anonymous %}disabled="disabled"{% endif %} name="dist" size="1">
-            {% for x in DISTANCE %}
-              <option {% if params.distance == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
-            {% endfor %}
-          </select>
-        </label>&nbsp;
-        <label class="submit">
-          <input type="submit" value="search">
-        </label>&nbsp;
-        <label style="font-size: 0.8rem;">
-          <span>sort by:</span>
-          <select name="order" size="1" style="font-size: inherit; background: transparent; border: none; outline: none;">
-            {% for x in settings.ORDER_BY %}
-              {% if x.0 != "-sr_count" %}
-                <option {% if params.order == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
-        </label>&nbsp;
-      </div>
-
-      <section class="toggle-section">
-        <label for="id_984hfde">
-          <h3>more search settings</h3>
-        </label>
-        <input id="id_984hfde" type="checkbox" style="display: none;">
-        <div class="opts">
-          <section>
-            <label>
-              <input type="checkbox" name="hide_no_pic" value="1" {% if params.hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
-            </label>&nbsp;&middot;&nbsp;
-            <label>
-              <input type="checkbox" name="has_verified_email" value="1" {% if params.has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
-            </label>&nbsp;
-            <!--
-            <label>
-              <input type="checkbox" name="f_is_stable" value="1">&nbsp;<span title="Ignore very new and low karma accounts.">only established redditors</span>
-            </label>&nbsp;
-            -->
-          </section>
-          <section>
-            <span><b>age range</b>: between&nbsp;
-            <input type="number" min="18" max="98" name="minage" value="{{params.minage|default:18}}">&nbsp;and&nbsp;
-            <input type="number" min="19" max="100" name="maxage" value="{{params.maxage|default:100}}">&nbsp;
-            years old</span>
-          </section>
-          <section style="text-align:center">
+    <div class="search-bar" id="id_search">
+      <div id="id_search_loading" class="loading" style="display:none; text-align:center; border: 0.75rem solid transparent;"><span></span><span></span><span></span></div>
+  
+      <form id="id_search_form" method="GET" action="{% url 'sr_page' view_sr.display_name %}">
+        <div class="mainopts">
+          <span class="reddit-link"><a href="https://www.reddit.com/r/{{view_sr.display_name}}" class="fa fa-reddit"></a><a href="/r/{{view_sr.display_name}}">/r/{{view_sr.display_name}}</a></span>
+          <label>
+            <select name="s" size="1">
+              <!-- rename param "sex" to just "s", because it will show in the URL and may trigger blocking by overly P.C. company or uni networks -->
+              <option value="">everybody</option>
+              {% for sex in settings.SEX_PLURAL %}
+                {% if sex.0 > 0 %}
+                  <option {% if params.sex == sex.0 %} selected{% endif %} value="{{sex.0}}">{{sex.1}}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </label>&nbsp;
+          <span>within</span>&nbsp;
+          <label>
+            <select {% if user.is_anonymous %}disabled="disabled"{% endif %} name="dist" size="1">
+              {% for x in DISTANCE %}
+                <option {% if params.distance == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+              {% endfor %}
+            </select>
+          </label>&nbsp;
+          <label class="submit">
             <input type="submit" value="search">
-          </section>
+          </label>&nbsp;
+          <label style="font-size: 0.8rem;">
+            <span>sort by:</span>
+            <select name="order" size="1" style="font-size: inherit; background: transparent; border: none; outline: none;">
+              {% for x in settings.ORDER_BY %}
+                {% if x.0 != "-sr_count" %}
+                  <option {% if params.order == x.0 %}selected{% endif %} value="{{x.0}}">{{x.1}}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </label>&nbsp;
         </div>
-      </section>
-    </form>
-  </div>
-
-
-
-</section>
+  
+        <section class="toggle-section">
+          <label for="id_984hfde">
+            <h3>more search settings</h3>
+          </label>
+          <input id="id_984hfde" type="checkbox" style="display: none;">
+          <div class="opts">
+            <section>
+              <label>
+                <input type="checkbox" name="hide_no_pic" value="1" {% if params.hide_no_pic %} checked{% endif %}>&nbsp;<span title="">only show profiles with picture</span>
+              </label>&nbsp;&middot;&nbsp;
+              <label>
+                <input type="checkbox" name="has_verified_email" value="1" {% if params.has_verified_email %} checked{% endif %}>&nbsp;<span title="Must have verified email on reddit.">only with verified email</span>
+              </label>&nbsp;
+              <!--
+              <label>
+                <input type="checkbox" name="f_is_stable" value="1">&nbsp;<span title="Ignore very new and low karma accounts.">only established redditors</span>
+              </label>&nbsp;
+              -->
+            </section>
+            <section>
+              <span><b>age range</b>: between&nbsp;
+              <input type="number" min="18" max="98" name="minage" value="{{params.minage|default:18}}">&nbsp;and&nbsp;
+              <input type="number" min="19" max="100" name="maxage" value="{{params.maxage|default:100}}">&nbsp;
+              years old</span>
+            </section>
+            <section style="text-align:center">
+              <input type="submit" value="search">
+            </section>
+          </div>
+        </section>
+      </form>
+    </div>
+  </section>
 
 {% if user_list %}
   <article>

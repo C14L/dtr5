@@ -1,5 +1,4 @@
 {% load static %}
-{% spaceless %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -16,95 +15,31 @@
     <link rel="icon" sizes="192x192" href="{% static 'icon192.png' %}">
     <link rel="icon" sizes="256x256" href="{% static 'icon256.png' %}">
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css'>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <style>/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background-color:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:bold}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-0.5em}sub{bottom:-0.25em}img{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}pre{overflow:auto}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:bold}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}</style>
 
     {% block head %}{% endblock %}
     <script>function ga(){return true}</script>
   </head>
-  <body class="{% block body_classes %}{% endblock %}{% if user.is_authenticated %} auth-user{% else %} anon-user{% endif %}"{% if view_user and view_user.profile.background_pic %} style="background-image: url({{view_user.profile.display_background_pic}}); background-attachment: fixed; background-position: center center; background-repeat: no-repeat; background-size: cover;"{% endif %}>
-    <header>
-      <div class="site-logo">
-        <a class="site-icon" href="/" onclick="ga('send', 'event', 'header', 'click', 'sitelogo');"><img src="{% static 'logo100.gif' %}" alt=""></a>
-        <a class="site-name" href="/" onclick="ga('send', 'event', 'header', 'click', 'sitename');">reddmeet</a>
-      </div>
-      <div class="site-links">
+  <body class="{% block body_classes %}{% endblock %}{% if user.is_authenticated %} auth-user{% else %} anon-user{% endif %}">
 
-        <a class="item likes" href="{% url 'me_recv_like_page' %}" onclick="ga('send', 'event', 'header', 'click', 'upvotes-inbox');">
-          <span class="text">upvotes inbox</span>
-          <!-- <span class="cst-arrow-up"></span> -->
-          <span class="icon fa fa-arrow-up"></span>
-          {% if user.profile.new_likes_count %}
-            <span class="number">{{user.profile.new_likes_count}}</span>
-          {% endif %}
-        </a>
-
-        <a class="item matches" href="{% url 'matches_page' %}" onclick="ga('send', 'event', 'header', 'click', 'upvote-matches');">
-          <span class="text">upvote&nbsp;matches</span>
-          <span class="icon fa fa-bullseye"></span>
-          {% if user.profile.new_matches_count %}
-            <span class="number">{{user.profile.new_matches_count}}</span>
-          {% endif %}
-        </a>
-
-        <a class="item visits" href="{% url 'me_viewed_me_page' %}" onclick="ga('send', 'event', 'header', 'click', 'visited-you');">
-          <span class="text">visited you</span>
-          <span class="icon fa fa-users"></span>
-          {% if user.profile.new_views_count %}
-            <span class="number">{{user.profile.new_views_count}}</span>
-          {% endif %}
-        </a>
-
-        <a class="item settings" href="{% url 'me_page' %}" onclick="ga('send', 'event', 'header', 'click', 'preferences');">
-          <span class="text">preferences</span>
-          <span class="icon fa fa-cog"></span>
-        </a>
-
-        {% if user.is_authenticated %}
-
-          <nav class="dotmenu">
-            <span class="fa fa-ellipsis-h"></span>
-            <input type="checkbox">
-            <ul class="opts">
-              <li>
-                <span class="icon fa fa-user"></span>
-                <a class="username" href="{% url 'profile_page' user.username %}" onclick="ga('send', 'event', 'headmenu', 'click', 'username');">{{user.username}}</a>
-              </li>
-
-              <li>
-                <span class="icon fa fa-map"></span>
-                <a class="map" href="{% url 'usermap' %}" onclick="ga('send', 'event', 'headmenu', 'click', 'redditors-map');">redditors map</a>
-              </li>
-
-              <li>
-                <span class="icon fa fa-envelope"></span>
-                <a href="https://www.reddit.com/message/messages/" title="reddit mailbox" onclick="ga('send', 'event', 'headmenu', 'click', 'reddit-mailbox');">reddit mailbox</a>
-              </li>
-
-              <li class="">
-                <span class="cst-arrow-up gray"></span>
-                <a href="{% url 'me_like_page' %}" onclick="ga('send', 'event', 'headmenu', 'click', 'upvotes-you-sent');">upvotes you sent</a>
-              </li>
-
-              <li class="secondary">
-                <span class="fa fa-arrow-down"></span>
-                <a href="{% url 'me_nope_page' %}" onclick="ga('send', 'event', 'headmenu', 'click', 'hidden-profiles');">hidden profiles</a>
-              </li>
-
-              <li class="secondary">
-                <span class="fa fa-sign-out"></span>
-                <a class="logout" href="{% url 'logout_page' %}" onclick="ga('send', 'event', 'headmenu', 'click', 'logout');">logout</a>
-              </li>
-            </ul>
-          </nav>
-
-        {% else %}
-          <a class="item login" href="/" onclick="ga('send', 'event', 'header', 'click', 'signup-login');"><span class="text">signup/login</span><span class="icon fa fa-sign-in"></span></a>
-
-        {% endif %}
-      </div>
-    </header>
+    <c14l-header logo="{% static 'logo100.gif' %}" name="reddmeet">
+      <a class="likes" counter="1{{user.profile.new_likes_count}}" href="{% url 'me_recv_like_page' %}">upvotes inbox</a>
+      <a class="matches" counter="{{user.profile.new_matches_count}}" href="{% url 'matches_page' %}">upvote matches</a>
+      <a class="visits" counter="{{user.profile.new_views_count}}" href="{% url 'me_viewed_me_page' %}">visited you</a>
+      {% if user.is_authenticated %}
+        <c14l-menu>
+          <a class="username" href="{% url 'profile_page' user.username %}">{{user.username}}</a>
+          <a href="{% url 'me_page' %}">preferences</a>
+          <a class="map" href="{% url 'usermap' %}">redditors map</a>
+          <a href="https://www.reddit.com/message/messages/">reddit mailbox</a>
+          <a href="{% url 'me_like_page' %}">upvotes you sent</a>
+          <a class="secondary" href="{% url 'me_nope_page' %}">hidden profiles</a>
+          <a class="secondary logout" href="{% url 'logout_page' %}">logout</a>
+        </c14l-menu>
+      {% else %}
+        <a class="login" href="/">signup/login</a>
+      {% endif %}
+    </c14l-header>
 
     {% if messages %}
     <ul id="site-messages" onclick="this.parentNode.removeChild(this)">
@@ -120,17 +55,31 @@
 
     <footer>
       <p>
-        <a href="/stats/" onclick="ga('send', 'event', 'footer', 'click', 'stats');">site stats</a>
+        <a href="/stats/">site stats</a>
         &middot;
-        discuss on <a href="https://www.reddit.com/r/redddate" onclick="ga('send', 'event', 'footer', 'click', 'ext-r-redddit');">r/reddmeet</a>
+        discuss on <a href="https://www.reddit.com/r/redddate">r/reddmeet</a>
         &middot;
-        source on <a href="https://github.com/C14L/dtr5" onclick="ga('send', 'event', 'footer', 'click', 'ext-github');"><span class="fa fa-github"></span> GitHub</a>
+        source on <a href="https://github.com/C14L/dtr5"><span class="fa fa-github"></span> GitHub</a>
       </p>
       <p>
-        &copy; 2016-18 ReddMeet.com -- use of this site implies acceptance of the <a href="{% static 'useragreement.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'user-agreement');">User Agreement</a> and <a href="{% static 'privacy.html' %}" onclick="ga('send', 'event', 'footer', 'click', 'privacy-policy');">Privacy Policy</a>.
+        &copy; 2016-18 ReddMeet.com -- use of this site implies acceptance of the 
+        <a href="{% static 'useragreement.html' %}">User Agreement</a> and 
+        <a href="{% static 'privacy.html' %}">Privacy Policy</a>.
       <p>
 
-      {% if DEBUG or user.is_superuser %}
+      {% if DEBUG %}
+        <hr>
+        <p>[DEBUG] --
+        CANONICAL_HOST=={{CANONICAL_HOST}} --
+        authuser: {{user.id}} -
+        refresh_token: {{request.session.refresh_token}} -
+        access_token: {{request.session.access_token}} -
+        expires: {{request.session.expires}} -
+        now {{unixtime}} -
+        secs.left: {{timeleft}}</p>
+      {% endif %}
+
+      {% if user.is_superuser %}
         <hr>
         <p>[SUPERUSER] --
         CANONICAL_HOST=={{CANONICAL_HOST}} --
@@ -144,7 +93,6 @@
     </footer>
 
     {% if user.is_staff %}
-
       <div style="position:fixed; right:0; bottom:0; background:green; color:white; margin:0; padding:4px 8px;">
         STAFF:&nbsp;
         <a href="{% url 'mod_report_page' %}" style="color:inherit;">reports</a>
@@ -158,11 +106,12 @@
           <span>USERNAME: {{view_user.username}}</span>
         {% endif %}
       </div>
-
     {% endif %}
 
+    <script src="{% static 'c14l-srchip.js' %}"></script>
+    <script src="{% static 'c14l-menu.js' %}"></script>
+    <script src="{% static 'c14l-header.js' %}"></script>
+    <script src="{% static 'c14l-userhead.js' %}"></script>
   </body>
-  <script src="{% static 'base.js' %}"></script>
   {% block foot %}{% endblock %}
 </html>
-{% endspaceless %}
