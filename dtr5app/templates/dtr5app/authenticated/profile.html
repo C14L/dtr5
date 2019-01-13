@@ -43,9 +43,9 @@
 
     {% else %}
 
-      <div class="announce herefor">
+      <!-- <div class="announce herefor">
         <span class="herefor-bg{{view_user.profile.herefor}}">{{view_user.profile.herefor|display_choice:settings.HEREFOR}}</span>
-      </div>
+      </div> -->
 
     {% endif %}
   {% endif %}
@@ -63,18 +63,21 @@
     {% if is_like %}<div class="announce like"><span class="tx">upvoted</span></div>{% endif %}
 
     {% if view_user.username != user.username %}
-    <div class="upvote-hide">
+    <div class="upvote-downvote">
       <form class="upvote" method="POST" action="{% url 'me_flag_page' 'set' 'like' view_user.username %}" title="upvote">
         {% csrf_token %}
         <input type="submit" value="">
-        <input type="hidden" name="next" value="{% url 'profile_page' view_user.username %}">
+        <!--
+          Don't go to next profile! Just like on Reddit, up/down vote.
+          <input type="hidden" name="next" value="{% url 'profile_page' view_user.username %}">
+        -->
       </form>
       <div class="middot">
         &middot;
       </div>
-      <form class="hide" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}" title="hide from search results">
+      <form class="downvote" method="POST" action="{% url 'me_flag_page' 'set' 'nope' view_user.username %}" title="hide from search results">
         {% csrf_token %}
-        <input type="submit" value="hide">
+        <input type="submit" value="">
       </form>
     </div>
     {% endif %}
@@ -228,20 +231,6 @@
       </div>
     </section>
   </div>
-
-  {% if view_user.pics_list.1.url %}
-    <div class="card nopadd" id="id_pics">
-      <section class="nopadd fullpics">
-        {% for pic in view_user.pics_list %}
-          {% if pic.url %}
-            <span><a href="{{pic.url_large}}" class="pic" style="background-image: url({{pic.url}});"></a></span>
-          {% else %}
-            <span class="no"><span class="pic" style="background-image: url({% static 'nopic.jpg' %});"></span></span>
-          {% endif %}
-        {% endfor %}
-      </section>
-    </div>
-  {% endif %}
 
   <div class="card nopadd" id="id_about">
     <a href="#" class="fa fa-arrow-up"></a>

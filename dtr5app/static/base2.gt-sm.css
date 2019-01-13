@@ -359,56 +359,66 @@ body.profile .card.headcard .dotmenu {
   z-index: 1;
 }
 
-body.profile .upvote-hide {
+
+
+
+body.profile .upvote-downvote {
   display: block;
-  position: absolute; top: 0; left: 0;
+  font-size: 0;
+  left: 0;
+  margin: 20px 20px 0 22px;
+  padding: 24px 16px;
+  position: absolute;
+  top: 0;
   width: 84px;
-  margin: 32px 20px 0 22px; padding: 24px 16px;
-  border: 1px solid gray;
-  border-radius: 58px;
 }
-body.profile .upvote-hide .upvote {
+body.profile .upvote-downvote .upvote {
   display: block;
 }
-body.profile .upvote-hide .upvote input[type="submit"] {
-  opacity: 0.75;
+body.profile .upvote-downvote .upvote input[type="submit"] {
   background:url(/static/up-arrows-2.gif) center center no-repeat;
+  border: 0;
+  margin: 0;
+  opacity: 0.75;
+  outline: 0;
+  padding: 0;
   width: 84px; height: 76px;
-  border: 0; outline: 0;
-  margin: 0; padding: 0;
 }
-body.profile .upvote-hide .upvote input[type="submit"]:hover {
+body.profile .upvote-downvote .upvote input[type="submit"]:hover {
   opacity: 1;
 }
-body.profile.is-like .upvote-hide .upvote {
+body.profile.is-like .upvote-downvote .upvote {
+  opacity: 1;
 }
-body.profile.is-match .upvote-hide .upvote input[type="submit"],
-body.profile.is-like .upvote-hide .upvote input[type="submit"] {
+body.profile.is-match .upvote-downvote .upvote input[type="submit"],
+body.profile.is-like .upvote-downvote .upvote input[type="submit"] {
   opacity: 1;
 }
 
-body.profile .upvote-hide .middot {
-  width: 84px;
-  margin: 0; margin-top: 16px; padding: 0;
-  font-size: 32px; line-height: 32px;
-  text-align: center;
+body.profile .upvote-downvote .middot {
   color: gray;
+  font-size: 32px;
   font-weight: bold;
+  line-height: 32px;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 84px;
 }
-body.profile .upvote-hide .hide {
+body.profile .upvote-downvote .downvote {
   display: block;
 }
-body.profile .upvote-hide .hide input[type="submit"] {
+body.profile .upvote-downvote .downvote input[type="submit"] {
+  border: 0;
+  background:url(/static/down-arrows-2.gif) center center no-repeat;
+  height: 76px;
+  margin: 0;
   opacity: 0.75;
-  background: transparent;
-  border: 0; outline: 0;
-  color: gray;
-  font-size: 0.9rem;
-  font-weight: bold;
+  outline: 0;
+  padding: 0;
   width: 84px;
-  margin: 16px 0 0 0; padding: 0;
 }
-body.profile .upvote-hide .hide input[type="submit"]:hover {
+body.profile .upvote-downvote .downvote input[type="submit"]:hover {
   opacity: 1;
 }
 

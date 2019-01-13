@@ -2,16 +2,22 @@
     let template = document.createElement('template');
     template.innerHTML = `
         <style>
-            #pics {
-                background: white;
+            #pics-state {
+                width: 0px;
+                height: 0px;
+                opacity: 0;
+            }
+            #pics-state + #pics {
+                background: transparent;
+                cursor: pointer;
                 display: block;
                 height: 280px;
                 margin: 32px 0;
                 padding: 0;
                 position: relative;
-                overflow: hidden;
+                width: 280px;
             }
-            #pics div {
+            #pics-state + #pics div {
                 background-position: center center;
                 background-repeat: no-repeat;
                 background-size: cover;
@@ -21,20 +27,29 @@
                 left: 0;
                 position: absolute;
                 top: 0;
-                transition: 0.5s ease-out;
+                transition: 0.15s ease-out;
                 width: 280px;
             }
-            #pics:hover div {
+            #pics-state:checked + #pics {
+            }
+            #pics-state:checked + #pics div {
                 box-shadow: 0 0 40px rgba(0,0,0,0.75);
             }
-            #pics:hover div:nth-child(2) {
-                left: calc(1 * 280px);
+            #pics-state:checked + #pics div:nth-child(1) {
+                left: 0;
+                transform: rotate(-5deg);
             }
-            #pics:hover div:nth-child(3) {
+            #pics-state:checked + #pics div:nth-child(2) {
+                left: calc(1 * 280px);
+                transform: rotate(2deg);
+            }
+            #pics-state:checked + #pics div:nth-child(3) {
                 left: calc(2 * 280px);
+                transform: rotate(10deg);
             }
         </style>
-        <div id="pics"></div>
+        <input type="checkbox" id="pics-state">
+        <label for="pics-state" id="pics"></label>
     `;
 
     class C14LUserHead extends HTMLElement {
