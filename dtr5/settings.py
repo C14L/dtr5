@@ -18,7 +18,7 @@ DEBUG = os.path.exists('/islocal.txt')
 print('--> DEBUG: {}'.format(DEBUG))
 
 # Import the following "secret" settings
-SECRET_KEY = ''
+SECRET_KEY = 'totallyrandomstringwhichbyweirdcoincidencecameoutlikethis2'
 DATABASES = {'default': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
     'HOST': 'localhost', 'NAME': '', 'USER': '', 'PASSWORD': '', }}
@@ -26,7 +26,7 @@ OAUTH_REDDIT_CLIENT_ID = ''
 OAUTH_REDDIT_CLIENT_SECRET = ''
 OAUTH_REDDIT_USER_AGENT = ''
 #######################################
-from .settings_secrets import *
+from .settings_private import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
