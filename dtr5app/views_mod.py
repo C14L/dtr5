@@ -17,14 +17,14 @@ from dtr5app.models import Report
 
 @staff_member_required
 @require_http_methods(["GET", "POST"])
-def mod_report_view(request, pk=None, template_name='dtr5app/reports.html'):
+def mod_report_view(request, pk=None, template_name="dtr5app/reports.html"):
     """
     For staff users to review reported profiles. If a pk is given on a POST,
     set that report to "resolved".
     """
-    show = request.POST.get('show', None) or request.GET.get('show', 'open')
+    show = request.POST.get("show", None) or request.GET.get("show", "open")
 
-    if request.method in ['POST']:
+    if request.method in ["POST"]:
         # toggle the resove state of the report.
         report = get_object_or_404(Report, pk=pk)
         if report.resolved:
@@ -34,32 +34,32 @@ def mod_report_view(request, pk=None, template_name='dtr5app/reports.html'):
         report.save()
 
         # then show the same list, either "open" or "resolved"
-        return redirect(reverse('mod_report_page') + '?show=' + show)
+        return redirect(reverse("mod_report_page") + "?show=" + show)
 
-    li = Report.objects.prefetch_related('sender', 'receiver')
-    if show == 'resolved':
+    li = Report.objects.prefetch_related("sender", "receiver")
+    if show == "resolved":
         # show list of old resolved reports
-        li = li.filter(resolved__isnull=False).order_by('-resolved')
+        li = li.filter(resolved__isnull=False).order_by("-resolved")
     else:
         # or a list of fresh open reports
-        li = li.filter(resolved__isnull=True).order_by('-created')
+        li = li.filter(resolved__isnull=True).order_by("-created")
 
     paginator = Paginator(li, per_page=100)
     try:
-        reports = paginator.page(int(request.GET.get('page', 1)))
+        reports = paginator.page(int(request.GET.get("page", 1)))
     except EmptyPage:  # out of range
         return HttpResponseNotFound()
     except ValueError:  # not a number
         return HttpResponseNotFound()
 
-    ctx = {'reports': reports, 'show': show}
+    ctx = {"reports": reports, "show": show}
 
     return render(request, template_name, ctx)
 
 
 @require_http_methods(["GET", "POST"])
 @staff_member_required
-def mod_deluser_view(request, pk, template_name='dtr5app/mod_del_profile.html'):
+def mod_deluser_view(request, pk, template_name="dtr5app/mod_del_profile.html"):
     """
     For moderators to delete a user profile and ban the user.
     """
@@ -82,9 +82,9 @@ def mod_deluser_view(request, pk, template_name='dtr5app/mod_del_profile.html'):
         view_user.is_active = False
         view_user.save()
 
-        kwargs = {'username': view_user.username}
-        return redirect(reverse('profile_page', kwargs=kwargs))
+        kwargs = {"username": view_user.username}
+        return redirect(reverse("profile_page", kwargs=kwargs))
 
-    ctx = {'view_user': view_user}
+    ctx = {"view_user": view_user}
 
     return render(request, template_name, ctx)
