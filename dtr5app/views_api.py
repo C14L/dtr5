@@ -61,7 +61,7 @@ def filter_members_view(request):
     ul = User.objects.filter(username__in=usernames)\
                      .prefetch_related('profile')[:50]
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         ul = add_likes_sent(ul, request.user)
         ul = add_likes_recv(ul, request.user)
         ul = add_matches_to_user_list(ul, request.user)
@@ -75,7 +75,7 @@ def filter_members_view(request):
                 'sex': user.profile.get_sex_display(),
                 'age': user.profile.get_age(), }
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             item['is_like_sent'] = user.is_like_sent
             item['is_like_recv'] = user.is_like_recv
             item['is_match'] = user.is_match
@@ -112,7 +112,7 @@ def sr_user_list(request, sr, format=None):
     params['maxage'] = force_int(request.GET.get('maxage', 100))
     if params['maxage'] not in range(params['minage'], 101):
         params['maxage'] = 100
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         params['user_id'] = request.user.id
         params['lat'] = request.user.profile.lat
         params['lng'] = request.user.profile.lng

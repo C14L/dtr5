@@ -13,7 +13,7 @@ from toolbox import force_int
 
 
 def get_subs_for_user(user):
-    if user.is_authenticated():
+    if user.is_authenticated:
         return user.subs.all().prefetch_related('sr')
 
     return []
@@ -50,7 +50,7 @@ def get_paginated_user_list(user_list, page, user):
            distances to all users the the returned page are calculated.
     """
     user_page = prepare_paginated_user_list(user_list, page)
-    if user.is_authenticated():
+    if user.is_authenticated:
         ul = add_auth_user_latlng(user, user_page.object_list)
         user_page.object_list = ul
     return user_page
@@ -246,7 +246,7 @@ def add_likes_sent(user_list, user):
     :user_list: a list of User objects.
     :user: a single User object.
     """
-    if user.is_authenticated():
+    if user.is_authenticated:
         li = User.objects.filter(username__in=[x.username for x in user_list],
                                  flags_received__sender=user,
                                  flags_received__flag=Flag.LIKE_FLAG
@@ -266,7 +266,7 @@ def add_likes_recv(user_list, user):
     :user_list: a list of User objects.
     :user: a single User object.
     """
-    if user.is_authenticated():
+    if user.is_authenticated:
         li = User.objects.filter(username__in=[x.username for x in user_list],
                                  flags_sent__receiver=user,
                                  flags_sent__flag=Flag.LIKE_FLAG
@@ -282,7 +282,7 @@ def add_matches_to_user_list(user_list, user):
     Add a "is_match" attribut to all User objects in the user_list list
     who are a match (mutual like) with user and return the user_list.
     """
-    if user.is_authenticated():
+    if user.is_authenticated:
         li = [x.username for x in user_list]
         qs = get_matches_user_queryset(user).filter(username__in=li)
         li = [x.username for x in qs]

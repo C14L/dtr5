@@ -31,12 +31,11 @@ def me_view(request, template_name='dtr5app/me.html'):
     """
     Show a settings page for auth user's profile.
     """
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect(settings.OAUTH_REDDIT_REDIRECT_AUTH_ERROR)
 
     ctx = {'unixtime': unixtime(),
            'timeleft': request.session['expires'] - unixtime()}
-    kwargs = {'context_instance': RequestContext(request)}
 
     link_karma = settings.USER_MIN_LINK_KARMA
     comment_karma = settings.USER_MIN_COMMENT_KARMA

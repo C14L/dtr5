@@ -37,7 +37,7 @@ class Dtr5appConsumersTestCase(ChannelTestCase):
 
         login = self.client.login(reddit_user=self.u1['username'])
         self.assertTrue(login, msg='User is not logged in.')
-        self.assertTrue(auth.get_user(self.client).is_authenticated())
+        self.assertTrue(auth.get_user(self.client).is_authenticated)
         self.assertEqual(int(self.client.session['_auth_user_id']), self.user1.pk)
 
         # TODO: The below test causes an error:

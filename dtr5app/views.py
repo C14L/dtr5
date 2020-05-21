@@ -175,7 +175,7 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
     if params['maxage'] not in range(params['minage'], 101):
         params['maxage'] = 100
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         params['user_id'] = request.user.id
         params['lat'] = request.user.profile.lat
         params['lng'] = request.user.profile.lng

@@ -48,7 +48,7 @@ class UserProfileLastActiveMiddleware():
     """Set Profile.accessed to now()."""
 
     def process_request(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             request.user.profile.accessed = datetime.now().replace(tzinfo=utc)
             request.user.profile.save(update_fields=['accessed'])
 
@@ -67,7 +67,7 @@ class UserSetDefaultLocalizationValues():
                ]
 
     def process_request(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if not request.user.profile.pref_distance_unit:
                 # if no distance unit set by user, try to find one based on
                 # user's browser settings.
