@@ -3,14 +3,9 @@ Pillow
 PyYAML
 Twisted
 argparse
-asgi-ipc
-asgi-redis
-asgiref
 autobahn
 cffi
-channels
 cryptography
-daphne
 defusedxml
 django-cors-headers
 djangorestframework
@@ -34,7 +29,6 @@ python-dateutil
 python-gnupg
 python-jose
 python-memcached
-python3-openid
 pytz
 pywebpush
 redis
