@@ -14,7 +14,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import re
 
-DEBUG = os.path.exists('/islocal.txt')
+DEBUG = bool(os.environ.get('ISDEV'))
+
+redis_host = os.environ.get('REDIS_HOST', 'localhost')
+
 print('--> DEBUG: {}'.format(DEBUG))
 
 # Import the following "secret" settings
@@ -46,8 +49,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
-# Use memcached for sessions. Careful: cache size has to be large enough! Once
-# the cache fills up, random items will be evicted, i.e. sessions dumped.
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -69,33 +70,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'corsheaders',
-
     'rest_framework',
-    'channels',
-
     'simple_reddit_oauth',
     'dtr5app',
 )
-
-redis_host = os.environ.get('REDIS_HOST', 'localhost')
-
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "asgi_redis.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [(redis_host, 6379)],
-#         },
-#         "ROUTING": "dtr5.routing.channel_routing",
-#     },
-# }
-
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "asgi_ipc.IPCChannelLayer",
-#         "ROUTING": "dtr5.routing.channel_routing",
-#         "CONFIG": {"prefix": "dtr5"},
-#     },
-# }
 
 MIDDLEWARE = (
     # 'dtr5app.middleware.CheckSiteTemporarilyUnavailable',
@@ -136,8 +114,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dtr5.wsgi.application'
-ASGI_APPLICATION = 'dtr5.routing.application'
-
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = False  # english only, for now
