@@ -9,6 +9,7 @@ cryptography
 defusedxml
 django-cors-headers
 djangorestframework
+django_redis
 ecdsa
 flake8
 geopy
