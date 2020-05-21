@@ -12,8 +12,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseBadRequest, Http404
-from django.shortcuts import redirect, render_to_response
-from django.template import RequestContext
+from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
 from simple_reddit_oauth import api
@@ -101,7 +100,7 @@ def me_view(request, template_name='dtr5app/me.html'):
         template_name = 'dtr5app/step_7.html'
         request.session['view_post_signup'] = False
 
-    return render_to_response(template_name, ctx, **kwargs)
+    return render(request, template_name, ctx)
 
 
 @login_required
@@ -173,9 +172,7 @@ def me_locate_view(request, template_name='dtr5app/location_form.html'):
     user's approximate location, but good enough for our purpose.
     """
     if request.method == "GET":
-        ctx = {}
-        kwargs = {'context_instance': RequestContext(request)}
-        return render_to_response(template_name, ctx, **kwargs)
+        return render(request, template_name)
 
     request.user.profile.fuzzy = force_float(request.POST.get('fuzzy', 2))
     request.user.profile.lat = force_float(request.POST.get('lat', 0.0))
@@ -426,9 +423,7 @@ def me_account_del_view(request, template_name='dtr5app/account_del.html'):
 
         return redirect(request.POST.get('next', settings.LOGIN_URL))
 
-    ctx = {}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+    return render(request, template_name)
 
 
 @login_required
@@ -438,9 +433,7 @@ def me_flag_del_view(request, template_name = 'dtr5app/flag_del_all.html'):
     Delete ALL listed flags authuser set on other users.
     """
     if request.method in ['GET', 'HEAD']:  # Return a "are you sure" page.
-        ctx = {}
-        kwargs = {'context_instance': RequestContext(request)}
-        return render_to_response(template_name, ctx, **kwargs)
+        return render(request, template_name, ctx)
 
     flag_str = request.POST.get('flags', 'like,nope')
     flag_ids = [Flag.FLAG_DICT[x] for x in flag_str.split(',')]
@@ -471,7 +464,6 @@ def me_flag_view(request, action, flag, username):
     Valid flag values: 'like', 'nope', 'report'.
     """
     _next = None
-    kwargs = {'context_instance': RequestContext(request)}
     view_user = get_user_and_related_or_404(username)
     flags = {x[1]: x[0] for x in Flag.FLAG_CHOICES}
 
@@ -481,7 +473,7 @@ def me_flag_view(request, action, flag, username):
             template_name = 'dtr5app/report_profile_form.html'
             ctx = {'view_user': view_user,
                    'report_reasons': Report.REASON_CHOICES}
-            return render_to_response(template_name, ctx, **kwargs)
+            return render(request, template_name, ctx)
 
         raise Http404
 

@@ -6,13 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.http import (
-    JsonResponse, 
-    HttpResponseNotFound, 
+    JsonResponse,
+    HttpResponseNotFound,
     Http404,
     HttpResponseRedirect,
 )
-from django.shortcuts import redirect, render, render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.http import require_http_methods
 
 from simple_reddit_oauth import api
@@ -20,18 +19,18 @@ from toolbox import force_int
 from . import utils_stats
 from .models import Sr, Flag, Visit
 from .utils import (
-    add_auth_user_latlng, 
-    count_matches, 
+    add_auth_user_latlng,
+    count_matches,
     get_matches_user_list,
-    get_prevnext_user, 
-    get_user_and_related_or_404, 
+    get_prevnext_user,
+    get_user_and_related_or_404,
     get_paginated_user_list,
-    prepare_paginated_user_list, 
-    add_matches_to_user_list, 
+    prepare_paginated_user_list,
+    add_matches_to_user_list,
     get_user_list_from_username_list,
-    get_user_list_after, 
-    add_likes_sent, 
-    add_likes_recv, 
+    get_user_list_after,
+    add_likes_sent,
+    add_likes_recv,
     get_subs_for_user,
 )
 from .utils_search import search_results_buffer, search_subreddit_users
@@ -70,8 +69,7 @@ def results_view(request, template_name='dtr5app/results.html'):
         sr_names.append({'name': row.sr.display_name, 'fav': fav})
 
     ctx = {'user_list': ul, 'order_by': order_by, 'sr_names': sr_names}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+    return render(request, template_name, ctx)
 
 
 @login_required
@@ -145,8 +143,8 @@ def profile_view(request, username, template_name='dtr5app/profile.html'):
            'is_nope': request.user.profile.does_nope(view_user),
            'prev_user': prev_user,
            'next_user': next_user}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    return render(request, template_name, ctx)
 
 
 @require_http_methods(["GET", "HEAD"])
@@ -199,8 +197,8 @@ def sr_view(request, sr, template_name='dtr5app/sr.html'):
 
     ctx = {'view_sr': view_sr, 'user_list': ul, 'params': params,
            'user_subs_all': get_subs_for_user(request.user)}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    return render(request, template_name, ctx)
 
 
 @login_required
@@ -214,8 +212,8 @@ def nope_view(request, template_name='dtr5app/nopes.html'):
                              flags_received__flag=Flag.NOPE_FLAG
                              ).prefetch_related('profile')
     ctx = {'user_list': get_paginated_user_list(ul, pg, request.user)}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    return render(request, template_name, ctx)
 
 
 @login_required
@@ -252,8 +250,8 @@ def viewed_me_view(request, template_name='dtr5app/viewed_me.html'):
     request.user.profile.save(update_fields=['new_views_count'])
 
     ctx = {'user_list': sorted(ul, key=lambda x: x.visit_created, reverse=True)}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    return render(request, template_name, ctx)
 
 
 @login_required
@@ -271,8 +269,8 @@ def likes_sent_view(request, template_name='dtr5app/likes_sent.html'):
     ul.object_list = add_matches_to_user_list(ul.object_list, request.user)
 
     ctx = {'user_list': ul}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    return render(request, template_name, ctx)
 
 
 @login_required
@@ -303,8 +301,8 @@ def likes_recv_view(request, template_name='dtr5app/likes_recv.html'):
     request.user.profile.save(update_fields=['new_likes_count'])
 
     ctx = {'user_list': ul}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    return render(request, template_name, ctx)
 
 
 @login_required
@@ -329,8 +327,8 @@ def matches_view(request, template_name='dtr5app/matches.html'):
     request.user.profile.save(update_fields=['matches_count',
                                              'new_matches_count'])
     ctx = {'user_list': ul}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    return render(request, template_name, ctx)
 
 
 def stats_view(request, template_name='dtr5app/stats.html'):
@@ -355,8 +353,8 @@ def stats_view(request, template_name='dtr5app/stats.html'):
         'signups_per_day': utils_stats.get_signups_per_day_for_range(
             (date.today() - timedelta(days=30)), date.today())
         }
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+
+    return render(request, template_name, ctx)
 
 
 @login_required
@@ -389,6 +387,4 @@ def usermap_view(request, template_name='dtr5app/usermap.html'):
 
         return JsonResponse({'users': users})
 
-    ctx = {}
-    kwargs = {'context_instance': RequestContext(request)}
-    return render_to_response(template_name, ctx, **kwargs)
+    return render(request, template_name)
