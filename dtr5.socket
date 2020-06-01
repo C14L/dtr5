@@ -1,0 +1,8 @@
+[Unit]
+Description=django dtr5 socket
+
+[Socket]
+ListenStream=/run/dtr5.socket
+
+[Install]
+WantedBy=dtr5.target

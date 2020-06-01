@@ -1,0 +1,30 @@
+[Unit]
+
+Description=django dtr5 service
+Requires=dtr5.socket
+After=network.target
+
+[Service]
+PIDFile=/run/dtr5.pid
+User=chris
+Group=chris
+RuntimeDirectory=gunicorn
+WorkingDirectory=/opt/dtr5
+ExecStart=/home/chris/.virtualenvs/dtr5/bin/gunicorn \
+    dtr5.wsgi:application \
+    --name dtr5 \
+    --workers 3 \
+    --threads 4 \
+    --user=chris \
+    --group=chris \
+    --bind=unix:/run/dtr5.socket \
+    --log-level=warning \
+    --log-file=-
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+Restart=on-failure
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
