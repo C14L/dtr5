@@ -1,7 +1,3 @@
-avatars/
-www/
-ng-app/libs/
-static_files/
+static/
 NOTES
 simple_reddit_oauth
-**/__pycache__
