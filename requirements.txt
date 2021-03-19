@@ -18,7 +18,7 @@ defusedxml==0.6.0
 Django==3.0.6
 django-cors-headers==3.3.0
 django-redis==4.11.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 ecdsa==0.15
 flake8==3.8.1
 geographiclib==1.50
