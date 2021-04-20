@@ -3,7 +3,7 @@ asgi-ipc==1.4.2
 asgi-redis==1.4.3
 asgiref==3.2.7
 attrs==19.3.0
-autobahn==20.4.3
+autobahn==20.12.3
 Automat==20.2.0
 black==19.10b0
 certifi==2020.4.5.1
