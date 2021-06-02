@@ -63,6 +63,6 @@ toml==0.10.1
 Twisted==20.3.0
 txaio==20.4.1
 typed-ast==1.4.1
-urllib3==1.25.9
+urllib3==1.26.5
 zipp==3.1.0
 zope.interface==5.1.0
