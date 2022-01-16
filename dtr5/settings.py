@@ -1,14 +1,17 @@
 import os
 import re
+import logging
 
 DEBUG = bool(os.environ.get("ISDEV"))
-print("--> DEBUG: {}".format(DEBUG))
+
+logger = logging.getLogger(__name__)
+logger.info("DEBUG: %s", DEBUG)
 
 if DEBUG:
-    print("--> Using development settings...")
+    logger.info("Using development settings...")
     from .settings_development_private import *
 else:
-    print("--> Using production settings...")
+    logger.info("Using production settings...")
     from .settings_production_private import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,10 +27,21 @@ LOGIN_URL = "/"
 
 AUTHENTICATION_BACKENDS = ("simple_reddit_oauth.backends.RedditBackend",)
 
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "HOST": "db",
+        "PORT": "5432",
+        "NAME": os.environ.get("POSTGRES_NAME"),
+        "USER": os.environ.get("POSTGRES_USER"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+    }
+}
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "redis://redis:6379/1",
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient",},
     }
 }
