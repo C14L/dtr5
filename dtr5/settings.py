@@ -30,18 +30,30 @@ AUTHENTICATION_BACKENDS = ("simple_reddit_oauth.backends.RedditBackend",)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "HOST": "db",
-        "PORT": "5432",
-        "NAME": os.environ.get("POSTGRES_NAME"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-    }
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+        "PORT": os.environ.get("POSTGRES_PORT", "5433"),
+        "NAME": os.environ.get("POSTGRES_NAME", "dtr5"),
+        "USER": os.environ.get("POSTGRES_USER", "dev"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "12345678"),
+        #"POOL_OPTIONS": {
+        #    'POOL_SIZE': 10,
+        #    'MAX_OVERFLOW': 10,
+        #},
+        #"OPTIONS": {
+        #    "keepalives": 1,
+        #    "keepalives_idle": 30,
+        #    "keepalives_interval": 10,
+        #    "keepalives_count": 5,
+        #},
+    },
 }
+
+print("######## Connecting to DB: %s", DATABASES)
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
+        "LOCATION": "redis://%s:%s/1" % (os.environ.get("REDIS_HOST", "localhost"), os.environ.get("REDIS_PORT", "6379")),
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient",},
     }
 }
